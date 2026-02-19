@@ -215,11 +215,11 @@ function TimerDisplay({
           <div className="score-team left-team">
             <div className="team-color-label">{config.leftTeamLabel}</div>
             <div className="team-name">{currentGame.team1}</div>
-            <div className="score-value">{scores.team1}</div>
-            <div className="score-buttons">
+            <div className="score-row">
               <button onClick={() => decrementScore('team1')} className="score-btn minus">
                 -
               </button>
+              <div className="score-value">{scores.team1}</div>
               <button onClick={() => incrementScore('team1')} className="score-btn plus">
                 +
               </button>
@@ -229,11 +229,11 @@ function TimerDisplay({
           <div className="score-team right-team">
             <div className="team-color-label">{config.rightTeamLabel}</div>
             <div className="team-name">{currentGame.team2}</div>
-            <div className="score-value">{scores.team2}</div>
-            <div className="score-buttons">
+            <div className="score-row">
               <button onClick={() => decrementScore('team2')} className="score-btn minus">
                 -
               </button>
+              <div className="score-value">{scores.team2}</div>
               <button onClick={() => incrementScore('team2')} className="score-btn plus">
                 +
               </button>
