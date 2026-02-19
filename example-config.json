@@ -1,0 +1,35 @@
+{
+  "countdownToStart": 20,
+  "firstHalfDuration": 600,
+  "halfTimeDuration": 120,
+  "secondHalfDuration": 600,
+  "betweenGamesDuration": 180,
+  "leftTeamLabel": "White",
+  "rightTeamLabel": "Black",
+  "games": [
+    {
+      "team1": "Blue Sharks",
+      "team2": "Red Dragons"
+    },
+    {
+      "team1": "Green Torpedoes",
+      "team2": "Yellow Waves"
+    },
+    {
+      "team1": "Blue Sharks",
+      "team2": "Green Torpedoes"
+    },
+    {
+      "team1": "Red Dragons",
+      "team2": "Yellow Waves"
+    },
+    {
+      "team1": "Blue Sharks",
+      "team2": "Yellow Waves"
+    },
+    {
+      "team1": "Red Dragons",
+      "team2": "Green Torpedoes"
+    }
+  ]
+}
