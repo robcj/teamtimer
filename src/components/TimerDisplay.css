@@ -261,6 +261,121 @@
   cursor: not-allowed;
 }
 
+.next-game-time {
+  text-align: center;
+  font-size: clamp(0.7rem, 2vh, 2rem);
+  color: #666;
+  margin-top: clamp(8px, 1.5vh, 15px);
+  padding: clamp(4px, 0.8vh, 8px);
+  font-style: italic;
+}
+
+.scores-btn {
+  background: #6f42c1;
+  color: white;
+}
+
+.scores-btn:hover:not(:disabled) {
+  background: #5a32a3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(111, 66, 193, 0.4);
+}
+
+.scores-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.scores-dialog {
+  background: white;
+  border-radius: 16px;
+  width: min(700px, 95vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.scores-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #f5f3ff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.scores-dialog-header h3 {
+  margin: 0;
+  color: #4c2a91;
+}
+
+.scores-dialog-close {
+  border: none;
+  background: #6f42c1;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.scores-dialog-close:hover {
+  background: #5a32a3;
+}
+
+.scores-dialog-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+
+.scores-empty {
+  color: #666;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.scores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.scores-row {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+
+.scores-title {
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.scores-winner {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.scores-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #555;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 1024px) and (orientation: portrait) {
   .score-display {
     flex-direction: column;

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import './TimerDisplay.css';
-import { TimerConfig, Scores } from '../types';
+import { TimerConfig, Scores, GameResult } from '../types';
 
 const PHASES = {
   COUNTDOWN: 'countdown',
@@ -28,6 +28,18 @@ interface TimerDisplayProps {
   onNextGame: () => void;
   onPrevGame: () => void;
   onResetGame: () => void;
+  gameResults: GameResult[];
+  phase: string;
+  setPhase: Dispatch<SetStateAction<string>>;
+  timeRemaining: number;
+  setTimeRemaining: Dispatch<SetStateAction<number>>;
+  isRunning: boolean;
+  setIsRunning: Dispatch<SetStateAction<boolean>>;
+  isPaused: boolean;
+  setIsPaused: Dispatch<SetStateAction<boolean>>;
+  scores: Scores;
+  setScores: Dispatch<SetStateAction<Scores>>;
+  onResetTimer: () => void;
 }
 
 function TimerDisplay({
@@ -36,14 +48,22 @@ function TimerDisplay({
   onNextGame,
   onPrevGame,
   onResetGame,
+  gameResults,
+  phase,
+  setPhase,
+  timeRemaining,
+  setTimeRemaining,
+  isRunning,
+  setIsRunning,
+  isPaused,
+  setIsPaused,
+  scores,
+  setScores,
+  onResetTimer,
 }: TimerDisplayProps) {
-  const [phase, setPhase] = useState<Phase>(PHASES.IDLE);
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
-  const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [scores, setScores] = useState<Scores>({ team1: 0, team2: 0 });
   const audioContextRef = useRef<AudioContext | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isScoresOpen, setIsScoresOpen] = useState<boolean>(false);
 
   const currentGame = config.games[currentGameIndex];
 
@@ -58,59 +78,6 @@ function TimerDisplay({
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (isRunning && !isPaused) {
-      timerRef.current = setInterval(() => {
-        setTimeRemaining(prev => {
-          const newTime = prev - 1;
-
-          // Beep for last 5 seconds
-          if (newTime <= 5 && newTime > 0) {
-            playBeep();
-          }
-
-          // When timer reaches 0, move to next phase
-          if (newTime <= 0) {
-            playBeep();
-            moveToNextPhase();
-            return 0;
-          }
-
-          return newTime;
-        });
-      }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    }
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
-  }, [isRunning, isPaused, phase]);
-
-  const playBeep = (): void => {
-    if (!audioContextRef.current) return;
-
-    const oscillator = audioContextRef.current.createOscillator();
-    const gainNode = audioContextRef.current.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContextRef.current.destination);
-
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-
-    gainNode.gain.setValueAtTime(0.3, audioContextRef.current.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
-
-    oscillator.start(audioContextRef.current.currentTime);
-    oscillator.stop(audioContextRef.current.currentTime + 0.1);
-  };
 
   const moveToNextPhase = (): void => {
     switch (phase) {
@@ -160,14 +127,6 @@ function TimerDisplay({
     setIsPaused(true);
   };
 
-  const handleReset = (): void => {
-    setPhase(PHASES.IDLE);
-    setIsRunning(false);
-    setIsPaused(false);
-    setTimeRemaining(0);
-    setScores({ team1: 0, team2: 0 });
-  };
-
   const handleSkipPhase = (): void => {
     moveToNextPhase();
   };
@@ -177,6 +136,47 @@ function TimerDisplay({
     const secs = Math.abs(seconds) % 60;
     const sign = seconds < 0 ? '-' : '';
     return `${sign}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getNextGameStartTime = (): string => {
+    // Only show if timer is running and there's a next game
+    if (!isRunning || isPaused || currentGameIndex >= config.games.length - 1) {
+      return '';
+    }
+    // Calculate remaining time until next game starts
+    let secondsUntilGameStart = timeRemaining;
+
+    // Add time for remaining phases if not in idle
+    if (phase === PHASES.COUNTDOWN) {
+      secondsUntilGameStart +=
+        config.firstHalfDuration +
+        config.halfTimeDuration +
+        config.secondHalfDuration +
+        config.betweenGamesDuration;
+    } else if (phase === PHASES.FIRST_HALF) {
+      secondsUntilGameStart +=
+        config.halfTimeDuration + config.secondHalfDuration + config.betweenGamesDuration;
+    } else if (phase === PHASES.HALF_TIME) {
+      secondsUntilGameStart += config.secondHalfDuration + config.betweenGamesDuration;
+    } else if (phase === PHASES.SECOND_HALF) {
+      secondsUntilGameStart += config.betweenGamesDuration;
+    } else if (phase === PHASES.BETWEEN_GAMES) {
+      // Next game starts after this phase
+      secondsUntilGameStart = timeRemaining;
+    } else {
+      // Idle phase
+      return '';
+    }
+
+    // Calculate the estimated time
+    const now = new Date();
+    const futureTime = new Date(now.getTime() + secondsUntilGameStart * 1000);
+
+    // Format as HH:MM
+    const hours = futureTime.getHours().toString().padStart(2, '0');
+    const minutes = futureTime.getMinutes().toString().padStart(2, '0');
+    const seconds = futureTime.getSeconds().toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
   };
 
   const incrementScore = (team: keyof Scores): void => {
@@ -204,7 +204,7 @@ function TimerDisplay({
       )}
 
       <div className="timer-container">
-        <div className="phase-label">{PHASE_LABELS[phase]}</div>
+        <div className="phase-label">{PHASE_LABELS[phase as Phase]}</div>
         <div className={`timer ${timeRemaining <= 5 && timeRemaining > 0 ? 'warning' : ''}`}>
           {formatTime(timeRemaining)}
         </div>
@@ -257,8 +257,11 @@ function TimerDisplay({
         >
           Pause
         </button>
-        <button onClick={handleReset} className="control-btn reset-btn">
+        <button onClick={onResetTimer} className="control-btn reset-btn">
           Reset
+        </button>
+        <button onClick={() => setIsScoresOpen(true)} className="control-btn scores-btn">
+          Game Scores
         </button>
         <button
           onClick={handleSkipPhase}
@@ -283,7 +286,65 @@ function TimerDisplay({
             className="nav-btn"
           >
             Next Game
-          </button>
+          </button>{' '}
+          {getNextGameStartTime() && (
+            <div className="next-game-time">Next game starts at: {getNextGameStartTime()}</div>
+          )}
+        </div>
+      )}
+
+      {isScoresOpen && (
+        <div className="scores-dialog-backdrop" onClick={() => setIsScoresOpen(false)}>
+          <div className="scores-dialog" onClick={event => event.stopPropagation()}>
+            <div className="scores-dialog-header">
+              <h3>Game Scores</h3>
+              <button
+                className="scores-dialog-close"
+                onClick={() => setIsScoresOpen(false)}
+                type="button"
+              >
+                Close
+              </button>
+            </div>
+            <div className="scores-dialog-body">
+              {config.games.length === 0 ? (
+                <div className="scores-empty">No games configured.</div>
+              ) : (
+                <div className="scores-list">
+                  {config.games.map((game, index) => {
+                    const result = gameResults[index];
+                    const startTime = result?.startTime ?? '—';
+                    const hasScore = Boolean(result?.score);
+                    const team1Score = result?.score?.team1 ?? 0;
+                    const team2Score = result?.score?.team2 ?? 0;
+                    const team1Wins = hasScore && team1Score > team2Score;
+                    const team2Wins = hasScore && team2Score > team1Score;
+                    const scoreText = result?.score
+                      ? `${result.score.team1} - ${result.score.team2}`
+                      : '—';
+                    return (
+                      <div className="scores-row" key={`${game.team1}-${game.team2}-${index}`}>
+                        <div className="scores-title">
+                          Game {index + 1}:{' '}
+                          <span className={team1Wins ? 'scores-winner' : undefined}>
+                            {game.team1}
+                          </span>{' '}
+                          vs{' '}
+                          <span className={team2Wins ? 'scores-winner' : undefined}>
+                            {game.team2}
+                          </span>
+                        </div>
+                        <div className="scores-meta">
+                          <span className="scores-start">Start: {startTime}</span>
+                          <span className="scores-score">Score: {scoreText}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -112,12 +112,17 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
     }
   };
 
-  const secondsToMinutes = (seconds: number): string => {
-    return (seconds / 60).toFixed(2);
+  const secondsToMinutesAndSeconds = (
+    totalSeconds: number
+  ): { minutes: number; seconds: number } => {
+    return {
+      minutes: Math.floor(totalSeconds / 60),
+      seconds: totalSeconds % 60,
+    };
   };
 
-  const minutesToSeconds = (minutes: string): number => {
-    return Math.round(parseFloat(minutes) * 60);
+  const minutesAndSecondsToSeconds = (minutes: number, seconds: number): number => {
+    return minutes * 60 + seconds;
   };
 
   return (
@@ -138,47 +143,147 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
           </label>
 
           <label>
-            First Half Duration (minutes):
-            <input
-              type="number"
-              step="0.1"
-              value={secondsToMinutes(firstHalfDuration)}
-              onChange={e => setFirstHalfDuration(minutesToSeconds(e.target.value))}
-              min="0"
-            />
+            First Half Duration:
+            <div className="time-input-group">
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(firstHalfDuration).minutes}
+                onChange={e =>
+                  setFirstHalfDuration(
+                    minutesAndSecondsToSeconds(
+                      Number(e.target.value),
+                      secondsToMinutesAndSeconds(firstHalfDuration).seconds
+                    )
+                  )
+                }
+                min="0"
+                placeholder="mins"
+              />
+              <span>:</span>
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(firstHalfDuration).seconds}
+                onChange={e =>
+                  setFirstHalfDuration(
+                    minutesAndSecondsToSeconds(
+                      secondsToMinutesAndSeconds(firstHalfDuration).minutes,
+                      Number(e.target.value)
+                    )
+                  )
+                }
+                min="0"
+                max="59"
+                placeholder="secs"
+              />
+            </div>
           </label>
 
           <label>
-            Half Time Duration (minutes):
-            <input
-              type="number"
-              step="0.1"
-              value={secondsToMinutes(halfTimeDuration)}
-              onChange={e => setHalfTimeDuration(minutesToSeconds(e.target.value))}
-              min="0"
-            />
+            Half Time Duration:
+            <div className="time-input-group">
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(halfTimeDuration).minutes}
+                onChange={e =>
+                  setHalfTimeDuration(
+                    minutesAndSecondsToSeconds(
+                      Number(e.target.value),
+                      secondsToMinutesAndSeconds(halfTimeDuration).seconds
+                    )
+                  )
+                }
+                min="0"
+                placeholder="mins"
+              />
+              <span>:</span>
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(halfTimeDuration).seconds}
+                onChange={e =>
+                  setHalfTimeDuration(
+                    minutesAndSecondsToSeconds(
+                      secondsToMinutesAndSeconds(halfTimeDuration).minutes,
+                      Number(e.target.value)
+                    )
+                  )
+                }
+                min="0"
+                max="59"
+                placeholder="secs"
+              />
+            </div>
           </label>
 
           <label>
-            Second Half Duration (minutes):
-            <input
-              type="number"
-              step="0.1"
-              value={secondsToMinutes(secondHalfDuration)}
-              onChange={e => setSecondHalfDuration(minutesToSeconds(e.target.value))}
-              min="0"
-            />
+            Second Half Duration:
+            <div className="time-input-group">
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(secondHalfDuration).minutes}
+                onChange={e =>
+                  setSecondHalfDuration(
+                    minutesAndSecondsToSeconds(
+                      Number(e.target.value),
+                      secondsToMinutesAndSeconds(secondHalfDuration).seconds
+                    )
+                  )
+                }
+                min="0"
+                placeholder="mins"
+              />
+              <span>:</span>
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(secondHalfDuration).seconds}
+                onChange={e =>
+                  setSecondHalfDuration(
+                    minutesAndSecondsToSeconds(
+                      secondsToMinutesAndSeconds(secondHalfDuration).minutes,
+                      Number(e.target.value)
+                    )
+                  )
+                }
+                min="0"
+                max="59"
+                placeholder="secs"
+              />
+            </div>
           </label>
 
           <label>
-            Between Games Duration (minutes):
-            <input
-              type="number"
-              step="0.1"
-              value={secondsToMinutes(betweenGamesDuration)}
-              onChange={e => setBetweenGamesDuration(minutesToSeconds(e.target.value))}
-              min="0"
-            />
+            Between Games Duration:
+            <div className="time-input-group">
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(betweenGamesDuration).minutes}
+                onChange={e =>
+                  setBetweenGamesDuration(
+                    minutesAndSecondsToSeconds(
+                      Number(e.target.value),
+                      secondsToMinutesAndSeconds(betweenGamesDuration).seconds
+                    )
+                  )
+                }
+                min="0"
+                placeholder="mins"
+              />
+              <span>:</span>
+              <input
+                type="number"
+                value={secondsToMinutesAndSeconds(betweenGamesDuration).seconds}
+                onChange={e =>
+                  setBetweenGamesDuration(
+                    minutesAndSecondsToSeconds(
+                      secondsToMinutesAndSeconds(betweenGamesDuration).minutes,
+                      Number(e.target.value)
+                    )
+                  )
+                }
+                min="0"
+                max="59"
+                placeholder="secs"
+              />
+            </div>
           </label>
         </div>
       </div>

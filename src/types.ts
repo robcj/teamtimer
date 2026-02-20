@@ -19,4 +19,19 @@ export interface Scores {
   team2: number;
 }
 
+export interface GameResult {
+  startTime: string | null;
+  score: Scores | null;
+}
+
+export interface TimerState {
+  phase: string;
+  timeRemaining: number;
+  isRunning: boolean;
+  isPaused: boolean;
+  scores: Scores;
+  currentGameIndex?: number;
+  gameResults?: GameResult[];
+}
+
 export type ViewType = 'timer' | 'config';

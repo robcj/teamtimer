@@ -61,6 +61,33 @@
   border-color: #667eea;
 }
 
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-input-group input {
+  flex: 1;
+  padding: 12px;
+  font-size: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease;
+  max-width: 80px;
+}
+
+.time-input-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.time-input-group span {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #667eea;
+}
+
 .add-game {
   display: flex;
   gap: 10px;
