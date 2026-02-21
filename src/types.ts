@@ -12,6 +12,7 @@ export interface TimerConfig {
   games: Game[];
   leftTeamLabel: string;
   rightTeamLabel: string;
+  competitionName?: string;
 }
 
 export interface Scores {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import TimerDisplay from './components/TimerDisplay';
 import Configuration from './components/Configuration';
+import GameScoresDialog from './components/GameScoresDialog';
 import { TimerConfig, ViewType, TimerState, Scores, Game, GameResult } from './types';
 
 const DEFAULT_CONFIG: TimerConfig = {
@@ -13,6 +14,7 @@ const DEFAULT_CONFIG: TimerConfig = {
   games: [],
   leftTeamLabel: 'White',
   rightTeamLabel: 'Black',
+  competitionName: '',
 };
 
 function App() {
@@ -39,6 +41,7 @@ function App() {
   const [currentGameIndex, setCurrentGameIndex] = useState<number>(
     () => timerState?.currentGameIndex ?? 0
   );
+  const [isScoresOpen, setIsScoresOpen] = useState<boolean>(false);
 
   // Expanded state for active timer management
   const [phase, setPhase] = useState<string>(() => timerState?.phase || 'idle');
@@ -92,6 +95,7 @@ function App() {
   }, [phase, timeRemaining, isRunning, isPaused, scores, currentGameIndex, gameResults]);
 
   const prevPhaseRef = useRef<string>(phase);
+  const isLoadingScoresRef = useRef<boolean>(false);
 
   useEffect(() => {
     const prevPhase = prevPhaseRef.current;
@@ -124,6 +128,48 @@ function App() {
 
     prevPhaseRef.current = phase;
   }, [phase, currentGameIndex, scores]);
+
+  // Load scores for the current game when navigating between games
+  useEffect(() => {
+    if (phase === 'idle' || phase === 'betweenGames') {
+      isLoadingScoresRef.current = true;
+      const currentGameResult = gameResults[currentGameIndex];
+      if (currentGameResult?.score) {
+        // Game has been played - load its scores
+        setScores(currentGameResult.score);
+      } else {
+        // Game hasn't been played yet - reset scores
+        setScores({ team1: 0, team2: 0 });
+      }
+      // Use a timeout to reset the flag after state updates have processed
+      setTimeout(() => {
+        isLoadingScoresRef.current = false;
+      }, 0);
+    }
+  }, [currentGameIndex, phase, gameResults.length]);
+
+  // Save score changes back to gameResults when not actively timing
+  useEffect(() => {
+    if (
+      !isLoadingScoresRef.current &&
+      (phase === 'idle' || phase === 'betweenGames') &&
+      currentGameIndex >= 0
+    ) {
+      setGameResults(prev => {
+        const next = [...prev];
+        const current = next[currentGameIndex] ?? { startTime: null, score: null };
+        // Only update if scores have changed or if there were no scores before
+        if (
+          !current.score ||
+          current.score.team1 !== scores.team1 ||
+          current.score.team2 !== scores.team2
+        ) {
+          next[currentGameIndex] = { ...current, score: { ...scores } };
+        }
+        return next;
+      });
+    }
+  }, [scores, phase, currentGameIndex]);
 
   // Main timer interval - runs regardless of view
   useEffect(() => {
@@ -249,6 +295,13 @@ function App() {
   };
 
   const handleResetTimer = (): void => {
+    const confirmed = window.confirm(
+      'This will reset all times and scores. Are you sure you want to continue?'
+    );
+    if (!confirmed) {
+      return;
+    }
+
     setPhase('idle');
     setTimeRemaining(0);
     setIsRunning(false);
@@ -263,8 +316,19 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Team Timer</h1>
+        <div className="header-title">
+          <h1>Team Timer</h1>
+        </div>
+        {config.competitionName && <p className="competition-name">{config.competitionName}</p>}
         <div className="header-buttons">
+          {view === 'timer' && (
+            <button
+              onClick={() => setIsScoresOpen(true)}
+              className="config-button scores-header-button"
+            >
+              Game Scores
+            </button>
+          )}
           {view === 'timer' && (
             <button onClick={() => setView('config')} className="config-button">
               Configuration
@@ -278,10 +342,10 @@ function App() {
           <TimerDisplay
             config={config}
             currentGameIndex={currentGameIndex}
+            gameResults={gameResults}
             onNextGame={handleNextGame}
             onPrevGame={handlePrevGame}
             onResetGame={handleResetGame}
-            gameResults={gameResults}
             phase={phase}
             setPhase={setPhase}
             timeRemaining={timeRemaining}
@@ -298,6 +362,15 @@ function App() {
           <Configuration config={config} onSave={handleConfigSave} onCancel={handleConfigCancel} />
         )}
       </main>
+      <GameScoresDialog
+        isOpen={isScoresOpen}
+        games={config.games}
+        results={gameResults}
+        leftTeamLabel={config.leftTeamLabel}
+        rightTeamLabel={config.rightTeamLabel}
+        competitionName={config.competitionName || ''}
+        onClose={() => setIsScoresOpen(false)}
+      />
     </div>
   );
 }

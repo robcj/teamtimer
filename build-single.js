@@ -8,11 +8,19 @@ const jsPath = path.join(__dirname, 'dist', 'bundle.js');
 const html = fs.readFileSync(htmlPath, 'utf8');
 const js = fs.readFileSync(jsPath, 'utf8');
 
-// Create inline version
-const inlineHtml = html.replace(
-  /<script defer="defer" src="bundle\.js"><\/script>/,
-  `<script>${js}</script>`
-);
+// Replace </script> with <\/script> to prevent premature HTML parsing
+// Replace <script with <\u0073cript (unicode escape for 's')
+// Replace $ with $$$$ to escape special regex replacement patterns
+const safeJs = js
+  .replace(/<\/script>/gi, '<\\/script>')
+  .replace(/<script/gi, '<\\u0073cript')
+  .replace(/\$/g, '$$$$');
+
+// Remove external bundle script and inject inline script at end of body
+const scriptPattern = /<script[^>]*\ssrc\s*=\s*["'][^"']*bundle\.js["'][^>]*>\s*<\/script>/i;
+const htmlWithoutBundle = html.replace(scriptPattern, '');
+const inlineScript = '<script>' + safeJs + '</script>';
+const inlineHtml = htmlWithoutBundle.replace(/<\/body>/i, inlineScript + '</body>');
 
 // Create output directory
 const outputDir = path.join(__dirname, 'dist-single');

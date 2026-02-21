@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import './TimerDisplay.css';
 import { TimerConfig, Scores, GameResult } from '../types';
+import ScoreBoard from './ScoreBoard';
+import GameNavigation from './GameNavigation';
+import TimerHeader from './TimerHeader';
+import TimerControls from './TimerControls';
+import GameHeader from './GameHeader';
 
 const PHASES = {
   COUNTDOWN: 'countdown',
@@ -25,10 +30,10 @@ const PHASE_LABELS: Record<Phase, string> = {
 interface TimerDisplayProps {
   config: TimerConfig;
   currentGameIndex: number;
+  gameResults: GameResult[];
   onNextGame: () => void;
   onPrevGame: () => void;
   onResetGame: () => void;
-  gameResults: GameResult[];
   phase: string;
   setPhase: Dispatch<SetStateAction<string>>;
   timeRemaining: number;
@@ -45,10 +50,10 @@ interface TimerDisplayProps {
 function TimerDisplay({
   config,
   currentGameIndex,
+  gameResults,
   onNextGame,
   onPrevGame,
   onResetGame,
-  gameResults,
   phase,
   setPhase,
   timeRemaining,
@@ -63,7 +68,6 @@ function TimerDisplay({
 }: TimerDisplayProps) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [isScoresOpen, setIsScoresOpen] = useState<boolean>(false);
 
   const currentGame = config.games[currentGameIndex];
 
@@ -193,160 +197,68 @@ function TimerDisplay({
     }));
   };
 
+  const hasCompletedCurrentGame = Boolean(gameResults[currentGameIndex]?.score);
+  const lastPlayedGameIndex =
+    (phase === PHASES.BETWEEN_GAMES || phase === PHASES.IDLE) && hasCompletedCurrentGame
+      ? currentGameIndex
+      : currentGameIndex - 1;
+
+  console.log('Current Game Index:', currentGameIndex);
+  console.log('Game Results:', gameResults);
+  console.log('Last Played Game Index:', lastPlayedGameIndex);
+
   return (
     <div className="timer-display">
       {currentGame && (
-        <div className="game-info">
-          <h2>
-            Game {currentGameIndex + 1} of {config.games.length}
-          </h2>
-        </div>
+        <GameHeader
+          game={currentGame}
+          currentIndex={currentGameIndex}
+          totalGames={config.games.length}
+        />
       )}
 
-      <div className="timer-container">
-        <div className="phase-label">{PHASE_LABELS[phase as Phase]}</div>
-        <div className={`timer ${timeRemaining <= 5 && timeRemaining > 0 ? 'warning' : ''}`}>
-          {formatTime(timeRemaining)}
-        </div>
-      </div>
+      <TimerHeader
+        phaseLabel={PHASE_LABELS[phase as Phase]}
+        timeText={formatTime(timeRemaining)}
+        isWarning={timeRemaining <= 5 && timeRemaining > 0}
+      />
 
       {currentGame && (
-        <div className="score-display">
-          <div className="score-team left-team">
-            <div className="team-color-label">{config.leftTeamLabel}</div>
-            <div className="team-name">{currentGame.team1}</div>
-            <div className="score-row">
-              <button onClick={() => decrementScore('team1')} className="score-btn minus">
-                -
-              </button>
-              <div className="score-value">{scores.team1}</div>
-              <button onClick={() => incrementScore('team1')} className="score-btn plus">
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className="score-team right-team">
-            <div className="team-color-label">{config.rightTeamLabel}</div>
-            <div className="team-name">{currentGame.team2}</div>
-            <div className="score-row">
-              <button onClick={() => decrementScore('team2')} className="score-btn minus">
-                -
-              </button>
-              <div className="score-value">{scores.team2}</div>
-              <button onClick={() => incrementScore('team2')} className="score-btn plus">
-                +
-              </button>
-            </div>
-          </div>
-        </div>
+        <ScoreBoard
+          config={config}
+          game={currentGame}
+          scores={scores}
+          onIncrement={incrementScore}
+          onDecrement={decrementScore}
+        />
       )}
 
-      <div className="controls">
-        <button
-          onClick={handleStart}
-          disabled={isRunning && !isPaused}
-          className="control-btn start-btn"
-        >
-          {isPaused ? 'Resume' : 'Start'}
-        </button>
-        <button
-          onClick={handlePause}
-          disabled={!isRunning || isPaused}
-          className="control-btn pause-btn"
-        >
-          Pause
-        </button>
-        <button onClick={onResetTimer} className="control-btn reset-btn">
-          Reset
-        </button>
-        <button onClick={() => setIsScoresOpen(true)} className="control-btn scores-btn">
-          Game Scores
-        </button>
-        <button
-          onClick={handleSkipPhase}
-          disabled={phase === PHASES.IDLE || !isRunning}
-          className="control-btn skip-btn"
-        >
-          Skip Phase
-        </button>
-      </div>
+      <TimerControls
+        isRunning={isRunning}
+        isPaused={isPaused}
+        onStart={handleStart}
+        onPause={handlePause}
+        onReset={onResetTimer}
+        onSkipPhase={handleSkipPhase}
+        canSkip={phase !== PHASES.IDLE && isRunning}
+      />
 
-      {config.games.length > 0 && (
-        <div className="game-navigation">
-          <button onClick={onPrevGame} disabled={currentGameIndex === 0} className="nav-btn">
-            Previous Game
-          </button>
-          <button onClick={onResetGame} className="nav-btn">
-            First Game
-          </button>
-          <button
-            onClick={onNextGame}
-            disabled={currentGameIndex >= config.games.length - 1}
-            className="nav-btn"
-          >
-            Next Game
-          </button>{' '}
-          {getNextGameStartTime() && (
-            <div className="next-game-time">Next game starts at: {getNextGameStartTime()}</div>
-          )}
-        </div>
-      )}
-
-      {isScoresOpen && (
-        <div className="scores-dialog-backdrop" onClick={() => setIsScoresOpen(false)}>
-          <div className="scores-dialog" onClick={event => event.stopPropagation()}>
-            <div className="scores-dialog-header">
-              <h3>Game Scores</h3>
-              <button
-                className="scores-dialog-close"
-                onClick={() => setIsScoresOpen(false)}
-                type="button"
-              >
-                Close
-              </button>
-            </div>
-            <div className="scores-dialog-body">
-              {config.games.length === 0 ? (
-                <div className="scores-empty">No games configured.</div>
-              ) : (
-                <div className="scores-list">
-                  {config.games.map((game, index) => {
-                    const result = gameResults[index];
-                    const startTime = result?.startTime ?? '—';
-                    const hasScore = Boolean(result?.score);
-                    const team1Score = result?.score?.team1 ?? 0;
-                    const team2Score = result?.score?.team2 ?? 0;
-                    const team1Wins = hasScore && team1Score > team2Score;
-                    const team2Wins = hasScore && team2Score > team1Score;
-                    const scoreText = result?.score
-                      ? `${result.score.team1} - ${result.score.team2}`
-                      : '—';
-                    return (
-                      <div className="scores-row" key={`${game.team1}-${game.team2}-${index}`}>
-                        <div className="scores-title">
-                          Game {index + 1}:{' '}
-                          <span className={team1Wins ? 'scores-winner' : undefined}>
-                            {game.team1}
-                          </span>{' '}
-                          vs{' '}
-                          <span className={team2Wins ? 'scores-winner' : undefined}>
-                            {game.team2}
-                          </span>
-                        </div>
-                        <div className="scores-meta">
-                          <span className="scores-start">Start: {startTime}</span>
-                          <span className="scores-score">Score: {scoreText}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <GameNavigation
+        currentGameIndex={currentGameIndex}
+        totalGames={config.games.length}
+        onPrevGame={onPrevGame}
+        onResetGame={onResetGame}
+        onNextGame={onNextGame}
+        nextGameStartTime={getNextGameStartTime()}
+        previousGame={
+          lastPlayedGameIndex >= 0
+            ? {
+                game: config.games[lastPlayedGameIndex],
+                score: gameResults[lastPlayedGameIndex]?.score ?? null,
+              }
+            : null
+        }
+      />
     </div>
   );
 }

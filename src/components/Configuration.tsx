@@ -9,6 +9,7 @@ interface ConfigurationProps {
 }
 
 function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
+  const [competitionName, setCompetitionName] = useState<string>(config.competitionName || '');
   const [countdownToStart, setCountdownToStart] = useState<number>(config.countdownToStart);
   const [firstHalfDuration, setFirstHalfDuration] = useState<number>(config.firstHalfDuration);
   const [halfTimeDuration, setHalfTimeDuration] = useState<number>(config.halfTimeDuration);
@@ -31,6 +32,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
       leftTeamLabel: leftTeamLabel.trim() || 'White',
       rightTeamLabel: rightTeamLabel.trim() || 'Black',
+      competitionName: competitionName.trim(),
       games,
     };
     onSave(newConfig);
@@ -73,6 +75,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
       leftTeamLabel: leftTeamLabel.trim() || 'White',
       rightTeamLabel: rightTeamLabel.trim() || 'Black',
+      competitionName: competitionName.trim(),
       games,
     };
 
@@ -95,6 +98,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
           const result = e.target?.result;
           if (typeof result === 'string') {
             const importedConfig: TimerConfig = JSON.parse(result);
+            setCompetitionName(importedConfig.competitionName || '');
             setCountdownToStart(importedConfig.countdownToStart || 20);
             setFirstHalfDuration(importedConfig.firstHalfDuration || 600);
             setHalfTimeDuration(importedConfig.halfTimeDuration || 120);
@@ -128,6 +132,21 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
   return (
     <div className="configuration">
       <h2>Configuration</h2>
+
+      <div className="config-section">
+        <h3>Competition</h3>
+        <div className="config-group">
+          <label>
+            Competition Name:
+            <input
+              type="text"
+              value={competitionName}
+              onChange={e => setCompetitionName(e.target.value)}
+              placeholder="e.g., Regional Tournament 2026"
+            />
+          </label>
+        </div>
+      </div>
 
       <div className="config-section">
         <h3>Timer Durations</h3>
