@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .game-info {
@@ -50,7 +50,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(4px, 0.8vh, 10px);
+  gap: clamp(2px, 0.5vh, 6px);
   padding: clamp(8px, 1.5vh, 15px);
   background: white;
   border-radius: 8px;
@@ -81,21 +81,23 @@
   font-weight: 600;
   color: #333;
   text-align: center;
+  line-height: 1;
 }
 
 .score-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(20px, 5vw, 80px);
+  gap: clamp(10px, 3vw, 40px);
 }
 
 .score-value {
-  font-size: clamp(4rem, 20vh, 10rem);
+  font-size: clamp(2.8rem, 12vh, 7rem);
   font-weight: bold;
   color: #667eea;
-  min-width: clamp(100px, 15vw, 160px);
+  min-width: clamp(70px, 12vw, 120px);
   text-align: center;
+  line-height: 0.88;
 }
 
 .score-btn {
@@ -133,7 +135,7 @@
 }
 
 .timer {
-  font-size: clamp(5rem, 15vh, 10rem);
+  font-size: clamp(3rem, 12vh, 8rem);
   font-weight: bold;
   color: #333;
   font-family: 'Courier New', monospace;
@@ -173,10 +175,65 @@
   align-items: center;
   gap: clamp(6px, 1.2vw, 12px);
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .controls-right {
   justify-content: flex-end;
+}
+
+.compact-actions-menu,
+.compact-nav-menu {
+  display: none;
+  position: relative;
+}
+
+.compact-actions-trigger {
+  list-style: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  user-select: none;
+}
+
+.compact-actions-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.compact-actions-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 12;
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #d9d9e8;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.compact-action-item {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #f3f4f6;
+  color: #333;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.compact-action-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .control-btn {
@@ -256,6 +313,7 @@
   justify-content: center;
   gap: clamp(6px, 1.2vw, 12px);
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .last-game-summary {
@@ -308,6 +366,124 @@
   color: #666;
   padding: clamp(4px, 0.8vh, 8px);
   font-style: italic;
+}
+
+@media (min-width: 1280px) and (min-height: 700px) {
+  .timer-display {
+    padding: clamp(10px, 1.8vh, 20px);
+  }
+
+  .game-info h2 {
+    font-size: clamp(1rem, 1.8vh, 1.4rem);
+  }
+
+  .timer-container {
+    margin: clamp(6px, 1.2vh, 12px) 0;
+  }
+
+  .phase-label {
+    font-size: clamp(1.1rem, 2.2vh, 1.6rem);
+    margin-bottom: clamp(4px, 0.9vh, 10px);
+  }
+
+  .timer {
+    font-size: clamp(3.8rem, 22vh, 25rem);
+    line-height: 1;
+  }
+
+  .score-display {
+    margin: clamp(6px, 1.2vh, 12px) 0;
+    gap: clamp(10px, 1.8vw, 24px);
+  }
+
+  .score-team {
+    padding: clamp(8px, 1.4vh, 14px);
+  }
+
+  .team-color-label {
+    font-size: clamp(0.7rem, 1.3vh, 0.95rem);
+  }
+
+  .team-name {
+    font-size: clamp(1.2rem, 2.3vh, 1.8rem);
+  }
+
+  .score-value {
+    font-size: clamp(3.2rem, 24vh, 30rem);
+    min-width: clamp(90px, 12vw, 150px);
+  }
+
+  .score-btn {
+    width: clamp(36px, 4.2vh, 52px);
+    height: clamp(36px, 4.2vh, 52px);
+    font-size: clamp(1.1rem, 2vh, 1.6rem);
+  }
+
+  .control-btn,
+  .nav-btn {
+    font-size: clamp(0.85rem, 1.4vh, 1rem);
+  }
+
+  .last-game-label,
+  .last-game-result,
+  .next-game-time {
+    font-size: clamp(0.78rem, 1.2vh, 0.95rem);
+  }
+}
+
+@media (max-width: 1024px) {
+  .timer-display {
+    padding: clamp(8px, 1.5vh, 14px);
+  }
+
+  .score-display {
+    gap: 10px;
+  }
+
+  .team-name {
+    font-size: clamp(1rem, 2.2vh, 1.3rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .score-display {
+    flex-direction: column;
+  }
+
+  .controls,
+  .game-navigation {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .controls-left,
+  .controls-right,
+  .game-navigation-buttons,
+  .last-game-summary,
+  .next-game-time {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .last-game-summary {
+    max-width: 100%;
+  }
+
+  .control-btn,
+  .nav-btn {
+    min-width: clamp(90px, 22vw, 130px);
+  }
+
+  .controls-right,
+  .game-navigation-buttons {
+    display: none;
+  }
+
+  .compact-actions-menu,
+  .compact-nav-menu {
+    display: block;
+  }
 }
 
 .scores-dialog-backdrop {
@@ -477,35 +653,39 @@
 }
 
 @media (max-width: 768px) {
+  .timer-display {
+    padding: 8px;
+  }
+
   .score-display {
     flex-direction: column;
+    margin: 8px 0;
   }
 
-  .controls {
-    flex-wrap: wrap;
-    justify-content: center;
+  .phase-label {
+    font-size: clamp(0.95rem, 2vh, 1.2rem);
   }
 
-  .controls-left,
-  .controls-right {
-    justify-content: center;
-    width: 100%;
+  .timer {
+    font-size: clamp(2.4rem, 10vh, 4.5rem);
   }
 
-  .game-navigation {
-    flex-wrap: wrap;
-    justify-content: center;
+  .score-value {
+    font-size: clamp(2.2rem, 12vw, 4rem);
+    min-width: 60px;
   }
 
-  .last-game-summary {
-    max-width: 100%;
-    width: 100%;
-    text-align: center;
+  .control-btn,
+  .nav-btn {
+    padding: 8px 10px;
+    min-width: 90px;
+    font-size: 0.82rem;
   }
 
-  .next-game-time {
-    width: 100%;
-    margin-left: 0;
+  .next-game-time,
+  .last-game-label,
+  .last-game-result {
+    font-size: 0.85rem;
   }
 
   .left-team,
@@ -517,7 +697,7 @@
 
 @media (max-height: 600px) {
   .timer-display {
-    padding: clamp(8px, 1.5vh, 15px);
+    padding: 8px;
   }
 
   .game-info {
@@ -532,6 +712,14 @@
     margin: 8px 0;
   }
 
+  .timer {
+    font-size: clamp(2.2rem, 8vh, 3.8rem);
+  }
+
+  .score-value {
+    font-size: clamp(2rem, 8vh, 3.4rem);
+  }
+
   .controls {
     margin: 8px 0;
     gap: 5px;
@@ -540,5 +728,143 @@
   .game-navigation {
     margin-top: 8px;
     padding-top: 8px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+  .timer-display {
+    padding: 6px;
+    border-radius: 10px;
+  }
+
+  .game-info {
+    margin-bottom: 3px;
+  }
+
+  .game-info h2 {
+    font-size: clamp(0.75rem, 3vh, 0.95rem);
+  }
+
+  .timer-container {
+    margin: 4px 0;
+  }
+
+  .phase-label {
+    margin-bottom: 4px;
+    font-size: clamp(0.8rem, 3vh, 1rem);
+  }
+
+  .timer {
+    font-size: clamp(1.9rem, 9vh, 3.1rem);
+    line-height: 1;
+  }
+
+  .score-display {
+    gap: 6px;
+    margin: 4px 0;
+  }
+
+  .score-team {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .team-color-label {
+    font-size: clamp(0.55rem, 2.2vh, 0.7rem);
+    padding: 2px 8px;
+  }
+
+  .team-name {
+    font-size: clamp(0.9rem, 3vh, 1.1rem);
+  }
+
+  .score-row {
+    gap: 8px;
+  }
+
+  .score-value {
+    font-size: clamp(1.7rem, 8vh, 2.7rem);
+    min-width: 56px;
+  }
+
+  .score-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  .controls {
+    margin: 5px 0;
+    gap: 4px;
+  }
+
+  .controls-left,
+  .controls-right {
+    gap: 4px;
+  }
+
+  .controls-right,
+  .game-navigation-buttons {
+    display: none;
+  }
+
+  .compact-actions-menu,
+  .compact-nav-menu {
+    display: block;
+  }
+
+  .control-btn {
+    min-width: 72px;
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .compact-actions-trigger {
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .compact-actions-list {
+    min-width: 150px;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .compact-action-item {
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .game-navigation {
+    gap: 4px;
+    padding-top: 5px;
+  }
+
+  .last-game-label {
+    font-size: 0.68rem;
+  }
+
+  .last-game-result {
+    font-size: 0.74rem;
+  }
+
+  .nav-btn {
+    min-width: 72px;
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .next-game-time {
+    font-size: 0.72rem;
+    padding: 2px 4px;
+  }
+
+  .scores-dialog {
+    max-height: 88vh;
+  }
+
+  .scores-dialog-header,
+  .scores-dialog-body {
+    padding: 10px 12px;
   }
 }

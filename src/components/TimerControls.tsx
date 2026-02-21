@@ -19,22 +19,21 @@ function TimerControls({
   onSkipPhase,
   canSkip,
 }: TimerControlsProps) {
+  const closeCompactMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    const menu = event.currentTarget.closest('details');
+    if (menu) {
+      menu.removeAttribute('open');
+    }
+  };
+
   return (
     <div className="controls">
       <div className="controls-left">
         <button
-          onClick={onStart}
-          disabled={isRunning && !isPaused}
-          className="control-btn start-btn"
+          onClick={isRunning && !isPaused ? onPause : onStart}
+          className={`control-btn ${isRunning && !isPaused ? 'pause-btn' : 'start-btn'}`}
         >
-          {isPaused ? 'Resume' : 'Start'}
-        </button>
-        <button
-          onClick={onPause}
-          disabled={!isRunning || isPaused}
-          className="control-btn pause-btn"
-        >
-          Pause
+          {isRunning && !isPaused ? 'Pause' : isPaused ? 'Resume' : 'Start'}
         </button>
       </div>
 
@@ -46,6 +45,31 @@ function TimerControls({
           Skip Phase
         </button>
       </div>
+
+      <details className="compact-actions-menu" role="group">
+        <summary className="compact-actions-trigger">Actions ▾</summary>
+        <div className="compact-actions-list">
+          <button
+            className="compact-action-item"
+            onClick={event => {
+              closeCompactMenu(event);
+              onReset();
+            }}
+          >
+            Reset
+          </button>
+          <button
+            className="compact-action-item"
+            disabled={!canSkip}
+            onClick={event => {
+              closeCompactMenu(event);
+              onSkipPhase();
+            }}
+          >
+            Skip Phase
+          </button>
+        </div>
+      </details>
     </div>
   );
 }

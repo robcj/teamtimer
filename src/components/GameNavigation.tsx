@@ -29,6 +29,13 @@ function GameNavigation({
     return null;
   }
 
+  const closeCompactMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    const menu = event.currentTarget.closest('details');
+    if (menu) {
+      menu.removeAttribute('open');
+    }
+  };
+
   return (
     <div className="game-navigation">
       <div className="last-game-summary" aria-live="polite">
@@ -57,6 +64,41 @@ function GameNavigation({
           Next Game
         </button>
       </div>
+
+      <details className="compact-nav-menu" role="group">
+        <summary className="compact-actions-trigger">Game Nav ▾</summary>
+        <div className="compact-actions-list">
+          <button
+            className="compact-action-item"
+            disabled={currentGameIndex === 0}
+            onClick={event => {
+              closeCompactMenu(event);
+              onPrevGame();
+            }}
+          >
+            Previous Game
+          </button>
+          <button
+            className="compact-action-item"
+            onClick={event => {
+              closeCompactMenu(event);
+              onResetGame();
+            }}
+          >
+            First Game
+          </button>
+          <button
+            className="compact-action-item"
+            disabled={currentGameIndex >= totalGames - 1}
+            onClick={event => {
+              closeCompactMenu(event);
+              onNextGame();
+            }}
+          >
+            Next Game
+          </button>
+        </div>
+      </details>
     </div>
   );
 }
