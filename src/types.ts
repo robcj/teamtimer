@@ -3,12 +3,19 @@ export interface Game {
   team2: string;
 }
 
+export interface Team {
+  name: string;
+  division: string;
+}
+
 export interface TimerConfig {
   countdownToStart: number;
   firstHalfDuration: number;
   halfTimeDuration: number;
   secondHalfDuration: number;
   betweenGamesDuration: number;
+  divisions: string[];
+  teams: Team[];
   games: Game[];
   leftTeamLabel: string;
   rightTeamLabel: string;
@@ -35,4 +42,4 @@ export interface TimerState {
   gameResults?: GameResult[];
 }
 
-export type ViewType = 'timer' | 'config';
+export type ViewType = 'timer' | 'config' | 'draw';

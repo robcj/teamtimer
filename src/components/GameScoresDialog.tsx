@@ -1,9 +1,12 @@
 import React from 'react';
-import { Game, GameResult } from '../types';
+import { Game, GameResult, Team } from '../types';
+import { formatTeamWithDivision } from '../utils/teams';
+import { resolveGamesFromResults } from '../utils/drawResolution';
 
 interface GameScoresDialogProps {
   isOpen: boolean;
   games: Game[];
+  teams: Team[];
   results: GameResult[];
   leftTeamLabel: string;
   rightTeamLabel: string;
@@ -14,6 +17,7 @@ interface GameScoresDialogProps {
 function GameScoresDialog({
   isOpen,
   games,
+  teams,
   results,
   leftTeamLabel,
   rightTeamLabel,
@@ -23,6 +27,8 @@ function GameScoresDialog({
   if (!isOpen) {
     return null;
   }
+
+  const resolvedGames = resolveGamesFromResults(games, results);
 
   const exportCsv = (): void => {
     const header = [
@@ -34,7 +40,7 @@ function GameScoresDialog({
       `${rightTeamLabel} Score`,
     ];
 
-    const rows = games.map((game, index) => {
+    const rows = resolvedGames.map((game, index) => {
       const result = results[index];
       const startTime = result?.startTime ?? '';
       const leftScore = result?.score?.team1 ?? '';
@@ -42,9 +48,9 @@ function GameScoresDialog({
       return [
         String(index + 1),
         startTime,
-        game.team1,
+        formatTeamWithDivision(teams, game.team1),
         String(leftScore),
-        game.team2,
+        formatTeamWithDivision(teams, game.team2),
         String(rightScore),
       ];
     });
@@ -118,7 +124,7 @@ function GameScoresDialog({
                 </tr>
               </thead>
               <tbody>
-                {games.map((game, index) => {
+                {resolvedGames.map((game, index) => {
                   const result = results[index];
                   const startTime = result?.startTime ?? '—';
                   const hasScore = Boolean(result?.score);
@@ -132,11 +138,11 @@ function GameScoresDialog({
                       <td className="scores-game-number">{index + 1}</td>
                       <td className="scores-time-cell">{startTime}</td>
                       <td className={team1Wins ? 'scores-winner' : ''}>
-                        <strong>{game.team1}</strong>
+                        <strong>{formatTeamWithDivision(teams, game.team1)}</strong>
                       </td>
                       <td className="scores-score-cell">{team1Score}</td>
                       <td className={team2Wins ? 'scores-winner' : ''}>
-                        <strong>{game.team2}</strong>
+                        <strong>{formatTeamWithDivision(teams, game.team2)}</strong>
                       </td>
                       <td className="scores-score-cell">{team2Score}</td>
                     </tr>

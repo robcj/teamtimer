@@ -6,26 +6,9 @@ import GameNavigation from './GameNavigation';
 import TimerHeader from './TimerHeader';
 import TimerControls from './TimerControls';
 import GameHeader from './GameHeader';
-
-const PHASES = {
-  COUNTDOWN: 'countdown',
-  FIRST_HALF: 'firstHalf',
-  HALF_TIME: 'halfTime',
-  SECOND_HALF: 'secondHalf',
-  BETWEEN_GAMES: 'betweenGames',
-  IDLE: 'idle',
-} as const;
-
-type Phase = (typeof PHASES)[keyof typeof PHASES];
-
-const PHASE_LABELS: Record<Phase, string> = {
-  countdown: 'Countdown to Start',
-  firstHalf: 'First Half',
-  halfTime: 'Half Time',
-  secondHalf: 'Second Half',
-  betweenGames: 'Between Games',
-  idle: 'Ready to Start',
-};
+import { PHASES, Phase, PHASE_LABELS } from '../utils/phases';
+import { formatTimerDuration, getNextGameStartTime } from '../utils/timerDisplay';
+import { resolveGamesFromResults } from '../utils/drawResolution';
 
 interface TimerDisplayProps {
   config: TimerConfig;
@@ -69,7 +52,8 @@ function TimerDisplay({
   const audioContextRef = useRef<AudioContext | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const currentGame = config.games[currentGameIndex];
+  const resolvedGames = resolveGamesFromResults(config.games, gameResults);
+  const currentGame = resolvedGames[currentGameIndex];
 
   useEffect(() => {
     // Initialize AudioContext
@@ -135,54 +119,6 @@ function TimerDisplay({
     moveToNextPhase();
   };
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(Math.abs(seconds) / 60);
-    const secs = Math.abs(seconds) % 60;
-    const sign = seconds < 0 ? '-' : '';
-    return `${sign}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getNextGameStartTime = (): string => {
-    // Only show if timer is running and there's a next game
-    if (!isRunning || isPaused || currentGameIndex >= config.games.length - 1) {
-      return '';
-    }
-    // Calculate remaining time until next game starts
-    let secondsUntilGameStart = timeRemaining;
-
-    // Add time for remaining phases if not in idle
-    if (phase === PHASES.COUNTDOWN) {
-      secondsUntilGameStart +=
-        config.firstHalfDuration +
-        config.halfTimeDuration +
-        config.secondHalfDuration +
-        config.betweenGamesDuration;
-    } else if (phase === PHASES.FIRST_HALF) {
-      secondsUntilGameStart +=
-        config.halfTimeDuration + config.secondHalfDuration + config.betweenGamesDuration;
-    } else if (phase === PHASES.HALF_TIME) {
-      secondsUntilGameStart += config.secondHalfDuration + config.betweenGamesDuration;
-    } else if (phase === PHASES.SECOND_HALF) {
-      secondsUntilGameStart += config.betweenGamesDuration;
-    } else if (phase === PHASES.BETWEEN_GAMES) {
-      // Next game starts after this phase
-      secondsUntilGameStart = timeRemaining;
-    } else {
-      // Idle phase
-      return '';
-    }
-
-    // Calculate the estimated time
-    const now = new Date();
-    const futureTime = new Date(now.getTime() + secondsUntilGameStart * 1000);
-
-    // Format as HH:MM
-    const hours = futureTime.getHours().toString().padStart(2, '0');
-    const minutes = futureTime.getMinutes().toString().padStart(2, '0');
-    const seconds = futureTime.getSeconds().toString().padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-  };
-
   const incrementScore = (team: keyof Scores): void => {
     setScores(prev => ({
       ...prev,
@@ -215,7 +151,7 @@ function TimerDisplay({
 
       <TimerHeader
         phaseLabel={PHASE_LABELS[phase as Phase]}
-        timeText={formatTime(timeRemaining)}
+        timeText={formatTimerDuration(timeRemaining)}
         isWarning={timeRemaining <= 5 && timeRemaining > 0}
       />
 
@@ -245,11 +181,19 @@ function TimerDisplay({
         onPrevGame={onPrevGame}
         onResetGame={onResetGame}
         onNextGame={onNextGame}
-        nextGameStartTime={getNextGameStartTime()}
+        nextGameStartTime={getNextGameStartTime({
+          isRunning,
+          isPaused,
+          currentGameIndex,
+          totalGames: config.games.length,
+          timeRemaining,
+          phase: phase as Phase,
+          config,
+        })}
         previousGame={
           lastPlayedGameIndex >= 0
             ? {
-                game: config.games[lastPlayedGameIndex],
+                game: resolvedGames[lastPlayedGameIndex],
                 score: gameResults[lastPlayedGameIndex]?.score ?? null,
               }
             : null

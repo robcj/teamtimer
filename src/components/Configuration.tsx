@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import './Configuration.css';
-import { TimerConfig, Game } from '../types';
+import { Team, TimerConfig } from '../types';
+import { normalizeTeams } from '../utils/teams';
 
 interface ConfigurationProps {
   config: TimerConfig;
@@ -17,11 +18,10 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
   const [betweenGamesDuration, setBetweenGamesDuration] = useState<number>(
     config.betweenGamesDuration
   );
+  const [divisions, setDivisions] = useState<string[]>(config.divisions || []);
   const [leftTeamLabel, setLeftTeamLabel] = useState<string>(config.leftTeamLabel || 'White');
   const [rightTeamLabel, setRightTeamLabel] = useState<string>(config.rightTeamLabel || 'Black');
-  const [games, setGames] = useState<Game[]>(config.games || []);
-  const [newTeam1, setNewTeam1] = useState<string>('');
-  const [newTeam2, setNewTeam2] = useState<string>('');
+  const [teams, setTeams] = useState<Team[]>(normalizeTeams(config.teams));
 
   const handleSave = (): void => {
     const newConfig: TimerConfig = {
@@ -30,40 +30,14 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       halfTimeDuration: parseInt(halfTimeDuration.toString()),
       secondHalfDuration: parseInt(secondHalfDuration.toString()),
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
+      divisions,
+      teams,
       leftTeamLabel: leftTeamLabel.trim() || 'White',
       rightTeamLabel: rightTeamLabel.trim() || 'Black',
       competitionName: competitionName.trim(),
-      games,
+      games: config.games,
     };
     onSave(newConfig);
-  };
-
-  const handleAddGame = (): void => {
-    if (newTeam1.trim() && newTeam2.trim()) {
-      setGames([...games, { team1: newTeam1.trim(), team2: newTeam2.trim() }]);
-      setNewTeam1('');
-      setNewTeam2('');
-    }
-  };
-
-  const handleRemoveGame = (index: number): void => {
-    setGames(games.filter((_, i) => i !== index));
-  };
-
-  const handleMoveGameUp = (index: number): void => {
-    if (index > 0) {
-      const newGames = [...games];
-      [newGames[index - 1], newGames[index]] = [newGames[index], newGames[index - 1]];
-      setGames(newGames);
-    }
-  };
-
-  const handleMoveGameDown = (index: number): void => {
-    if (index < games.length - 1) {
-      const newGames = [...games];
-      [newGames[index], newGames[index + 1]] = [newGames[index + 1], newGames[index]];
-      setGames(newGames);
-    }
   };
 
   const handleExportConfig = (): void => {
@@ -73,10 +47,12 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       halfTimeDuration: parseInt(halfTimeDuration.toString()),
       secondHalfDuration: parseInt(secondHalfDuration.toString()),
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
+      divisions,
+      teams,
       leftTeamLabel: leftTeamLabel.trim() || 'White',
       rightTeamLabel: rightTeamLabel.trim() || 'Black',
       competitionName: competitionName.trim(),
-      games,
+      games: config.games,
     };
 
     const dataStr = JSON.stringify(configToExport, null, 2);
@@ -104,9 +80,10 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
             setHalfTimeDuration(importedConfig.halfTimeDuration || 120);
             setSecondHalfDuration(importedConfig.secondHalfDuration || 600);
             setBetweenGamesDuration(importedConfig.betweenGamesDuration || 180);
+            setDivisions(importedConfig.divisions || []);
+            setTeams(normalizeTeams(importedConfig.teams));
             setLeftTeamLabel(importedConfig.leftTeamLabel || 'White');
             setRightTeamLabel(importedConfig.rightTeamLabel || 'Black');
-            setGames(importedConfig.games || []);
           }
         } catch (error) {
           alert('Error importing configuration. Please check the file format.');
@@ -329,58 +306,6 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
               placeholder="Black"
             />
           </label>
-        </div>
-      </div>
-
-      <div className="config-section">
-        <h3>Game Draw</h3>
-        <div className="add-game">
-          <input
-            type="text"
-            placeholder="Team 1"
-            value={newTeam1}
-            onChange={e => setNewTeam1(e.target.value)}
-          />
-          <span className="vs-label">vs</span>
-          <input
-            type="text"
-            placeholder="Team 2"
-            value={newTeam2}
-            onChange={e => setNewTeam2(e.target.value)}
-          />
-          <button onClick={handleAddGame} className="add-btn">
-            Add Game
-          </button>
-        </div>
-
-        <div className="games-list">
-          {games.map((game, index) => (
-            <div key={index} className="game-item">
-              <span className="game-number">Game {index + 1}:</span>
-              <span className="game-teams">
-                {game.team1} vs {game.team2}
-              </span>
-              <div className="game-controls">
-                <button
-                  onClick={() => handleMoveGameUp(index)}
-                  disabled={index === 0}
-                  className="move-btn"
-                >
-                  ↑
-                </button>
-                <button
-                  onClick={() => handleMoveGameDown(index)}
-                  disabled={index === games.length - 1}
-                  className="move-btn"
-                >
-                  ↓
-                </button>
-                <button onClick={() => handleRemoveGame(index)} className="remove-btn">
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
