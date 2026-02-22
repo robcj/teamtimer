@@ -3,31 +3,23 @@ import { Game, GameResult, Team } from '../types';
 import { formatTeamWithDivision } from '../utils/teams';
 import { resolveGamesFromResults } from '../utils/drawResolution';
 
-interface GameScoresDialogProps {
-  isOpen: boolean;
+interface GameScoresViewProps {
   games: Game[];
   teams: Team[];
   results: GameResult[];
   leftTeamLabel: string;
   rightTeamLabel: string;
   competitionName: string;
-  onClose: () => void;
 }
 
-function GameScoresDialog({
-  isOpen,
+function GameScoresView({
   games,
   teams,
   results,
   leftTeamLabel,
   rightTeamLabel,
   competitionName,
-  onClose,
-}: GameScoresDialogProps) {
-  if (!isOpen) {
-    return null;
-  }
-
+}: GameScoresViewProps) {
   const resolvedGames = resolveGamesFromResults(games, results);
 
   const exportCsv = (): void => {
@@ -91,23 +83,20 @@ function GameScoresDialog({
   };
 
   return (
-    <div className="scores-dialog-backdrop" onClick={onClose}>
-      <div className="scores-dialog" onClick={event => event.stopPropagation()}>
-        <div className="scores-dialog-header">
-          <h3>Game Scores</h3>
-          <div className="scores-dialog-actions">
-            <button className="scores-dialog-action" onClick={exportCsv} type="button">
+    <div className="scores-page">
+      <div className="scores-panel">
+        <div className="scores-header">
+          <h2>Game Scores</h2>
+          <div className="scores-actions">
+            <button className="scores-action" onClick={exportCsv} type="button">
               Export CSV
             </button>
-            <button className="scores-dialog-action" onClick={handlePrint} type="button">
+            <button className="scores-action" onClick={handlePrint} type="button">
               Print
-            </button>
-            <button className="scores-dialog-close" onClick={onClose} type="button">
-              Close
             </button>
           </div>
         </div>
-        <div className="scores-dialog-body">
+        <div className="scores-body">
           {competitionName && <div className="scores-competition-name">{competitionName}</div>}
           {games.length === 0 ? (
             <div className="scores-empty">No games configured.</div>
@@ -157,4 +146,4 @@ function GameScoresDialog({
   );
 }
 
-export default GameScoresDialog;
+export default GameScoresView;

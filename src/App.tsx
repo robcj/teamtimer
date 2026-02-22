@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import TimerDisplay from './components/TimerDisplay';
 import Configuration from './components/Configuration';
-import GameScoresDialog from './components/GameScoresDialog';
+import GameScoresView from './components/GameScoresView';
 import AppHeader from './components/AppHeader';
 import Draw from './components/Draw';
 import { TimerConfig, ViewType } from './types';
@@ -39,7 +39,6 @@ function App() {
       games: parsed.games || [],
     };
   });
-  const [isScoresOpen, setIsScoresOpen] = useState<boolean>(false);
 
   const {
     currentGameIndex,
@@ -87,9 +86,10 @@ function App() {
       <AppHeader
         view={view}
         competitionName={config.competitionName}
-        onOpenScores={() => setIsScoresOpen(true)}
+        onOpenScores={() => setView('scores')}
         onOpenDraw={() => setView('draw')}
         onOpenConfig={() => setView('config')}
+        onViewTimer={() => setView('timer')}
       />
 
       <main className="app-main">
@@ -120,20 +120,19 @@ function App() {
             onSave={handleDrawSave}
             onCancel={handleDrawCancel}
           />
+        ) : view === 'scores' ? (
+          <GameScoresView
+            games={config.games}
+            teams={config.teams}
+            results={gameResults}
+            leftTeamLabel={config.leftTeamLabel}
+            rightTeamLabel={config.rightTeamLabel}
+            competitionName={config.competitionName || ''}
+          />
         ) : (
           <Configuration config={config} onSave={handleConfigSave} onCancel={handleConfigCancel} />
         )}
       </main>
-      <GameScoresDialog
-        isOpen={isScoresOpen}
-        games={config.games}
-        teams={config.teams}
-        results={gameResults}
-        leftTeamLabel={config.leftTeamLabel}
-        rightTeamLabel={config.rightTeamLabel}
-        competitionName={config.competitionName || ''}
-        onClose={() => setIsScoresOpen(false)}
-      />
     </div>
   );
 }

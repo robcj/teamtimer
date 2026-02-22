@@ -7,6 +7,7 @@ interface AppHeaderProps {
   onOpenScores: () => void;
   onOpenDraw: () => void;
   onOpenConfig: () => void;
+  onViewTimer: () => void;
 }
 
 function AppHeader({
@@ -15,6 +16,7 @@ function AppHeader({
   onOpenScores,
   onOpenDraw,
   onOpenConfig,
+  onViewTimer,
 }: AppHeaderProps) {
   return (
     <header className="app-header">
@@ -23,21 +25,18 @@ function AppHeader({
       </div>
       {competitionName && <p className="competition-name">{competitionName}</p>}
       <div className="header-buttons">
-        {view === 'timer' && (
-          <button onClick={onOpenScores} className="config-button scores-header-button">
-            Game Scores
-          </button>
-        )}
-        {view === 'timer' && (
-          <button onClick={onOpenDraw} className="config-button">
-            Draw
-          </button>
-        )}
-        {view === 'timer' && (
-          <button onClick={onOpenConfig} className="config-button">
-            Configuration
-          </button>
-        )}
+        <button onClick={onViewTimer} className="config-button">
+          Timer
+        </button>
+        <button onClick={onOpenScores} className="config-button scores-header-button">
+          Game Scores
+        </button>
+        <button onClick={onOpenDraw} className="config-button">
+          Draw
+        </button>
+        <button onClick={onOpenConfig} className="config-button">
+          Configuration
+        </button>
       </div>
     </header>
   );

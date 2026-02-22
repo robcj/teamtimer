@@ -42,4 +42,4 @@ export interface TimerState {
   gameResults?: GameResult[];
 }
 
-export type ViewType = 'timer' | 'config' | 'draw';
+export type ViewType = 'timer' | 'config' | 'draw' | 'scores';
