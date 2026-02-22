@@ -110,7 +110,50 @@ Works in all modern browsers that support:
 - **React 18** - UI framework
 - **TypeScript** - Type-safe JavaScript
 - **Webpack 5** - Module bundler
-- **CSS3** - Styling
+- **SCSS (Sass)** - Styling
+
+## Style Guide (SCSS Tokens)
+
+Shared style primitives live in `src/styles/_tokens.scss` and `src/styles/_mixins.scss`.
+
+Use shared tokens from `src/styles/_tokens.scss` instead of hard-coded values.
+
+- **Semantic names first**: use purpose-based names (`$text-primary`, `$brand-primary`, `$border-subtle`) rather than raw-value names.
+- **Category prefixes**: keep names grouped by intent (`$text-*`, `$brand-*`, `$border-*`, `$surface-*`, `$shadow-*`, `$radius-*`).
+- **Interactive variants**: use explicit hover/state tokens (`$*-hover`, `$shadow-hover-*`) for consistent interaction styling.
+- **Reuse before adding**: check existing tokens first; add a new token only when the value is reused or improves readability.
+- **No new hex values in component SCSS**: prefer token references in component files and keep palette changes centralized in `_tokens.scss`.
+- **No raw `rgba(...)` in component SCSS** unless it is a true one-off and documented in the PR.
+
+Example:
+
+```scss
+/* ✅ Good */
+.save-btn {
+  background: $success;
+  color: $white;
+  border-radius: $radius-lg;
+}
+
+/* ❌ Avoid */
+.save-btn {
+  background: #28a745;
+  color: #fff;
+  border-radius: 10px;
+}
+```
+
+```scss
+/* ✅ Good (hover shadow token) */
+.config-button:hover {
+  box-shadow: $shadow-hover-primary;
+}
+
+/* ❌ Avoid */
+.config-button:hover {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+```
 
 ## License
 

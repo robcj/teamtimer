@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import './Configuration.css';
+import './Configuration.scss';
 import { Team, TimerConfig } from '../types';
 import { normalizeTeams } from '../utils/teams';
 

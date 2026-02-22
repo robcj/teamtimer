@@ -1,5 +1,5 @@
 import React from 'react';
-import './Configuration.css';
+import './Configuration.scss';
 import { GameResult, TimerConfig } from '../types';
 import CollapsibleSection from './draw/CollapsibleSection';
 import DivisionsSection from './draw/DivisionsSection';

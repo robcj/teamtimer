@@ -1,0 +1,19 @@
+@use './tokens' as *;
+
+@mixin focus-border {
+  outline: none;
+  border-color: $brand-primary;
+}
+
+@mixin hover-lift($shadow) {
+  transform: translateY(-2px);
+  box-shadow: $shadow;
+}
+
+@mixin btn-base {
+  border: none;
+  border-radius: $radius-md;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}

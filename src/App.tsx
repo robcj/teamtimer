@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import './App.scss';
 import TimerDisplay from './components/TimerDisplay';
 import Configuration from './components/Configuration';
 import GameScoresView from './components/GameScoresView';

@@ -1,9 +1,12 @@
+@use './styles/tokens' as *;
+@use './styles/mixins' as *;
+
 .app {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, $brand-primary 0%, $brand-secondary 100%);
+  color: $white;
   overflow: hidden;
 }
 
@@ -17,17 +20,17 @@
   column-gap: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+
+  h1 {
+    font-size: clamp(0.8rem, 1.2vh, 1rem);
+    font-weight: bold;
+    margin: 0;
+  }
 }
 
 .header-title {
   grid-area: title;
   justify-self: start;
-}
-
-.app-header h1 {
-  font-size: clamp(0.8rem, 1.2vh, 1rem);
-  font-weight: bold;
-  margin: 0;
 }
 
 .competition-name {
@@ -54,30 +57,24 @@
 }
 
 .scores-header-button {
-  background: #f0f0ff;
-  color: #5a32a3;
-}
+  background: $surface-soft;
+  color: $scores-accent;
 
-.scores-header-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(90, 50, 163, 0.3);
+  &:hover {
+    @include hover-lift($shadow-hover-scores);
+  }
 }
 
 .config-button {
+  @include btn-base;
   padding: clamp(6px, 1vh, 10px) clamp(12px, 2vw, 20px);
   font-size: clamp(0.8rem, 1.8vh, 1rem);
-  background: white;
-  color: #667eea;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
+  background: $white;
+  color: $brand-primary;
 
-.config-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  &:hover {
+    @include hover-lift($shadow-md);
+  }
 }
 
 .app-main {
@@ -119,8 +116,10 @@
 }
 
 @media (max-width: 480px) {
-  .app-header h1 {
-    font-size: 0.9rem;
+  .app-header {
+    h1 {
+      font-size: 0.9rem;
+    }
   }
 
   .config-button {
@@ -135,10 +134,10 @@
     grid-template-areas: 'title competition actions';
     row-gap: 0;
     padding: 6px 10px;
-  }
 
-  .app-header h1 {
-    font-size: 0.85rem;
+    h1 {
+      font-size: 0.85rem;
+    }
   }
 
   .competition-name {

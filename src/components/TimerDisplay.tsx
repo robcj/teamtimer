@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
-import './TimerDisplay.css';
+import './TimerDisplay.scss';
 import { TimerConfig, Scores, GameResult } from '../types';
 import ScoreBoard from './ScoreBoard';
 import GameNavigation from './GameNavigation';
