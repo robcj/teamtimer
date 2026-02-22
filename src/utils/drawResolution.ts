@@ -35,11 +35,18 @@ const resolveParticipant = (
     return participant;
   }
 
-  const winner = referencedResult.team1 > referencedResult.team2 ? referencedGame.team1 : referencedGame.team2;
-  const loser = referencedResult.team1 > referencedResult.team2 ? referencedGame.team2 : referencedGame.team1;
+  const winner =
+    referencedResult.team1 > referencedResult.team2 ? referencedGame.team1 : referencedGame.team2;
+  const loser =
+    referencedResult.team1 > referencedResult.team2 ? referencedGame.team2 : referencedGame.team1;
 
   const nextParticipant = outcome === 'winner' ? winner : loser;
-  return resolveParticipant(nextParticipant, games, results, new Set([...visitedGameIndexes, referencedIndex]));
+  return resolveParticipant(
+    nextParticipant,
+    games,
+    results,
+    new Set([...visitedGameIndexes, referencedIndex])
+  );
 };
 
 export const resolveGamesFromResults = (games: Game[], results: GameResult[]): Game[] =>

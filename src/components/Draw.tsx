@@ -1,7 +1,11 @@
 import React, { useState, ChangeEvent } from 'react';
 import './Configuration.css';
 import { Game, GameResult, Team, TimerConfig } from '../types';
-import { formatTeamWithDivision, normalizeTeams, sortTeamsByDivisionThenName } from '../utils/teams';
+import {
+  formatTeamWithDivision,
+  normalizeTeams,
+  sortTeamsByDivisionThenName,
+} from '../utils/teams';
 import { resolveGamesFromResults } from '../utils/drawResolution';
 
 interface DrawProps {
@@ -386,7 +390,8 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
             <div key={index} className="game-item">
               <span className="game-number">Game {index + 1}:</span>
               <span className="game-teams">
-                {formatTeamWithDivision(teams, game.team1)} vs {formatTeamWithDivision(teams, game.team2)}
+                {formatTeamWithDivision(teams, game.team1)} vs{' '}
+                {formatTeamWithDivision(teams, game.team2)}
               </span>
               <div className="game-controls">
                 <button
