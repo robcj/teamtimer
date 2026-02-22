@@ -203,10 +203,6 @@ function TimerDisplay({
       ? currentGameIndex
       : currentGameIndex - 1;
 
-  console.log('Current Game Index:', currentGameIndex);
-  console.log('Game Results:', gameResults);
-  console.log('Last Played Game Index:', lastPlayedGameIndex);
-
   return (
     <div className="timer-display">
       {currentGame && (

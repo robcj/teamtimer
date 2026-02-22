@@ -197,20 +197,32 @@ function App() {
 
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  const playBeep = (): void => {
+  const playBeep = (duration = 0.1, style: 'beep' | 'siren' = 'beep'): void => {
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
     const oscillator = audioContextRef.current.createOscillator();
     const gainNode = audioContextRef.current.createGain();
+    const startTime = audioContextRef.current.currentTime;
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContextRef.current.destination);
-    oscillator.frequency.value = 800;
-    oscillator.type = 'sine';
-    gainNode.gain.setValueAtTime(0.3, audioContextRef.current.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
-    oscillator.start(audioContextRef.current.currentTime);
-    oscillator.stop(audioContextRef.current.currentTime + 0.1);
+
+    if (style === 'siren') {
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(650, startTime);
+      oscillator.frequency.linearRampToValueAtTime(1100, startTime + duration / 2);
+      oscillator.frequency.linearRampToValueAtTime(650, startTime + duration);
+      gainNode.gain.setValueAtTime(0.45, startTime);
+    } else {
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(800, startTime);
+      gainNode.gain.setValueAtTime(0.3, startTime);
+    }
+
+    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration);
   };
 
   // Beep for last 5 seconds
@@ -223,7 +235,7 @@ function App() {
   // Handle phase transitions when time reaches 0
   useEffect(() => {
     if (timeRemaining === 0 && isRunning && !isPaused && phase !== 'idle') {
-      playBeep();
+      playBeep(2, 'siren');
 
       // Perform phase transition
       switch (phase) {

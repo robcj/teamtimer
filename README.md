@@ -1,6 +1,6 @@
 # Team Timer
 
-A web-based timer application for managing team sports tournaments (like underwater hockey). Perfect for referees and tournament administrators to keep track of game timing and scores throughout a tournament day.
+A web-based timer application for managing team sports tournaments (like underwater hockey). Intended for referees and tournament administrators to keep track of game timing and scores throughout a tournament day.
 
 Built with React and TypeScript for type safety and better developer experience.
 
