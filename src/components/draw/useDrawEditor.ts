@@ -2,7 +2,7 @@ import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { Game, GameResult, Team, TimerConfig } from '../../types';
 import { normalizeTeams, sortTeamsByDivisionThenName } from '../../utils/teams';
 import { resolveGamesFromResults } from '../../utils/drawResolution';
-import { SpecialOutcome } from './types';
+import { EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from './types';
 import {
   buildExportConfig,
   buildSpecialPlaceholder,
@@ -203,6 +203,23 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   const handleAddGame = (): void => {
     const locationForGame = hasMultipleLocations ? selectedLocation : locations[0] || undefined;
     if (hasMultipleLocations && !locationForGame) {
+      return;
+    }
+
+    const isEmptySlot =
+      selectedTeam1 === EMPTY_SLOT_OPTION_VALUE && selectedTeam2 === EMPTY_SLOT_OPTION_VALUE;
+
+    if (isEmptySlot) {
+      setGames([
+        ...games,
+        {
+          team1: '',
+          team2: '',
+          location: locationForGame,
+        },
+      ]);
+      setSelectedTeam1('');
+      setSelectedTeam2('');
       return;
     }
 

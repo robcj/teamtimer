@@ -19,6 +19,9 @@ function ScoreBoard({
   onIncrement,
   onDecrement,
 }: ScoreBoardProps) {
+  const isEmptySlotGame = !game.team1.trim() && !game.team2.trim();
+  const disableScoreButtons = readOnly || isEmptySlotGame;
+
   return (
     <div className="score-display">
       <div className="score-team left-team">
@@ -26,13 +29,21 @@ function ScoreBoard({
         <div className="team-name">{formatTeamWithDivision(config.teams, game.team1)}</div>
         <div className="score-row">
           {!readOnly && (
-            <button onClick={() => onDecrement('team1')} className="score-btn minus">
+            <button
+              onClick={() => onDecrement('team1')}
+              className="score-btn minus"
+              disabled={disableScoreButtons}
+            >
               -
             </button>
           )}
           <div className="score-value">{scores.team1}</div>
           {!readOnly && (
-            <button onClick={() => onIncrement('team1')} className="score-btn plus">
+            <button
+              onClick={() => onIncrement('team1')}
+              className="score-btn plus"
+              disabled={disableScoreButtons}
+            >
               +
             </button>
           )}
@@ -44,13 +55,21 @@ function ScoreBoard({
         <div className="team-name">{formatTeamWithDivision(config.teams, game.team2)}</div>
         <div className="score-row">
           {!readOnly && (
-            <button onClick={() => onDecrement('team2')} className="score-btn minus">
+            <button
+              onClick={() => onDecrement('team2')}
+              className="score-btn minus"
+              disabled={disableScoreButtons}
+            >
               -
             </button>
           )}
           <div className="score-value">{scores.team2}</div>
           {!readOnly && (
-            <button onClick={() => onIncrement('team2')} className="score-btn plus">
+            <button
+              onClick={() => onIncrement('team2')}
+              className="score-btn plus"
+              disabled={disableScoreButtons}
+            >
               +
             </button>
           )}

@@ -194,9 +194,19 @@
   color: $white;
   white-space: nowrap;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: $success-hover;
     @include hover-lift($shadow-hover-success);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    background: $neutral;
+    color: $white;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
   }
 }
 

@@ -156,7 +156,9 @@ function App() {
                     selectedLocation={selectedLocation}
                     showLocationSelector={!isSplitView && locations.length > 1}
                     onSelectLocation={setSelectedLocation}
-                    showGlobalControl={!isDisplayOnly && (isSplitView ? location === locations[0] : true)}
+                    showGlobalControl={
+                      !isDisplayOnly && (isSplitView ? location === locations[0] : true)
+                    }
                     globalControlLabel={globalControlLabel}
                     onGlobalControl={handleGlobalControl}
                   />

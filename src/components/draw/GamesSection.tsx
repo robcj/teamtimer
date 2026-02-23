@@ -1,7 +1,7 @@
 import React from 'react';
 import { Game, Team } from '../../types';
 import { formatTeamWithDivision } from '../../utils/teams';
-import { SpecialOutcome } from './types';
+import { EMPTY_SLOT_LABEL, EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from './types';
 import { formatExpectedStartTime } from '../../utils/expectedStartTimes';
 
 interface GamesSectionProps {
@@ -63,6 +63,41 @@ function GamesSection({
   onMoveGameDown,
   onRemoveGame,
 }: GamesSectionProps) {
+  const hasRequiredLocation = !requireLocationSelection || Boolean(selectedLocation);
+  const isEmptySlotSelection =
+    selectedTeam1 === EMPTY_SLOT_OPTION_VALUE && selectedTeam2 === EMPTY_SLOT_OPTION_VALUE;
+  const hasValidTeamSelection =
+    (Boolean(selectedTeam1) && Boolean(selectedTeam2) && selectedTeam1 !== selectedTeam2) ||
+    isEmptySlotSelection;
+  const canAddGame = hasRequiredLocation && hasValidTeamSelection;
+
+  const specialParticipant1 = `${specialOutcome1} of Game ${specialGameNumber1}`;
+  const specialParticipant2 = `${specialOutcome2} of Game ${specialGameNumber2}`;
+  const canAddSpecialGame =
+    games.length > 0 && hasRequiredLocation && specialParticipant1 !== specialParticipant2;
+
+  const handleSelectedTeam1Change = (value: string): void => {
+    onSelectedTeam1Change(value);
+    if (value === EMPTY_SLOT_OPTION_VALUE) {
+      onSelectedTeam2Change(EMPTY_SLOT_OPTION_VALUE);
+      return;
+    }
+    if (selectedTeam2 === EMPTY_SLOT_OPTION_VALUE) {
+      onSelectedTeam2Change('');
+    }
+  };
+
+  const handleSelectedTeam2Change = (value: string): void => {
+    onSelectedTeam2Change(value);
+    if (value === EMPTY_SLOT_OPTION_VALUE) {
+      onSelectedTeam1Change(EMPTY_SLOT_OPTION_VALUE);
+      return;
+    }
+    if (selectedTeam1 === EMPTY_SLOT_OPTION_VALUE) {
+      onSelectedTeam1Change('');
+    }
+  };
+
   const locationLabel = (game: Game): string => {
     if (game.location) {
       return game.location;
@@ -86,8 +121,12 @@ function GamesSection({
             ))}
           </select>
         )}
-        <select value={selectedTeam1} onChange={event => onSelectedTeam1Change(event.target.value)}>
+        <select
+          value={selectedTeam1}
+          onChange={event => handleSelectedTeam1Change(event.target.value)}
+        >
           <option value="">Select Team 1</option>
+          <option value={EMPTY_SLOT_OPTION_VALUE}>{EMPTY_SLOT_LABEL}</option>
           {sortedTeams.map(team => (
             <option key={`team1-${team.name}`} value={team.name}>
               {team.division} - {team.name}
@@ -95,15 +134,19 @@ function GamesSection({
           ))}
         </select>
         <span className="vs-label">vs</span>
-        <select value={selectedTeam2} onChange={event => onSelectedTeam2Change(event.target.value)}>
+        <select
+          value={selectedTeam2}
+          onChange={event => handleSelectedTeam2Change(event.target.value)}
+        >
           <option value="">Select Team 2</option>
+          <option value={EMPTY_SLOT_OPTION_VALUE}>{EMPTY_SLOT_LABEL}</option>
           {sortedTeams.map(team => (
             <option key={`team2-${team.name}`} value={team.name}>
               {team.division} - {team.name}
             </option>
           ))}
         </select>
-        <button onClick={onAddGame} className="add-btn">
+        <button onClick={onAddGame} className="add-btn" disabled={!canAddGame}>
           Add Game
         </button>
       </div>
@@ -150,7 +193,7 @@ function GamesSection({
             </option>
           ))}
         </select>
-        <button onClick={onAddSpecialGame} className="add-btn" disabled={games.length === 0}>
+        <button onClick={onAddSpecialGame} className="add-btn" disabled={!canAddSpecialGame}>
           Add Special Game
         </button>
       </div>

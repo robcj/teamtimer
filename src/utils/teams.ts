@@ -41,6 +41,10 @@ export const getTeamDivision = (teams: Team[], teamName: string): string | null 
 };
 
 export const formatTeamWithDivision = (teams: Team[], teamName: string): string => {
+  if (!teamName.trim()) {
+    return 'Empty slot';
+  }
+
   const division = getTeamDivision(teams, teamName);
   return division ? `${teamName} (${division})` : teamName;
 };
