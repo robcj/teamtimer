@@ -23,7 +23,15 @@ interface UseGameTimerResult {
   handleResetTimer: () => void;
 }
 
-export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
+interface UseGameTimerOptions {
+  readOnlyMirror?: boolean;
+}
+
+export const useGameTimer = (
+  config: TimerConfig,
+  options: UseGameTimerOptions = {}
+): UseGameTimerResult => {
+  const { readOnlyMirror = false } = options;
   const [timerState, setTimerState] = useState<TimerState | null>(() => {
     const saved = localStorage.getItem('teamTimerState');
     return saved ? JSON.parse(saved) : null;
@@ -57,6 +65,9 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
   }, [config.games.length]);
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     if (
       isRunning ||
       isPaused ||
@@ -78,9 +89,21 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
       setTimerState(newState);
       localStorage.setItem('teamTimerState', JSON.stringify(newState));
     }
-  }, [phase, timeRemaining, isRunning, isPaused, scores, currentGameIndex, gameResults]);
+  }, [
+    phase,
+    timeRemaining,
+    isRunning,
+    isPaused,
+    scores,
+    currentGameIndex,
+    gameResults,
+    readOnlyMirror,
+  ]);
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     const prevPhase = prevPhaseRef.current;
 
     if (phase === 'firstHalf' && prevPhase !== 'firstHalf') {
@@ -110,9 +133,12 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
     }
 
     prevPhaseRef.current = phase;
-  }, [phase, currentGameIndex, scores]);
+  }, [phase, currentGameIndex, scores, readOnlyMirror]);
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     if (phase === 'idle' || phase === 'betweenGames') {
       isLoadingScoresRef.current = true;
       const currentGameResult = gameResults[currentGameIndex];
@@ -125,9 +151,12 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
         isLoadingScoresRef.current = false;
       }, 0);
     }
-  }, [currentGameIndex, phase, gameResults.length]);
+  }, [currentGameIndex, phase, gameResults.length, readOnlyMirror]);
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     if (
       !isLoadingScoresRef.current &&
       (phase === 'idle' || phase === 'betweenGames') &&
@@ -146,9 +175,12 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
         return next;
       });
     }
-  }, [scores, phase, currentGameIndex]);
+  }, [scores, phase, currentGameIndex, readOnlyMirror]);
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     if (isRunning && !isPaused) {
       timerIntervalRef.current = setInterval(() => {
         setTimeRemaining(prev => {
@@ -168,7 +200,7 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [isRunning, isPaused]);
+  }, [isRunning, isPaused, readOnlyMirror]);
 
   const playBeep = (duration = 0.1, style: TimerToneStyle = 'beep'): void => {
     if (!audioContextRef.current) {
@@ -178,12 +210,18 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
   };
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     if (isRunning && !isPaused && timeRemaining <= 5 && timeRemaining > 0) {
       playBeep();
     }
-  }, [timeRemaining, isRunning, isPaused]);
+  }, [timeRemaining, isRunning, isPaused, readOnlyMirror]);
 
   useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
     if (timeRemaining === 0 && isRunning && !isPaused && phase !== 'idle') {
       playBeep(2, 'siren');
 
@@ -220,7 +258,73 @@ export const useGameTimer = (config: TimerConfig): UseGameTimerResult => {
           break;
       }
     }
-  }, [timeRemaining, phase, isRunning, isPaused, config, currentGameIndex]);
+  }, [timeRemaining, phase, isRunning, isPaused, config, currentGameIndex, readOnlyMirror]);
+
+  useEffect(() => {
+    if (!readOnlyMirror) {
+      return;
+    }
+
+    const applyExternalState = (nextState: TimerState | null): void => {
+      if (!nextState) {
+        setPhase('idle');
+        setTimeRemaining(0);
+        setIsRunning(false);
+        setIsPaused(false);
+        setScores({ team1: 0, team2: 0 });
+        setCurrentGameIndex(0);
+        setGameResults(createEmptyResults(config.games));
+        setTimerState(null);
+        return;
+      }
+
+      setPhase(nextState.phase || 'idle');
+      setTimeRemaining(nextState.timeRemaining || 0);
+      setIsRunning(Boolean(nextState.isRunning));
+      setIsPaused(Boolean(nextState.isPaused));
+      setScores(nextState.scores || { team1: 0, team2: 0 });
+      setCurrentGameIndex(
+        Math.min(nextState.currentGameIndex ?? 0, Math.max(config.games.length - 1, 0))
+      );
+      setGameResults(
+        config.games.map(
+          (_, index) => nextState.gameResults?.[index] ?? { startTime: null, score: null }
+        )
+      );
+      setTimerState(nextState);
+    };
+
+    const savedState = localStorage.getItem('teamTimerState');
+    if (savedState) {
+      try {
+        applyExternalState(JSON.parse(savedState) as TimerState);
+      } catch {
+        applyExternalState(null);
+      }
+    }
+
+    const handleStorage = (event: StorageEvent): void => {
+      if (event.key !== 'teamTimerState') {
+        return;
+      }
+
+      if (!event.newValue) {
+        applyExternalState(null);
+        return;
+      }
+
+      try {
+        applyExternalState(JSON.parse(event.newValue) as TimerState);
+      } catch {
+        applyExternalState(null);
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [readOnlyMirror, config.games]);
 
   const handleNextGame = (): void => {
     if (currentGameIndex < config.games.length - 1) {

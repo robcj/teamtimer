@@ -26,6 +26,7 @@ const DEFAULT_CONFIG: TimerConfig = {
 };
 
 function App() {
+  const isDisplayOnly = new URLSearchParams(window.location.search).get('view') === 'display';
   const [view, setView] = useState<ViewType>('timer');
   const [config, setConfig] = useState<TimerConfig>(() => {
     const saved = localStorage.getItem('teamTimerConfig');
@@ -62,11 +63,43 @@ function App() {
     handlePrevGame,
     handleResetGame,
     handleResetTimer,
-  } = useGameTimer(config);
+  } = useGameTimer(config, { readOnlyMirror: isDisplayOnly });
 
   useEffect(() => {
+    if (isDisplayOnly) {
+      return;
+    }
     localStorage.setItem('teamTimerConfig', JSON.stringify(config));
-  }, [config]);
+  }, [config, isDisplayOnly]);
+
+  useEffect(() => {
+    if (!isDisplayOnly) {
+      return;
+    }
+
+    const handleStorage = (event: StorageEvent): void => {
+      if (event.key !== 'teamTimerConfig' || !event.newValue) {
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(event.newValue) as Partial<TimerConfig>;
+        setConfig({
+          ...DEFAULT_CONFIG,
+          ...parsed,
+          keepScreenAwake: parsed.keepScreenAwake ?? DEFAULT_CONFIG.keepScreenAwake,
+          divisions: parsed.divisions || [],
+          teams: normalizeTeams(parsed.teams),
+          games: parsed.games || [],
+        });
+      } catch {}
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [isDisplayOnly]);
 
   const handleConfigSave = (newConfig: TimerConfig): void => {
     setConfig(newConfig);
@@ -86,21 +119,31 @@ function App() {
     setView('timer');
   };
 
+  const handleOpenSecondScreen = (): void => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', 'display');
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="app">
-      <AppHeader
-        view={view}
-        competitionName={config.competitionName}
-        onOpenScores={() => setView('scores')}
-        onOpenDraw={() => setView('draw')}
-        onOpenConfig={() => setView('config')}
-        onViewTimer={() => setView('timer')}
-      />
+      {!isDisplayOnly && (
+        <AppHeader
+          view={view}
+          competitionName={config.competitionName}
+          onOpenScores={() => setView('scores')}
+          onOpenDraw={() => setView('draw')}
+          onOpenConfig={() => setView('config')}
+          onViewTimer={() => setView('timer')}
+          onOpenSecondScreen={handleOpenSecondScreen}
+        />
+      )}
 
       <main className="app-main">
-        {view === 'timer' ? (
+        {view === 'timer' || isDisplayOnly ? (
           <TimerDisplay
             config={config}
+            displayOnly={isDisplayOnly}
             currentGameIndex={currentGameIndex}
             gameResults={gameResults}
             onNextGame={handleNextGame}

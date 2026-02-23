@@ -8,6 +8,7 @@ interface AppHeaderProps {
   onOpenDraw: () => void;
   onOpenConfig: () => void;
   onViewTimer: () => void;
+  onOpenSecondScreen?: () => void;
 }
 
 function AppHeader({
@@ -17,6 +18,7 @@ function AppHeader({
   onOpenDraw,
   onOpenConfig,
   onViewTimer,
+  onOpenSecondScreen,
 }: AppHeaderProps) {
   return (
     <header className="app-header">
@@ -37,6 +39,11 @@ function AppHeader({
         <button onClick={onOpenConfig} className="config-button">
           Configuration
         </button>
+        {onOpenSecondScreen && (
+          <button onClick={onOpenSecondScreen} className="config-button">
+            Second Screen
+          </button>
+        )}
       </div>
     </header>
   );
