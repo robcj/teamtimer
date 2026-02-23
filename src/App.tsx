@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.scss';
 import TimerDisplay from './components/TimerDisplay';
 import Configuration from './components/Configuration';
@@ -10,6 +10,7 @@ import LocationTimerPanel, {
 } from './components/LocationTimerPanel';
 import { TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
+import { getExpectedStartTimestamps, LocationStartTimes } from './utils/expectedStartTimes';
 
 import { normalizeTeams } from './utils/teams';
 const DEFAULT_CONFIG: TimerConfig = {
@@ -56,6 +57,20 @@ function App() {
     initialLayoutParam === 'split' ? 'split' : 'single'
   );
   const [selectedLocation, setSelectedLocation] = useState<string>(initialLocationParam || '');
+  const [startAllSignal, setStartAllSignal] = useState<number>(0);
+  const [resetAllSignal, setResetAllSignal] = useState<number>(0);
+  const [locationStartTimes, setLocationStartTimes] = useState<LocationStartTimes>(() => {
+    const saved = localStorage.getItem('teamTimerLocationStartTimes');
+    if (!saved) {
+      return {};
+    }
+    try {
+      return JSON.parse(saved) as LocationStartTimes;
+    } catch {
+      return {};
+    }
+  });
+  const autoStartedTournamentAtRef = useRef<string | null>(null);
 
   useWakeLock(config.keepScreenAwake);
 
@@ -107,6 +122,33 @@ function App() {
           games: parsed.games || [],
           tournamentStartAt: parsed.tournamentStartAt || '',
         });
+      } catch {}
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [isDisplayOnly]);
+
+  useEffect(() => {
+    if (isDisplayOnly) {
+      return;
+    }
+    localStorage.setItem('teamTimerLocationStartTimes', JSON.stringify(locationStartTimes));
+  }, [locationStartTimes, isDisplayOnly]);
+
+  useEffect(() => {
+    if (!isDisplayOnly) {
+      return;
+    }
+
+    const handleStorage = (event: StorageEvent): void => {
+      if (event.key !== 'teamTimerLocationStartTimes' || !event.newValue) {
+        return;
+      }
+      try {
+        setLocationStartTimes(JSON.parse(event.newValue) as LocationStartTimes);
       } catch {}
     };
 
@@ -176,7 +218,86 @@ function App() {
     window.open(url.toString(), '_blank', 'noopener,noreferrer');
   };
 
+  const handleLocationManualStart = (location: string): void => {
+    if (config.tournamentStartAt?.trim()) {
+      return;
+    }
+    setLocationStartTimes(prev => ({ ...prev, [location]: Date.now() }));
+  };
+
+  const handleStartAll = (): void => {
+    const now = Date.now();
+    if (!config.tournamentStartAt?.trim()) {
+      const nextStartTimes = locations.reduce<LocationStartTimes>((acc, location) => {
+        acc[location] = now;
+        return acc;
+      }, {});
+      setLocationStartTimes(prev => ({ ...prev, ...nextStartTimes }));
+    }
+    setStartAllSignal(prev => prev + 1);
+  };
+
+  const handleResetAll = (): void => {
+    const confirmed = window.confirm(
+      'This will reset all times and scores for every location. Are you sure you want to continue?'
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setLocationStartTimes({});
+    setResetAllSignal(prev => prev + 1);
+  };
+
+  useEffect(() => {
+    if (isDisplayOnly) {
+      return;
+    }
+
+    const tournamentStartAt = config.tournamentStartAt?.trim();
+    if (!tournamentStartAt) {
+      autoStartedTournamentAtRef.current = null;
+      return;
+    }
+
+    const startTimestamp = new Date(tournamentStartAt).getTime();
+    if (!Number.isFinite(startTimestamp)) {
+      return;
+    }
+
+    if (autoStartedTournamentAtRef.current === tournamentStartAt) {
+      return;
+    }
+
+    const startAllNow = (): void => {
+      setStartAllSignal(prev => prev + 1);
+      autoStartedTournamentAtRef.current = tournamentStartAt;
+    };
+
+    if (Date.now() >= startTimestamp) {
+      startAllNow();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (Date.now() >= startTimestamp && Date.now() <= startTimestamp + 5000) {
+        startAllNow();
+        clearInterval(interval);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [config.tournamentStartAt, isDisplayOnly]);
+
   const gameResults = getLocationGameResultsSnapshot(config.games, locations);
+  const expectedStartTimes = getExpectedStartTimestamps(
+    config,
+    config.games,
+    locations,
+    locationStartTimes
+  );
   const isSplitView = timerLayout === 'split' && locations.length > 1;
 
   return (
@@ -212,6 +333,16 @@ function App() {
                   </select>
                 </label>
                 <div className="location-layout-buttons">
+                  {!isDisplayOnly && (
+                    <>
+                      <button className="config-button" onClick={handleStartAll}>
+                        Start All
+                      </button>
+                      <button className="config-button" onClick={handleResetAll}>
+                        Reset All
+                      </button>
+                    </>
+                  )}
                   <button
                     className={`config-button ${!isSplitView ? 'active-layout' : ''}`}
                     onClick={() => setTimerLayout('single')}
@@ -243,6 +374,10 @@ function App() {
                     readOnlyMirror={isDisplayOnly}
                     displayOnly={isDisplayOnly}
                     hidden={!isSplitView && selectedLocation !== location}
+                    startAllSignal={startAllSignal}
+                    resetAllSignal={resetAllSignal}
+                    locationStartTime={locationStartTimes[location]}
+                    onManualStart={handleLocationManualStart}
                   />
                 );
               })}
@@ -252,6 +387,7 @@ function App() {
           <Draw
             config={config}
             gameResults={gameResults}
+            expectedStartTimes={expectedStartTimes}
             onSave={handleDrawSave}
             onCancel={handleDrawCancel}
           />
@@ -260,6 +396,7 @@ function App() {
             games={config.games}
             teams={config.teams}
             results={gameResults}
+            expectedStartTimes={expectedStartTimes}
             leftTeamLabel={config.leftTeamLabel}
             rightTeamLabel={config.rightTeamLabel}
             competitionName={config.competitionName || ''}

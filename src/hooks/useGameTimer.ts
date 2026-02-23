@@ -26,13 +26,20 @@ interface UseGameTimerResult {
 interface UseGameTimerOptions {
   readOnlyMirror?: boolean;
   storageKey?: string;
+  externalStartSignal?: number;
+  externalResetSignal?: number;
 }
 
 export const useGameTimer = (
   config: TimerConfig,
   options: UseGameTimerOptions = {}
 ): UseGameTimerResult => {
-  const { readOnlyMirror = false, storageKey = 'teamTimerState' } = options;
+  const {
+    readOnlyMirror = false,
+    storageKey = 'teamTimerState',
+    externalStartSignal = 0,
+    externalResetSignal = 0,
+  } = options;
   const [timerState, setTimerState] = useState<TimerState | null>(() => {
     const saved = localStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : null;
@@ -55,9 +62,24 @@ export const useGameTimer = (
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const autoStartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoStartIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastExternalStartSignalRef = useRef<number>(externalStartSignal);
+  const lastExternalResetSignalRef = useRef<number>(externalResetSignal);
   const prevPhaseRef = useRef<string>(phase);
   const isLoadingScoresRef = useRef<boolean>(false);
   const audioContextRef = useRef<AudioContext | null>(null);
+
+  const resetState = (): void => {
+    setPhase('idle');
+    setTimeRemaining(0);
+    setIsRunning(false);
+    setIsPaused(false);
+    setScores({ team1: 0, team2: 0 });
+    setCurrentGameIndex(0);
+    setGameResults(createEmptyResults(config.games));
+    setTimerState(null);
+    localStorage.removeItem(storageKey);
+  };
 
   useEffect(() => {
     setGameResults(prev =>
@@ -65,6 +87,36 @@ export const useGameTimer = (
     );
     setCurrentGameIndex(prev => Math.min(prev, Math.max(config.games.length - 1, 0)));
   }, [config.games.length]);
+
+  useEffect(() => {
+    if (readOnlyMirror || config.games.length === 0) {
+      return;
+    }
+    if (externalStartSignal === 0 || externalStartSignal === lastExternalStartSignalRef.current) {
+      return;
+    }
+
+    lastExternalStartSignalRef.current = externalStartSignal;
+
+    if (phase === 'idle') {
+      setPhase('countdown');
+      setTimeRemaining(config.countdownToStart);
+      setIsRunning(true);
+      setIsPaused(false);
+    }
+  }, [externalStartSignal, readOnlyMirror, config.games.length, phase, config.countdownToStart]);
+
+  useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
+    if (externalResetSignal === 0 || externalResetSignal === lastExternalResetSignalRef.current) {
+      return;
+    }
+
+    lastExternalResetSignalRef.current = externalResetSignal;
+    resetState();
+  }, [externalResetSignal, readOnlyMirror, config.games.length, storageKey]);
 
   useEffect(() => {
     if (readOnlyMirror) {
@@ -203,13 +255,6 @@ export const useGameTimer = (
       return;
     }
 
-    if (!(phase === 'idle' || phase === 'countdown' || phase === 'firstHalf')) {
-      return;
-    }
-
-    const countdownStartTimestamp = startTimestamp - config.countdownToStart * 1000;
-    const now = Date.now();
-
     const startCountdown = (secondsRemaining: number): void => {
       setPhase('countdown');
       setTimeRemaining(Math.max(1, secondsRemaining));
@@ -217,37 +262,56 @@ export const useGameTimer = (
       setIsPaused(false);
     };
 
-    if (now >= startTimestamp) {
-      const elapsedSeconds = Math.floor((now - startTimestamp) / 1000);
-      const firstHalfRemaining = Math.max(config.firstHalfDuration - elapsedSeconds, 0);
+    const tick = (): boolean => {
+      const now = Date.now();
+      const countdownStartTimestamp = startTimestamp - config.countdownToStart * 1000;
 
-      if (firstHalfRemaining > 0) {
-        setPhase('firstHalf');
-        setTimeRemaining(firstHalfRemaining);
-        setIsRunning(true);
-        setIsPaused(false);
+      if (now >= startTimestamp) {
+        const elapsedSeconds = Math.floor((now - startTimestamp) / 1000);
+        const firstHalfRemaining = Math.max(config.firstHalfDuration - elapsedSeconds, 0);
+
+        if (firstHalfRemaining > 0) {
+          setPhase('firstHalf');
+          setTimeRemaining(firstHalfRemaining);
+          setIsRunning(true);
+          setIsPaused(false);
+        }
+        return true;
       }
+
+      if (now >= countdownStartTimestamp) {
+        const secondsUntilStart = Math.ceil((startTimestamp - now) / 1000);
+        startCountdown(secondsUntilStart);
+        return true;
+      }
+
+      return false;
+    };
+
+    if (autoStartIntervalRef.current) {
+      clearInterval(autoStartIntervalRef.current);
+      autoStartIntervalRef.current = null;
+    }
+
+    if (tick()) {
       return;
     }
 
-    if (now >= countdownStartTimestamp) {
-      const secondsUntilStart = Math.ceil((startTimestamp - now) / 1000);
-      startCountdown(secondsUntilStart);
-      return;
-    }
-
-    if (autoStartTimeoutRef.current) {
-      clearTimeout(autoStartTimeoutRef.current);
-    }
-
-    autoStartTimeoutRef.current = setTimeout(() => {
-      startCountdown(config.countdownToStart);
-    }, countdownStartTimestamp - now);
+    autoStartIntervalRef.current = setInterval(() => {
+      if (tick() && autoStartIntervalRef.current) {
+        clearInterval(autoStartIntervalRef.current);
+        autoStartIntervalRef.current = null;
+      }
+    }, 500);
 
     return () => {
       if (autoStartTimeoutRef.current) {
         clearTimeout(autoStartTimeoutRef.current);
         autoStartTimeoutRef.current = null;
+      }
+      if (autoStartIntervalRef.current) {
+        clearInterval(autoStartIntervalRef.current);
+        autoStartIntervalRef.current = null;
       }
     };
   }, [
@@ -286,6 +350,10 @@ export const useGameTimer = (
       if (autoStartTimeoutRef.current) {
         clearTimeout(autoStartTimeoutRef.current);
         autoStartTimeoutRef.current = null;
+      }
+      if (autoStartIntervalRef.current) {
+        clearInterval(autoStartIntervalRef.current);
+        autoStartIntervalRef.current = null;
       }
     };
   }, [isRunning, isPaused, readOnlyMirror]);
@@ -438,15 +506,7 @@ export const useGameTimer = (
       return;
     }
 
-    setPhase('idle');
-    setTimeRemaining(0);
-    setIsRunning(false);
-    setIsPaused(false);
-    setScores({ team1: 0, team2: 0 });
-    setCurrentGameIndex(0);
-    setGameResults(createEmptyResults(config.games));
-    setTimerState(null);
-    localStorage.removeItem(storageKey);
+    resetState();
   };
 
   return {

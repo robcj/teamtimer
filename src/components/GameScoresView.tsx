@@ -2,11 +2,13 @@ import React from 'react';
 import { Game, GameResult, Team } from '../types';
 import { formatTeamWithDivision } from '../utils/teams';
 import { resolveGamesFromResults } from '../utils/drawResolution';
+import { formatExpectedStartTime } from '../utils/expectedStartTimes';
 
 interface GameScoresViewProps {
   games: Game[];
   teams: Team[];
   results: GameResult[];
+  expectedStartTimes: Array<number | null>;
   leftTeamLabel: string;
   rightTeamLabel: string;
   competitionName: string;
@@ -16,6 +18,7 @@ function GameScoresView({
   games,
   teams,
   results,
+  expectedStartTimes,
   leftTeamLabel,
   rightTeamLabel,
   competitionName,
@@ -25,6 +28,7 @@ function GameScoresView({
   const exportCsv = (): void => {
     const header = [
       'Game',
+      'Expected Start Time',
       'Start Time',
       leftTeamLabel,
       `${leftTeamLabel} Score`,
@@ -39,6 +43,7 @@ function GameScoresView({
       const rightScore = result?.score?.team2 ?? '';
       return [
         String(index + 1),
+        formatExpectedStartTime(expectedStartTimes[index] ?? null),
         startTime,
         formatTeamWithDivision(teams, game.team1),
         String(leftScore),
@@ -105,6 +110,7 @@ function GameScoresView({
               <thead>
                 <tr>
                   <th>Game</th>
+                  <th>Expected Start</th>
                   <th>Start Time</th>
                   <th>{leftTeamLabel}</th>
                   <th>Score</th>
@@ -125,6 +131,9 @@ function GameScoresView({
                   return (
                     <tr key={`${game.team1}-${game.team2}-${index}`}>
                       <td className="scores-game-number">{index + 1}</td>
+                      <td className="scores-time-cell">
+                        {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
+                      </td>
                       <td className="scores-time-cell">{startTime}</td>
                       <td className={team1Wins ? 'scores-winner' : ''}>
                         <strong>{formatTeamWithDivision(teams, game.team1)}</strong>

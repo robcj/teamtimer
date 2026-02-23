@@ -26,6 +26,7 @@ Built with React and TypeScript for type safety and better developer experience.
   - Navigate between games
   - Track multiple games in a single tournament
   - Manage simultaneous games across multiple locations
+  - Start all locations together with a single action
 
 - **Configurable Settings**:
   - Customize all timer durations
@@ -82,6 +83,7 @@ The single file `team-timer.html` can be downloaded and opened directly in any w
 
 - Enable/disable "Keep screen awake while using the timer" as needed (enabled by default)
 - In Draw, add one or more **Locations** (e.g., North Court, South Court)
+- Optionally set **Tournament Start** date/time
 - When 2+ locations exist, choose a location for each game in **Game Draw**
 - Add games to the tournament draw by entering team names
 - Reorder or remove games as needed
@@ -108,6 +110,8 @@ The single file `team-timer.html` can be downloaded and opened directly in any w
 - If multiple locations are configured, select which location to view in Timer mode
 - Use **Single** to focus on one location
 - Use **Split** to show all locations at once
+- Use **Start All** to begin countdowns in all locations at once
+- Use **Reset All** to reset all location timers and scores together
 - All location timers continue running even when not currently visible
 
 6. **Second Screen**:
@@ -116,6 +120,12 @@ The single file `team-timer.html` can be downloaded and opened directly in any w
 - If multiple locations exist, choose one location or "all" (split)
 - The second screen is display-only (no control buttons)
 - You can change displayed location or split view on the second screen
+
+7. **Expected Start Times**:
+
+- Expected start times are shown in **Game Draw** and **Game Scores**
+- If Tournament Start is set, schedule times are based on that datetime
+- Otherwise, schedule times are calculated from when the relevant **Start** (or **Start All**) action is clicked
 
 ## Browser Compatibility
 

@@ -2,11 +2,13 @@ import React from 'react';
 import { Game, Team } from '../../types';
 import { formatTeamWithDivision } from '../../utils/teams';
 import { SpecialOutcome } from './types';
+import { formatExpectedStartTime } from '../../utils/expectedStartTimes';
 
 interface GamesSectionProps {
   games: Game[];
   teams: Team[];
   resolvedGames: Game[];
+  expectedStartTimes: Array<number | null>;
   locations: string[];
   selectedLocation: string;
   requireLocationSelection: boolean;
@@ -36,6 +38,7 @@ function GamesSection({
   games,
   teams,
   resolvedGames,
+  expectedStartTimes,
   locations,
   selectedLocation,
   requireLocationSelection,
@@ -160,6 +163,10 @@ function GamesSection({
               {formatTeamWithDivision(teams, game.team1)} vs{' '}
               {formatTeamWithDivision(teams, game.team2)}
               <strong className="game-location"> @ {locationLabel(games[index])}</strong>
+              <span className="game-expected-start">
+                {' '}
+                (Expected: {formatExpectedStartTime(expectedStartTimes[index] ?? null)})
+              </span>
             </span>
             <div className="game-controls">
               <button

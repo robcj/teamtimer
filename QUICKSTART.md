@@ -60,14 +60,15 @@ Creates `dist-single/team-timer.html` - a single HTML file that works offline!
    - Set Right Team Label (e.g., "Black", "Away", etc.)
 4. Optional: enable **Keep screen awake while using the timer**
 5. In **Draw**, add one or more **Locations** (for example, North Court, South Court)
-6. Add games to the tournament:
+6. Optional: set **Tournament Start** date/time
+7. Add games to the tournament:
    - Enter Team 1 name
    - Enter Team 2 name
    - If 2+ locations exist, select a location for each game
    - Click **Add Game**
-7. Reorder games with **↑** and **↓** buttons
-8. **Save** or **Export** your configuration
-9. Click **Save** to return to timer view
+8. Reorder games with **↑** and **↓** buttons
+9. **Save** or **Export** your configuration
+10. Click **Save** to return to timer view
 
 #### Tournament Management
 
@@ -78,7 +79,12 @@ Creates `dist-single/team-timer.html` - a single HTML file that works offline!
 - If multiple locations are configured:
   - Use the location selector to choose one location
   - Use **Single** or **Split** to switch between focused and all-location views
+  - Use **Start All** to begin all location countdowns at once
+  - Use **Reset All** to reset all location timers and scores together
   - Timers continue running for all locations even when another location is being viewed
+  - Expected start times are shown in Draw and Scores
+    - If Tournament Start is set, it drives the schedule
+    - Otherwise, timing starts from when Start/Start All is clicked
 
 #### Second Screen
 

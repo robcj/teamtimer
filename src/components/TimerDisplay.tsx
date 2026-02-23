@@ -13,6 +13,8 @@ import { resolveGamesFromResults } from '../utils/drawResolution';
 interface TimerDisplayProps {
   config: TimerConfig;
   displayOnly?: boolean;
+  onManualStart?: () => void;
+  expectedStartTimes?: Array<number | null>;
   currentGameIndex: number;
   gameResults: GameResult[];
   onNextGame: () => void;
@@ -34,6 +36,8 @@ interface TimerDisplayProps {
 function TimerDisplay({
   config,
   displayOnly = false,
+  onManualStart,
+  expectedStartTimes = [],
   currentGameIndex,
   gameResults,
   onNextGame,
@@ -101,6 +105,7 @@ function TimerDisplay({
 
   const handleStart = (): void => {
     if (phase === PHASES.IDLE) {
+      onManualStart?.();
       setPhase(PHASES.COUNTDOWN);
       setTimeRemaining(config.countdownToStart);
       setIsRunning(true);
@@ -148,6 +153,8 @@ function TimerDisplay({
           game={currentGame}
           currentIndex={currentGameIndex}
           totalGames={config.games.length}
+          startTime={gameResults[currentGameIndex]?.startTime ?? null}
+          expectedStartTime={expectedStartTimes[currentGameIndex] ?? null}
         />
       )}
 

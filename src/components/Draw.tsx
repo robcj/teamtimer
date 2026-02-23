@@ -13,11 +13,12 @@ import useDrawEditor from './draw/useDrawEditor';
 interface DrawProps {
   config: TimerConfig;
   gameResults: GameResult[];
+  expectedStartTimes: Array<number | null>;
   onSave: (config: TimerConfig) => void;
   onCancel: () => void;
 }
 
-function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
+function Draw({ config, gameResults, expectedStartTimes, onSave, onCancel }: DrawProps) {
   const {
     locations,
     games,
@@ -145,6 +146,7 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
           games={games}
           teams={teams}
           resolvedGames={resolvedGames}
+          expectedStartTimes={expectedStartTimes}
           locations={locations}
           selectedLocation={selectedLocation}
           requireLocationSelection={locations.length > 1}

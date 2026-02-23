@@ -2,6 +2,7 @@ import React from 'react';
 import { Game, GameResult, TimerConfig } from '../types';
 import { useGameTimer } from '../hooks/useGameTimer';
 import TimerDisplay from './TimerDisplay';
+import { getExpectedStartTimestamps } from '../utils/expectedStartTimes';
 
 interface LocationTimerPanelProps {
   location: string;
@@ -10,6 +11,10 @@ interface LocationTimerPanelProps {
   readOnlyMirror: boolean;
   displayOnly: boolean;
   hidden: boolean;
+  startAllSignal: number;
+  resetAllSignal: number;
+  locationStartTime?: number;
+  onManualStart: (location: string) => void;
 }
 
 export const getLocationTimerStorageKey = (location: string): string =>
@@ -22,6 +27,10 @@ function LocationTimerPanel({
   readOnlyMirror,
   displayOnly,
   hidden,
+  startAllSignal,
+  resetAllSignal,
+  locationStartTime,
+  onManualStart,
 }: LocationTimerPanelProps) {
   const locationConfig: TimerConfig = {
     ...config,
@@ -48,7 +57,16 @@ function LocationTimerPanel({
   } = useGameTimer(locationConfig, {
     readOnlyMirror,
     storageKey: getLocationTimerStorageKey(location),
+    externalStartSignal: startAllSignal,
+    externalResetSignal: resetAllSignal,
   });
+
+  const expectedStartTimes = getExpectedStartTimestamps(
+    locationConfig,
+    games,
+    [location],
+    locationStartTime ? { [location]: locationStartTime } : {}
+  );
 
   return (
     <section className={`location-timer-panel ${hidden ? 'location-hidden' : ''}`}>
@@ -56,6 +74,8 @@ function LocationTimerPanel({
       <TimerDisplay
         config={locationConfig}
         displayOnly={displayOnly}
+        onManualStart={() => onManualStart(location)}
+        expectedStartTimes={expectedStartTimes}
         currentGameIndex={currentGameIndex}
         gameResults={gameResults}
         onNextGame={handleNextGame}
