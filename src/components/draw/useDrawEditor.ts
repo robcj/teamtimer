@@ -21,6 +21,7 @@ interface UseDrawEditorResult {
   priorGameNumbers: number[];
   isDivisionsOpen: boolean;
   isTeamsOpen: boolean;
+  isGamesOpen: boolean;
   newDivisionName: string;
   selectedDivision: string;
   newTeamName: string;
@@ -32,6 +33,7 @@ interface UseDrawEditorResult {
   specialGameNumber2: number;
   setIsDivisionsOpen: Dispatch<SetStateAction<boolean>>;
   setIsTeamsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsGamesOpen: Dispatch<SetStateAction<boolean>>;
   setNewDivisionName: Dispatch<SetStateAction<string>>;
   setSelectedDivision: Dispatch<SetStateAction<string>>;
   setNewTeamName: Dispatch<SetStateAction<string>>;
@@ -62,6 +64,7 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   const [games, setGames] = useState<Game[]>(config.games || []);
   const [isDivisionsOpen, setIsDivisionsOpen] = useState<boolean>(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState<boolean>(false);
+  const [isGamesOpen, setIsGamesOpen] = useState<boolean>(false);
   const [newDivisionName, setNewDivisionName] = useState<string>('');
   const [selectedDivision, setSelectedDivision] = useState<string>('');
   const [newTeamName, setNewTeamName] = useState<string>('');
@@ -243,6 +246,7 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
     priorGameNumbers,
     isDivisionsOpen,
     isTeamsOpen,
+    isGamesOpen,
     newDivisionName,
     selectedDivision,
     newTeamName,
@@ -254,6 +258,7 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
     specialGameNumber2,
     setIsDivisionsOpen,
     setIsTeamsOpen,
+    setIsGamesOpen,
     setNewDivisionName,
     setSelectedDivision,
     setNewTeamName,

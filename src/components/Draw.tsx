@@ -25,6 +25,7 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
     priorGameNumbers,
     isDivisionsOpen,
     isTeamsOpen,
+    isGamesOpen,
     newDivisionName,
     selectedDivision,
     newTeamName,
@@ -36,6 +37,7 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
     specialGameNumber2,
     setIsDivisionsOpen,
     setIsTeamsOpen,
+    setIsGamesOpen,
     setNewDivisionName,
     setSelectedDivision,
     setNewTeamName,
@@ -94,30 +96,36 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
         />
       </CollapsibleSection>
 
-      <GamesSection
-        games={games}
-        teams={teams}
-        resolvedGames={resolvedGames}
-        sortedTeams={sortedTeams}
-        selectedTeam1={selectedTeam1}
-        selectedTeam2={selectedTeam2}
-        onSelectedTeam1Change={setSelectedTeam1}
-        onSelectedTeam2Change={setSelectedTeam2}
-        onAddGame={handleAddGame}
-        specialOutcome1={specialOutcome1}
-        specialOutcome2={specialOutcome2}
-        specialGameNumber1={specialGameNumber1}
-        specialGameNumber2={specialGameNumber2}
-        priorGameNumbers={priorGameNumbers}
-        onSpecialOutcome1Change={setSpecialOutcome1}
-        onSpecialOutcome2Change={setSpecialOutcome2}
-        onSpecialGameNumber1Change={setSpecialGameNumber1}
-        onSpecialGameNumber2Change={setSpecialGameNumber2}
-        onAddSpecialGame={handleAddSpecialGame}
-        onMoveGameUp={handleMoveGameUp}
-        onMoveGameDown={handleMoveGameDown}
-        onRemoveGame={handleRemoveGame}
-      />
+      <CollapsibleSection
+        title="Game Draw"
+        isOpen={isGamesOpen}
+        onToggle={() => setIsGamesOpen(prev => !prev)}
+      >
+        <GamesSection
+          games={games}
+          teams={teams}
+          resolvedGames={resolvedGames}
+          sortedTeams={sortedTeams}
+          selectedTeam1={selectedTeam1}
+          selectedTeam2={selectedTeam2}
+          onSelectedTeam1Change={setSelectedTeam1}
+          onSelectedTeam2Change={setSelectedTeam2}
+          onAddGame={handleAddGame}
+          specialOutcome1={specialOutcome1}
+          specialOutcome2={specialOutcome2}
+          specialGameNumber1={specialGameNumber1}
+          specialGameNumber2={specialGameNumber2}
+          priorGameNumbers={priorGameNumbers}
+          onSpecialOutcome1Change={setSpecialOutcome1}
+          onSpecialOutcome2Change={setSpecialOutcome2}
+          onSpecialGameNumber1Change={setSpecialGameNumber1}
+          onSpecialGameNumber2Change={setSpecialGameNumber2}
+          onAddSpecialGame={handleAddSpecialGame}
+          onMoveGameUp={handleMoveGameUp}
+          onMoveGameDown={handleMoveGameDown}
+          onRemoveGame={handleRemoveGame}
+        />
+      </CollapsibleSection>
 
       <ImportExportSection
         onExportConfig={handleExportConfig}

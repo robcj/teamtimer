@@ -14,6 +14,7 @@ export interface TimerConfig {
   halfTimeDuration: number;
   secondHalfDuration: number;
   betweenGamesDuration: number;
+  keepScreenAwake: boolean;
   divisions: string[];
   teams: Team[];
   games: Game[];

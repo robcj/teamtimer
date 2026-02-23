@@ -7,6 +7,7 @@ import AppHeader from './components/AppHeader';
 import Draw from './components/Draw';
 import { TimerConfig, ViewType } from './types';
 import { useGameTimer } from './hooks/useGameTimer';
+import { useWakeLock } from './hooks/useWakeLock';
 
 import { normalizeTeams } from './utils/teams';
 const DEFAULT_CONFIG: TimerConfig = {
@@ -15,6 +16,7 @@ const DEFAULT_CONFIG: TimerConfig = {
   halfTimeDuration: 120, // 2 minutes
   secondHalfDuration: 600, // 10 minutes
   betweenGamesDuration: 180, // 3 minutes
+  keepScreenAwake: true,
   divisions: [],
   teams: [],
   games: [],
@@ -34,11 +36,14 @@ function App() {
     return {
       ...DEFAULT_CONFIG,
       ...parsed,
+      keepScreenAwake: parsed.keepScreenAwake ?? DEFAULT_CONFIG.keepScreenAwake,
       divisions: parsed.divisions || [],
       teams: normalizeTeams(parsed.teams),
       games: parsed.games || [],
     };
   });
+
+  useWakeLock(config.keepScreenAwake);
 
   const {
     currentGameIndex,

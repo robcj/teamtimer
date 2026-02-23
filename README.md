@@ -29,6 +29,7 @@ Built with React and TypeScript for type safety and better developer experience.
 - **Configurable Settings**:
   - Customize all timer durations
   - Configure team colour labels (e.g., "White" and "Black" for stick/cap colours)
+  - Optional keep-screen-awake mode to reduce screen dim/lock while timing (where supported)
   - Save/load configurations to/from JSON files
   - Settings persist in browser local storage
 
@@ -77,10 +78,12 @@ The single file `team-timer.html` can be downloaded and opened directly in any w
 1. **Configuration**:
    - Click the "Configuration" button in the header
    - Set timer durations for each phase
-   - Add games to the tournament draw by entering team names
-   - Reorder or remove games as needed
-   - Save or load configuration files for reuse
-   - Click "Save" to apply changes
+
+- Enable/disable "Keep screen awake while using the timer" as needed
+- Add games to the tournament draw by entering team names
+- Reorder or remove games as needed
+- Save or load configuration files for reuse
+- Click "Save" to apply changes
 
 2. **Running the Timer**:
    - Click "Start" to begin the countdown

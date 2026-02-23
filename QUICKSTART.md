@@ -58,13 +58,14 @@ Creates `dist-single/team-timer.html` - a single HTML file that works offline!
 3. Configure team colour labels:
    - Set Left Team Label (e.g., "White", "Home", etc.)
    - Set Right Team Label (e.g., "Black", "Away", etc.)
-4. Add games to the tournament:
+4. Optional: enable **Keep screen awake while using the timer**
+5. Add games to the tournament:
    - Enter Team 1 name
    - Enter Team 2 name
    - Click **Add Game**
-5. Reorder games with **↑** and **↓** buttons
-6. **Save** or **Export** your configuration
-7. Click **Save** to return to timer view
+6. Reorder games with **↑** and **↓** buttons
+7. **Save** or **Export** your configuration
+8. Click **Save** to return to timer view
 
 #### Tournament Management
 

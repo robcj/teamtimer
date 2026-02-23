@@ -53,8 +53,7 @@ function GamesSection({
   onRemoveGame,
 }: GamesSectionProps) {
   return (
-    <div className="config-section">
-      <h3>Game Draw</h3>
+    <>
       <div className="add-game">
         <select value={selectedTeam1} onChange={event => onSelectedTeam1Change(event.target.value)}>
           <option value="">Select Team 1</option>
@@ -155,7 +154,7 @@ function GamesSection({
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }
 

@@ -4,6 +4,7 @@
   "halfTimeDuration": 120,
   "secondHalfDuration": 600,
   "betweenGamesDuration": 180,
+  "keepScreenAwake": true,
   "leftTeamLabel": "White",
   "rightTeamLabel": "Black",
   "games": [

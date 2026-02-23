@@ -18,6 +18,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
   const [betweenGamesDuration, setBetweenGamesDuration] = useState<number>(
     config.betweenGamesDuration
   );
+  const [keepScreenAwake, setKeepScreenAwake] = useState<boolean>(config.keepScreenAwake ?? true);
   const [divisions, setDivisions] = useState<string[]>(config.divisions || []);
   const [leftTeamLabel, setLeftTeamLabel] = useState<string>(config.leftTeamLabel || 'White');
   const [rightTeamLabel, setRightTeamLabel] = useState<string>(config.rightTeamLabel || 'Black');
@@ -30,6 +31,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       halfTimeDuration: parseInt(halfTimeDuration.toString()),
       secondHalfDuration: parseInt(secondHalfDuration.toString()),
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
+      keepScreenAwake,
       divisions,
       teams,
       leftTeamLabel: leftTeamLabel.trim() || 'White',
@@ -47,6 +49,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       halfTimeDuration: parseInt(halfTimeDuration.toString()),
       secondHalfDuration: parseInt(secondHalfDuration.toString()),
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
+      keepScreenAwake,
       divisions,
       teams,
       leftTeamLabel: leftTeamLabel.trim() || 'White',
@@ -80,6 +83,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
             setHalfTimeDuration(importedConfig.halfTimeDuration || 120);
             setSecondHalfDuration(importedConfig.secondHalfDuration || 600);
             setBetweenGamesDuration(importedConfig.betweenGamesDuration || 180);
+            setKeepScreenAwake(importedConfig.keepScreenAwake ?? true);
             setDivisions(importedConfig.divisions || []);
             setTeams(normalizeTeams(importedConfig.teams));
             setLeftTeamLabel(importedConfig.leftTeamLabel || 'White');
@@ -121,6 +125,15 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
               onChange={e => setCompetitionName(e.target.value)}
               placeholder="e.g., Regional Tournament 2026"
             />
+          </label>
+
+          <label className="checkbox-row">
+            <input
+              type="checkbox"
+              checked={keepScreenAwake}
+              onChange={e => setKeepScreenAwake(e.target.checked)}
+            />
+            <span>Keep screen awake while using the timer (where supported)</span>
           </label>
         </div>
       </div>
