@@ -1,8 +1,20 @@
 import React from 'react';
+import { Game, Scores } from '../types';
+
+interface PreviousGameSummary {
+  game: Game;
+  score: Scores | null;
+}
+
+interface NextGameSummary {
+  game: Game;
+}
 
 interface TimerControlsProps {
   isRunning: boolean;
   isPaused: boolean;
+  previousGame: PreviousGameSummary | null;
+  nextGame: NextGameSummary | null;
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
@@ -13,6 +25,8 @@ interface TimerControlsProps {
 function TimerControls({
   isRunning,
   isPaused,
+  previousGame,
+  nextGame,
   onStart,
   onPause,
   onReset,
@@ -35,6 +49,22 @@ function TimerControls({
         >
           {isRunning && !isPaused ? 'Pause' : isPaused ? 'Resume' : 'Start'}
         </button>
+      </div>
+
+      <div className="controls-middle">
+        <div className="last-game-summary" aria-live="polite">
+          <span className="last-game-label">Last game:</span>{' '}
+          <span className="last-game-result">
+            {previousGame?.game.team1} <b>{previousGame?.score?.team1 ?? '—'}</b> -{' '}
+            <b>{previousGame?.score?.team2 ?? '—'}</b> {previousGame?.game.team2}
+          </span>
+        </div>
+        <div className="next-game-summary" aria-live="polite">
+          <span className="next-game-label">Next game:</span>{' '}
+          <span className="next-game-result">
+            {nextGame ? `${nextGame.game.team1} vs ${nextGame.game.team2}` : '—'}
+          </span>
+        </div>
       </div>
 
       <div className="controls-right">

@@ -12,6 +12,8 @@ interface LocationTimerPanelProps {
   displayOnly: boolean;
   hidden: boolean;
   startAllSignal: number;
+  pauseAllSignal: number;
+  resumeAllSignal: number;
   resetAllSignal: number;
   locationStartTime?: number;
   onManualStart: (location: string) => void;
@@ -28,6 +30,8 @@ function LocationTimerPanel({
   displayOnly,
   hidden,
   startAllSignal,
+  pauseAllSignal,
+  resumeAllSignal,
   resetAllSignal,
   locationStartTime,
   onManualStart,
@@ -50,14 +54,13 @@ function LocationTimerPanel({
     setIsPaused,
     scores,
     setScores,
-    handleNextGame,
-    handlePrevGame,
-    handleResetGame,
     handleResetTimer,
   } = useGameTimer(locationConfig, {
     readOnlyMirror,
     storageKey: getLocationTimerStorageKey(location),
     externalStartSignal: startAllSignal,
+    externalPauseSignal: pauseAllSignal,
+    externalResumeSignal: resumeAllSignal,
     externalResetSignal: resetAllSignal,
   });
 
@@ -78,9 +81,6 @@ function LocationTimerPanel({
         expectedStartTimes={expectedStartTimes}
         currentGameIndex={currentGameIndex}
         gameResults={gameResults}
-        onNextGame={handleNextGame}
-        onPrevGame={handlePrevGame}
-        onResetGame={handleResetGame}
         phase={phase}
         setPhase={setPhase}
         timeRemaining={timeRemaining}

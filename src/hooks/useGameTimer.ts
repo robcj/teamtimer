@@ -28,6 +28,8 @@ interface UseGameTimerOptions {
   storageKey?: string;
   externalStartSignal?: number;
   externalResetSignal?: number;
+  externalPauseSignal?: number;
+  externalResumeSignal?: number;
 }
 
 export const useGameTimer = (
@@ -39,6 +41,8 @@ export const useGameTimer = (
     storageKey = 'teamTimerState',
     externalStartSignal = 0,
     externalResetSignal = 0,
+    externalPauseSignal = 0,
+    externalResumeSignal = 0,
   } = options;
   const [timerState, setTimerState] = useState<TimerState | null>(() => {
     const saved = localStorage.getItem(storageKey);
@@ -65,6 +69,8 @@ export const useGameTimer = (
   const autoStartIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastExternalStartSignalRef = useRef<number>(externalStartSignal);
   const lastExternalResetSignalRef = useRef<number>(externalResetSignal);
+  const lastExternalPauseSignalRef = useRef<number>(externalPauseSignal);
+  const lastExternalResumeSignalRef = useRef<number>(externalResumeSignal);
   const prevPhaseRef = useRef<string>(phase);
   const isLoadingScoresRef = useRef<boolean>(false);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -117,6 +123,37 @@ export const useGameTimer = (
     lastExternalResetSignalRef.current = externalResetSignal;
     resetState();
   }, [externalResetSignal, readOnlyMirror, config.games.length, storageKey]);
+
+  useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
+    if (externalPauseSignal === 0 || externalPauseSignal === lastExternalPauseSignalRef.current) {
+      return;
+    }
+
+    lastExternalPauseSignalRef.current = externalPauseSignal;
+    if (phase !== 'idle' && isRunning && !isPaused) {
+      setIsPaused(true);
+    }
+  }, [externalPauseSignal, readOnlyMirror, phase, isRunning, isPaused]);
+
+  useEffect(() => {
+    if (readOnlyMirror) {
+      return;
+    }
+    if (
+      externalResumeSignal === 0 ||
+      externalResumeSignal === lastExternalResumeSignalRef.current
+    ) {
+      return;
+    }
+
+    lastExternalResumeSignalRef.current = externalResumeSignal;
+    if (phase !== 'idle' && isRunning && isPaused) {
+      setIsPaused(false);
+    }
+  }, [externalResumeSignal, readOnlyMirror, phase, isRunning, isPaused]);
 
   useEffect(() => {
     if (readOnlyMirror) {

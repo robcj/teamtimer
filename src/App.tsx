@@ -7,6 +7,7 @@ import AppHeader from './components/AppHeader';
 import Draw from './components/Draw';
 import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
+  getLocationTimerStorageKey,
 } from './components/LocationTimerPanel';
 import { TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
@@ -58,7 +59,11 @@ function App() {
   );
   const [selectedLocation, setSelectedLocation] = useState<string>(initialLocationParam || '');
   const [startAllSignal, setStartAllSignal] = useState<number>(0);
+  const [pauseAllSignal, setPauseAllSignal] = useState<number>(0);
+  const [resumeAllSignal, setResumeAllSignal] = useState<number>(0);
   const [resetAllSignal, setResetAllSignal] = useState<number>(0);
+  const [hasStartedGames, setHasStartedGames] = useState<boolean>(false);
+  const [allStartedGamesPaused, setAllStartedGamesPaused] = useState<boolean>(false);
   const [locationStartTimes, setLocationStartTimes] = useState<LocationStartTimes>(() => {
     const saved = localStorage.getItem('teamTimerLocationStartTimes');
     if (!saved) {
@@ -237,6 +242,14 @@ function App() {
     setStartAllSignal(prev => prev + 1);
   };
 
+  const handlePauseAll = (): void => {
+    setPauseAllSignal(prev => prev + 1);
+  };
+
+  const handleResumeAll = (): void => {
+    setResumeAllSignal(prev => prev + 1);
+  };
+
   const handleResetAll = (): void => {
     const confirmed = window.confirm(
       'This will reset all times and scores for every location. Are you sure you want to continue?'
@@ -291,6 +304,78 @@ function App() {
     };
   }, [config.tournamentStartAt, isDisplayOnly]);
 
+  useEffect(() => {
+    const detectTimerAggregateState = (): { hasStarted: boolean; allPaused: boolean } => {
+      let activeCount = 0;
+      let pausedCount = 0;
+
+      locations.forEach(location => {
+        const rawState = localStorage.getItem(getLocationTimerStorageKey(location));
+        if (!rawState) {
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(rawState) as {
+            phase?: string;
+            isRunning?: boolean;
+            isPaused?: boolean;
+            timeRemaining?: number;
+            currentGameIndex?: number;
+            gameResults?: Array<{ startTime: string | null; score: unknown }>;
+          };
+
+          const isActive = Boolean(parsed.isRunning) || Boolean(parsed.isPaused);
+
+          if (isActive) {
+            activeCount += 1;
+            if (Boolean(parsed.isPaused)) {
+              pausedCount += 1;
+            }
+          }
+        } catch {}
+      });
+
+      return {
+        hasStarted: activeCount > 0,
+        allPaused: activeCount > 0 && pausedCount === activeCount,
+      };
+    };
+
+    const updateDetectedState = (): void => {
+      const state = detectTimerAggregateState();
+      setHasStartedGames(state.hasStarted);
+      setAllStartedGamesPaused(state.allPaused);
+    };
+
+    updateDetectedState();
+    const interval = setInterval(() => {
+      updateDetectedState();
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [locations]);
+
+  const globalControlLabel = !hasStartedGames
+    ? 'Start All'
+    : allStartedGamesPaused
+      ? 'Resume All'
+      : 'Pause All';
+
+  const handleGlobalControl = (): void => {
+    if (!hasStartedGames) {
+      handleStartAll();
+      return;
+    }
+    if (allStartedGamesPaused) {
+      handleResumeAll();
+      return;
+    }
+    handlePauseAll();
+  };
+
   const gameResults = getLocationGameResultsSnapshot(config.games, locations);
   const expectedStartTimes = getExpectedStartTimestamps(
     config,
@@ -310,7 +395,12 @@ function App() {
           onOpenDraw={() => setView('draw')}
           onOpenConfig={() => setView('config')}
           onViewTimer={() => setView('timer')}
+          canToggleLayout={locations.length > 1}
+          isSplitLayout={isSplitView}
+          onSetSingleLayout={() => setTimerLayout('single')}
+          onSetSplitLayout={() => setTimerLayout('split')}
           onOpenSecondScreen={handleOpenSecondScreen}
+          onResetAll={handleResetAll}
         />
       )}
 
@@ -334,27 +424,10 @@ function App() {
                 </label>
                 <div className="location-layout-buttons">
                   {!isDisplayOnly && (
-                    <>
-                      <button className="config-button" onClick={handleStartAll}>
-                        Start All
-                      </button>
-                      <button className="config-button" onClick={handleResetAll}>
-                        Reset All
-                      </button>
-                    </>
+                    <button className="config-button" onClick={handleGlobalControl}>
+                      {globalControlLabel}
+                    </button>
                   )}
-                  <button
-                    className={`config-button ${!isSplitView ? 'active-layout' : ''}`}
-                    onClick={() => setTimerLayout('single')}
-                  >
-                    Single
-                  </button>
-                  <button
-                    className={`config-button ${isSplitView ? 'active-layout' : ''}`}
-                    onClick={() => setTimerLayout('split')}
-                  >
-                    Split
-                  </button>
                 </div>
               </div>
             )}
@@ -376,6 +449,8 @@ function App() {
                     hidden={!isSplitView && selectedLocation !== location}
                     startAllSignal={startAllSignal}
                     resetAllSignal={resetAllSignal}
+                    pauseAllSignal={pauseAllSignal}
+                    resumeAllSignal={resumeAllSignal}
                     locationStartTime={locationStartTimes[location]}
                     onManualStart={handleLocationManualStart}
                   />

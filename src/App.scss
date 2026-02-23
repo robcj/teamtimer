@@ -48,20 +48,53 @@
   text-overflow: ellipsis;
 }
 
-.header-buttons {
+.header-menu {
   grid-area: actions;
-  display: flex;
-  gap: 10px;
   justify-self: end;
-  flex-wrap: wrap;
+  position: relative;
 }
 
-.scores-header-button {
-  background: $surface-soft;
-  color: $scores-accent;
+.header-menu-trigger {
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+}
+
+.header-menu-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid $border-light-blue;
+  background: $white;
+  box-shadow: $shadow-md;
+}
+
+.header-menu-item {
+  border: none;
+  border-radius: $radius-md;
+  padding: 8px 10px;
+  background: $table-header-bg;
+  color: $text-primary;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
 
   &:hover {
-    @include hover-lift($shadow-hover-scores);
+    background: $scores-action-hover;
+  }
+
+  &.active {
+    background: $surface-soft;
+    color: $scores-accent;
   }
 }
 
@@ -174,11 +207,6 @@
     padding: clamp(6px, 1vh, 10px) 10px;
   }
 
-  .header-buttons {
-    gap: 5px;
-    justify-content: flex-end;
-  }
-
   .competition-name {
     max-width: 95%;
     font-size: clamp(1rem, 2.6vh, 1.4rem);
@@ -215,9 +243,8 @@
     max-width: 55vw;
   }
 
-  .header-buttons {
-    gap: 4px;
-    flex-wrap: nowrap;
+  .header-menu-list {
+    min-width: 160px;
   }
 
   .config-button {

@@ -2,12 +2,11 @@ import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 're
 import './TimerDisplay.scss';
 import { TimerConfig, Scores, GameResult } from '../types';
 import ScoreBoard from './ScoreBoard';
-import GameNavigation from './GameNavigation';
 import TimerHeader from './TimerHeader';
 import TimerControls from './TimerControls';
 import GameHeader from './GameHeader';
 import { PHASES, Phase, PHASE_LABELS } from '../utils/phases';
-import { formatTimerDuration, getNextGameStartTime } from '../utils/timerDisplay';
+import { formatTimerDuration } from '../utils/timerDisplay';
 import { resolveGamesFromResults } from '../utils/drawResolution';
 
 interface TimerDisplayProps {
@@ -17,9 +16,6 @@ interface TimerDisplayProps {
   expectedStartTimes?: Array<number | null>;
   currentGameIndex: number;
   gameResults: GameResult[];
-  onNextGame: () => void;
-  onPrevGame: () => void;
-  onResetGame: () => void;
   phase: string;
   setPhase: Dispatch<SetStateAction<string>>;
   timeRemaining: number;
@@ -40,9 +36,6 @@ function TimerDisplay({
   expectedStartTimes = [],
   currentGameIndex,
   gameResults,
-  onNextGame,
-  onPrevGame,
-  onResetGame,
   phase,
   setPhase,
   timeRemaining,
@@ -145,6 +138,20 @@ function TimerDisplay({
     (phase === PHASES.BETWEEN_GAMES || phase === PHASES.IDLE) && hasCompletedCurrentGame
       ? currentGameIndex
       : currentGameIndex - 1;
+  const nextGameIndex = lastPlayedGameIndex + 1;
+  const previousGame =
+    lastPlayedGameIndex >= 0
+      ? {
+          game: resolvedGames[lastPlayedGameIndex],
+          score: gameResults[lastPlayedGameIndex]?.score ?? null,
+        }
+      : null;
+  const nextGame =
+    nextGameIndex >= 0 && nextGameIndex < resolvedGames.length
+      ? {
+          game: resolvedGames[nextGameIndex],
+        }
+      : null;
 
   return (
     <div className="timer-display">
@@ -180,36 +187,13 @@ function TimerDisplay({
           <TimerControls
             isRunning={isRunning}
             isPaused={isPaused}
+            previousGame={previousGame}
+            nextGame={nextGame}
             onStart={handleStart}
             onPause={handlePause}
             onReset={onResetTimer}
             onSkipPhase={handleSkipPhase}
             canSkip={phase !== PHASES.IDLE && isRunning}
-          />
-
-          <GameNavigation
-            currentGameIndex={currentGameIndex}
-            totalGames={config.games.length}
-            onPrevGame={onPrevGame}
-            onResetGame={onResetGame}
-            onNextGame={onNextGame}
-            nextGameStartTime={getNextGameStartTime({
-              isRunning,
-              isPaused,
-              currentGameIndex,
-              totalGames: config.games.length,
-              timeRemaining,
-              phase: phase as Phase,
-              config,
-            })}
-            previousGame={
-              lastPlayedGameIndex >= 0
-                ? {
-                    game: resolvedGames[lastPlayedGameIndex],
-                    score: gameResults[lastPlayedGameIndex]?.score ?? null,
-                  }
-                : null
-            }
           />
         </>
       )}

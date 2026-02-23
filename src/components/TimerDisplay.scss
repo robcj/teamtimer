@@ -180,6 +180,7 @@
 }
 
 .controls-left,
+.controls-middle,
 .controls-right {
   display: flex;
   align-items: center;
@@ -188,8 +189,49 @@
   min-width: 0;
 }
 
+.controls-middle {
+  flex: 1;
+  justify-content: center;
+}
+
 .controls-right {
-  justify-content: flex-end;
+  justify-content: center;
+}
+
+.controls-middle .last-game-summary {
+  max-width: min(42vw, 420px);
+  text-align: center;
+}
+
+.next-game-summary {
+  min-width: 0;
+  max-width: min(42vw, 420px);
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .controls-middle .last-game-summary,
+  .next-game-summary {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+}
+
+.next-game-label {
+  font-size: clamp(0.7rem, 2vh, 2rem);
+  color: $text-muted;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.next-game-result {
+  margin-top: 2px;
+  font-size: clamp(0.75rem, 2vh, 2rem);
+  color: $text-primary;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .compact-actions-menu,
@@ -331,6 +373,7 @@
   font-size: clamp(0.7rem, 2vh, 2rem);
   color: $text-muted;
   font-weight: 600;
+  font-style: italic;
 }
 
 .last-game-result {
@@ -430,8 +473,10 @@
 
   .last-game-label,
   .last-game-result,
+  .next-game-label,
+  .next-game-result,
   .next-game-time {
-    font-size: clamp(0.78rem, 1.2vh, 0.95rem);
+    font-size: clamp(0.78rem, 2vh, 1rem);
   }
 }
 
@@ -461,6 +506,7 @@
   }
 
   .controls-left,
+  .controls-middle,
   .controls-right,
   .game-navigation-buttons,
   .last-game-summary,
@@ -482,6 +528,16 @@
   .controls-right,
   .game-navigation-buttons {
     display: none;
+  }
+
+  .controls-middle .last-game-summary {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .next-game-summary {
+    max-width: 100%;
+    text-align: center;
   }
 
   .compact-actions-menu,
@@ -670,8 +726,10 @@
 
   .next-game-time,
   .last-game-label,
-  .last-game-result {
-    font-size: 0.85rem;
+  .last-game-result,
+  .next-game-label,
+  .next-game-result {
+    font-size: 1rem;
   }
 
   .left-team,
@@ -826,11 +884,13 @@
     padding-top: 5px;
   }
 
-  .last-game-label {
-    font-size: 0.68rem;
+  .last-game-label,
+  .next-game-label {
+    font-size: 0.8rem;
   }
 
-  .last-game-result {
+  .last-game-result,
+  .next-game-result {
     font-size: 0.74rem;
   }
 
