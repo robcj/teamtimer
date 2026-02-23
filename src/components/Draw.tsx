@@ -6,6 +6,8 @@ import DivisionsSection from './draw/DivisionsSection';
 import TeamsSection from './draw/TeamsSection';
 import GamesSection from './draw/GamesSection';
 import ImportExportSection from './draw/ImportExportSection';
+import LocationsSection from './draw/LocationsSection';
+import TournamentStartSection from './draw/TournamentStartSection';
 import useDrawEditor from './draw/useDrawEditor';
 
 interface DrawProps {
@@ -17,12 +19,18 @@ interface DrawProps {
 
 function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
   const {
+    locations,
     games,
     teams,
+    isLocationsOpen,
+    isTournamentStartOpen,
     sortedDivisions,
     sortedTeams,
     resolvedGames,
     priorGameNumbers,
+    newLocationName,
+    selectedLocation,
+    tournamentStartAt,
     isDivisionsOpen,
     isTeamsOpen,
     isGamesOpen,
@@ -35,6 +43,11 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
     specialOutcome2,
     specialGameNumber1,
     specialGameNumber2,
+    setIsLocationsOpen,
+    setIsTournamentStartOpen,
+    setNewLocationName,
+    setSelectedLocation,
+    setTournamentStartAt,
     setIsDivisionsOpen,
     setIsTeamsOpen,
     setIsGamesOpen,
@@ -47,6 +60,8 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
     setSpecialOutcome2,
     setSpecialGameNumber1,
     setSpecialGameNumber2,
+    handleAddLocation,
+    handleRemoveLocation,
     handleAddDivision,
     handleRemoveDivision,
     handleAddTeam,
@@ -64,6 +79,31 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
   return (
     <div className="configuration">
       <h2>Draw</h2>
+
+      <CollapsibleSection
+        title="Locations"
+        isOpen={isLocationsOpen}
+        onToggle={() => setIsLocationsOpen(prev => !prev)}
+      >
+        <LocationsSection
+          locations={locations}
+          newLocationName={newLocationName}
+          onNewLocationNameChange={setNewLocationName}
+          onAddLocation={handleAddLocation}
+          onRemoveLocation={handleRemoveLocation}
+        />
+      </CollapsibleSection>
+
+      <CollapsibleSection
+        title="Tournament Start"
+        isOpen={isTournamentStartOpen}
+        onToggle={() => setIsTournamentStartOpen(prev => !prev)}
+      >
+        <TournamentStartSection
+          tournamentStartAt={tournamentStartAt}
+          onTournamentStartAtChange={setTournamentStartAt}
+        />
+      </CollapsibleSection>
 
       <CollapsibleSection
         title="Divisions"
@@ -105,7 +145,11 @@ function Draw({ config, gameResults, onSave, onCancel }: DrawProps) {
           games={games}
           teams={teams}
           resolvedGames={resolvedGames}
+          locations={locations}
+          selectedLocation={selectedLocation}
+          requireLocationSelection={locations.length > 1}
           sortedTeams={sortedTeams}
+          onSelectedLocationChange={setSelectedLocation}
           selectedTeam1={selectedTeam1}
           selectedTeam2={selectedTeam2}
           onSelectedTeam1Change={setSelectedTeam1}

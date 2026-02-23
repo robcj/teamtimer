@@ -12,13 +12,19 @@ import {
 
 interface UseDrawEditorResult {
   editableConfig: TimerConfig;
+  locations: string[];
+  tournamentStartAt: string;
   divisions: string[];
   teams: Team[];
   games: Game[];
+  isLocationsOpen: boolean;
+  isTournamentStartOpen: boolean;
   sortedDivisions: string[];
   sortedTeams: Team[];
   resolvedGames: Game[];
   priorGameNumbers: number[];
+  newLocationName: string;
+  selectedLocation: string;
   isDivisionsOpen: boolean;
   isTeamsOpen: boolean;
   isGamesOpen: boolean;
@@ -34,6 +40,11 @@ interface UseDrawEditorResult {
   setIsDivisionsOpen: Dispatch<SetStateAction<boolean>>;
   setIsTeamsOpen: Dispatch<SetStateAction<boolean>>;
   setIsGamesOpen: Dispatch<SetStateAction<boolean>>;
+  setIsLocationsOpen: Dispatch<SetStateAction<boolean>>;
+  setIsTournamentStartOpen: Dispatch<SetStateAction<boolean>>;
+  setTournamentStartAt: Dispatch<SetStateAction<string>>;
+  setNewLocationName: Dispatch<SetStateAction<string>>;
+  setSelectedLocation: Dispatch<SetStateAction<string>>;
   setNewDivisionName: Dispatch<SetStateAction<string>>;
   setSelectedDivision: Dispatch<SetStateAction<string>>;
   setNewTeamName: Dispatch<SetStateAction<string>>;
@@ -43,6 +54,8 @@ interface UseDrawEditorResult {
   setSpecialOutcome2: Dispatch<SetStateAction<SpecialOutcome>>;
   setSpecialGameNumber1: Dispatch<SetStateAction<number>>;
   setSpecialGameNumber2: Dispatch<SetStateAction<number>>;
+  handleAddLocation: () => void;
+  handleRemoveLocation: (locationToRemove: string) => void;
   handleAddDivision: () => void;
   handleRemoveDivision: (divisionToRemove: string) => void;
   handleAddTeam: () => void;
@@ -59,12 +72,20 @@ interface UseDrawEditorResult {
 
 function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawEditorResult {
   const [editableConfig, setEditableConfig] = useState<TimerConfig>(config);
+  const [locations, setLocations] = useState<string[]>(config.locations || []);
+  const [tournamentStartAt, setTournamentStartAt] = useState<string>(
+    config.tournamentStartAt || ''
+  );
   const [divisions, setDivisions] = useState<string[]>(config.divisions || []);
   const [teams, setTeams] = useState<Team[]>(normalizeTeams(config.teams));
   const [games, setGames] = useState<Game[]>(config.games || []);
+  const [isLocationsOpen, setIsLocationsOpen] = useState<boolean>(false);
+  const [isTournamentStartOpen, setIsTournamentStartOpen] = useState<boolean>(false);
   const [isDivisionsOpen, setIsDivisionsOpen] = useState<boolean>(false);
   const [isTeamsOpen, setIsTeamsOpen] = useState<boolean>(false);
   const [isGamesOpen, setIsGamesOpen] = useState<boolean>(false);
+  const [newLocationName, setNewLocationName] = useState<string>('');
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [newDivisionName, setNewDivisionName] = useState<string>('');
   const [selectedDivision, setSelectedDivision] = useState<string>('');
   const [newTeamName, setNewTeamName] = useState<string>('');
@@ -81,6 +102,42 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   const sortedTeams = sortTeamsByDivisionThenName(teams);
   const resolvedGames = resolveGamesFromResults(games, gameResults);
   const priorGameNumbers = games.map((_, index) => index + 1);
+  const hasMultipleLocations = locations.length > 1;
+
+  const handleAddLocation = (): void => {
+    const locationName = newLocationName.trim();
+    if (!locationName) {
+      return;
+    }
+    if (locations.some(location => location.toLowerCase() === locationName.toLowerCase())) {
+      return;
+    }
+    setLocations([...locations, locationName]);
+    if (!selectedLocation) {
+      setSelectedLocation(locationName);
+    }
+    setNewLocationName('');
+  };
+
+  const handleRemoveLocation = (locationToRemove: string): void => {
+    const remainingLocations = locations.filter(location => location !== locationToRemove);
+    setLocations(remainingLocations);
+    setGames(prevGames =>
+      prevGames.map(game => {
+        if (game.location !== locationToRemove) {
+          return game;
+        }
+        if (remainingLocations.length === 0) {
+          const { location, ...rest } = game;
+          return rest;
+        }
+        return { ...game, location: remainingLocations[0] };
+      })
+    );
+    if (selectedLocation === locationToRemove) {
+      setSelectedLocation(remainingLocations[0] || '');
+    }
+  };
 
   const handleAddDivision = (): void => {
     const divisionName = newDivisionName.trim();
@@ -144,12 +201,18 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   };
 
   const handleAddGame = (): void => {
+    const locationForGame = hasMultipleLocations ? selectedLocation : locations[0] || undefined;
+    if (hasMultipleLocations && !locationForGame) {
+      return;
+    }
+
     if (selectedTeam1 && selectedTeam2 && selectedTeam1 !== selectedTeam2) {
       setGames([
         ...games,
         {
           team1: selectedTeam1,
           team2: selectedTeam2,
+          location: locationForGame,
         },
       ]);
       setSelectedTeam1('');
@@ -159,6 +222,10 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
 
   const handleAddSpecialGame = (): void => {
     if (games.length === 0) {
+      return;
+    }
+    const locationForGame = hasMultipleLocations ? selectedLocation : locations[0] || undefined;
+    if (hasMultipleLocations && !locationForGame) {
       return;
     }
     const participant1 = buildSpecialPlaceholder(specialOutcome1, specialGameNumber1);
@@ -172,6 +239,7 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
       {
         team1: participant1,
         team2: participant2,
+        location: locationForGame,
       },
     ]);
   };
@@ -193,7 +261,14 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   };
 
   const handleExportConfig = (): void => {
-    const configToExport = buildExportConfig(editableConfig, divisions, teams, games);
+    const configToExport = buildExportConfig(
+      editableConfig,
+      divisions,
+      teams,
+      games,
+      locations,
+      tournamentStartAt
+    );
 
     const dataStr = JSON.stringify(configToExport, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -215,9 +290,12 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
           if (typeof result === 'string') {
             const importedConfig = parseImportedConfig(JSON.parse(result) as TimerConfig);
             setEditableConfig(importedConfig);
+            setLocations(importedConfig.locations || []);
+            setTournamentStartAt(importedConfig.tournamentStartAt || '');
             setDivisions(importedConfig.divisions);
             setTeams(importedConfig.teams);
             setGames(importedConfig.games);
+            setSelectedLocation((importedConfig.locations || [])[0] || '');
             setSelectedDivision('');
             setSelectedTeam1('');
             setSelectedTeam2('');
@@ -233,17 +311,23 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   };
 
   const getConfigForSave = (): TimerConfig =>
-    buildExportConfig(editableConfig, divisions, teams, games);
+    buildExportConfig(editableConfig, divisions, teams, games, locations, tournamentStartAt);
 
   return {
     editableConfig,
+    locations,
+    tournamentStartAt,
     divisions,
     teams,
     games,
+    isLocationsOpen,
+    isTournamentStartOpen,
     sortedDivisions,
     sortedTeams,
     resolvedGames,
     priorGameNumbers,
+    newLocationName,
+    selectedLocation,
     isDivisionsOpen,
     isTeamsOpen,
     isGamesOpen,
@@ -259,6 +343,11 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
     setIsDivisionsOpen,
     setIsTeamsOpen,
     setIsGamesOpen,
+    setIsLocationsOpen,
+    setIsTournamentStartOpen,
+    setTournamentStartAt,
+    setNewLocationName,
+    setSelectedLocation,
     setNewDivisionName,
     setSelectedDivision,
     setNewTeamName,
@@ -268,6 +357,8 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
     setSpecialOutcome2,
     setSpecialGameNumber1,
     setSpecialGameNumber2,
+    handleAddLocation,
+    handleRemoveLocation,
     handleAddDivision,
     handleRemoveDivision,
     handleAddTeam,

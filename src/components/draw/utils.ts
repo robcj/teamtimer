@@ -15,12 +15,16 @@ export const buildExportConfig = (
   editableConfig: TimerConfig,
   divisions: string[],
   teams: Team[],
-  games: Game[]
+  games: Game[],
+  locations: string[],
+  tournamentStartAt: string
 ): TimerConfig => ({
   ...editableConfig,
+  locations,
   divisions,
   teams,
   games,
+  tournamentStartAt,
 });
 
 export const parseImportedConfig = (rawConfig: Partial<TimerConfig>): TimerConfig => ({
@@ -30,10 +34,12 @@ export const parseImportedConfig = (rawConfig: Partial<TimerConfig>): TimerConfi
   secondHalfDuration: rawConfig.secondHalfDuration || 600,
   betweenGamesDuration: rawConfig.betweenGamesDuration || 180,
   keepScreenAwake: rawConfig.keepScreenAwake ?? true,
+  locations: rawConfig.locations || [],
   divisions: rawConfig.divisions || [],
   teams: normalizeTeams(rawConfig.teams),
   leftTeamLabel: rawConfig.leftTeamLabel || 'White',
   rightTeamLabel: rawConfig.rightTeamLabel || 'Black',
+  tournamentStartAt: rawConfig.tournamentStartAt || '',
   competitionName: rawConfig.competitionName || '',
   games: rawConfig.games || [],
 });

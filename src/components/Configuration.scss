@@ -157,12 +157,22 @@
   &.special-game-row {
     flex-wrap: nowrap;
 
+    .special-location-select,
     .special-outcome-select,
     .special-game-number-select {
       flex: 0 0 110px;
       min-width: 110px;
     }
   }
+}
+
+.game-location {
+  color: $brand-primary;
+  font-weight: 700;
+}
+
+.tournament-start-row {
+  max-width: 520px;
 }
 
 .vs-label {

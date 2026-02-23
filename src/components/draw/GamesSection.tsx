@@ -7,9 +7,13 @@ interface GamesSectionProps {
   games: Game[];
   teams: Team[];
   resolvedGames: Game[];
+  locations: string[];
+  selectedLocation: string;
+  requireLocationSelection: boolean;
   sortedTeams: Team[];
   selectedTeam1: string;
   selectedTeam2: string;
+  onSelectedLocationChange: (value: string) => void;
   onSelectedTeam1Change: (value: string) => void;
   onSelectedTeam2Change: (value: string) => void;
   onAddGame: () => void;
@@ -32,9 +36,13 @@ function GamesSection({
   games,
   teams,
   resolvedGames,
+  locations,
+  selectedLocation,
+  requireLocationSelection,
   sortedTeams,
   selectedTeam1,
   selectedTeam2,
+  onSelectedLocationChange,
   onSelectedTeam1Change,
   onSelectedTeam2Change,
   onAddGame,
@@ -52,9 +60,29 @@ function GamesSection({
   onMoveGameDown,
   onRemoveGame,
 }: GamesSectionProps) {
+  const locationLabel = (game: Game): string => {
+    if (game.location) {
+      return game.location;
+    }
+    return locations[0] || 'Unassigned';
+  };
+
   return (
     <>
       <div className="add-game">
+        {requireLocationSelection && (
+          <select
+            value={selectedLocation}
+            onChange={event => onSelectedLocationChange(event.target.value)}
+          >
+            <option value="">Select Location</option>
+            {locations.map(location => (
+              <option key={`location-main-${location}`} value={location}>
+                {location}
+              </option>
+            ))}
+          </select>
+        )}
         <select value={selectedTeam1} onChange={event => onSelectedTeam1Change(event.target.value)}>
           <option value="">Select Team 1</option>
           {sortedTeams.map(team => (
@@ -131,6 +159,7 @@ function GamesSection({
             <span className="game-teams">
               {formatTeamWithDivision(teams, game.team1)} vs{' '}
               {formatTeamWithDivision(teams, game.team2)}
+              <strong className="game-location"> @ {locationLabel(games[index])}</strong>
             </span>
             <div className="game-controls">
               <button

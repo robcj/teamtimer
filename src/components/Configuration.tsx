@@ -22,6 +22,9 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
   const [divisions, setDivisions] = useState<string[]>(config.divisions || []);
   const [leftTeamLabel, setLeftTeamLabel] = useState<string>(config.leftTeamLabel || 'White');
   const [rightTeamLabel, setRightTeamLabel] = useState<string>(config.rightTeamLabel || 'Black');
+  const [tournamentStartAt, setTournamentStartAt] = useState<string>(
+    config.tournamentStartAt || ''
+  );
   const [teams, setTeams] = useState<Team[]>(normalizeTeams(config.teams));
 
   const handleSave = (): void => {
@@ -32,10 +35,12 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       secondHalfDuration: parseInt(secondHalfDuration.toString()),
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
       keepScreenAwake,
+      locations: config.locations || [],
       divisions,
       teams,
       leftTeamLabel: leftTeamLabel.trim() || 'White',
       rightTeamLabel: rightTeamLabel.trim() || 'Black',
+      tournamentStartAt,
       competitionName: competitionName.trim(),
       games: config.games,
     };
@@ -50,10 +55,12 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
       secondHalfDuration: parseInt(secondHalfDuration.toString()),
       betweenGamesDuration: parseInt(betweenGamesDuration.toString()),
       keepScreenAwake,
+      locations: config.locations || [],
       divisions,
       teams,
       leftTeamLabel: leftTeamLabel.trim() || 'White',
       rightTeamLabel: rightTeamLabel.trim() || 'Black',
+      tournamentStartAt,
       competitionName: competitionName.trim(),
       games: config.games,
     };
@@ -88,6 +95,7 @@ function Configuration({ config, onSave, onCancel }: ConfigurationProps) {
             setTeams(normalizeTeams(importedConfig.teams));
             setLeftTeamLabel(importedConfig.leftTeamLabel || 'White');
             setRightTeamLabel(importedConfig.rightTeamLabel || 'Black');
+            setTournamentStartAt(importedConfig.tournamentStartAt || '');
           }
         } catch (error) {
           alert('Error importing configuration. Please check the file format.');

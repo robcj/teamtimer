@@ -25,6 +25,7 @@ Built with React and TypeScript for type safety and better developer experience.
   - Enter a draw (list of teams playing against each other)
   - Navigate between games
   - Track multiple games in a single tournament
+  - Manage simultaneous games across multiple locations
 
 - **Configurable Settings**:
   - Customize all timer durations
@@ -80,6 +81,8 @@ The single file `team-timer.html` can be downloaded and opened directly in any w
    - Set timer durations for each phase
 
 - Enable/disable "Keep screen awake while using the timer" as needed (enabled by default)
+- In Draw, add one or more **Locations** (e.g., North Court, South Court)
+- When 2+ locations exist, choose a location for each game in **Game Draw**
 - Add games to the tournament draw by entering team names
 - Reorder or remove games as needed
 - Save or load configuration files for reuse
@@ -99,6 +102,20 @@ The single file `team-timer.html` can be downloaded and opened directly in any w
 4. **Navigating Games**:
    - Use "Previous Game", "Next Game", and "First Game" buttons to navigate
    - Scores and timer reset when switching games
+
+5. **Multiple Locations & Split View**:
+
+- If multiple locations are configured, select which location to view in Timer mode
+- Use **Single** to focus on one location
+- Use **Split** to show all locations at once
+- All location timers continue running even when not currently visible
+
+6. **Second Screen**:
+
+- Click **Second Screen** from the header
+- If multiple locations exist, choose one location or "all" (split)
+- The second screen is display-only (no control buttons)
+- You can change displayed location or split view on the second screen
 
 ## Browser Compatibility
 

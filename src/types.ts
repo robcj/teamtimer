@@ -1,6 +1,7 @@
 export interface Game {
   team1: string;
   team2: string;
+  location?: string;
 }
 
 export interface Team {
@@ -15,11 +16,13 @@ export interface TimerConfig {
   secondHalfDuration: number;
   betweenGamesDuration: number;
   keepScreenAwake: boolean;
+  locations: string[];
   divisions: string[];
   teams: Team[];
   games: Game[];
   leftTeamLabel: string;
   rightTeamLabel: string;
+  tournamentStartAt?: string;
   competitionName?: string;
 }
 
