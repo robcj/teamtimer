@@ -26,10 +26,12 @@ function GameHeader({
 
   return (
     <div className="game-info">
-      <h2>
-        Game {currentIndex + 1} of {totalGames}: {game.team1} vs {game.team2}
-      </h2>
-      {headerStartTimeText && <div className="game-start-meta">{headerStartTimeText}</div>}
+      <div className="game-info-row">
+        <h2>
+          Game {currentIndex + 1} of {totalGames}: {game.team1} vs {game.team2}
+        </h2>
+        {headerStartTimeText && <div className="game-start-meta">{headerStartTimeText}</div>}
+      </div>
     </div>
   );
 }

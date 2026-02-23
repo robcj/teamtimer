@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Game, Scores } from '../types';
 
 interface PreviousGameSummary {
@@ -33,10 +33,28 @@ function TimerControls({
   onSkipPhase,
   canSkip,
 }: TimerControlsProps) {
+  const [openUpwards, setOpenUpwards] = useState<boolean>(false);
+  const actionsMenuRef = useRef<HTMLDetailsElement | null>(null);
+  const actionsListRef = useRef<HTMLDivElement | null>(null);
+
+  const handleActionsToggle = (): void => {
+    const menu = actionsMenuRef.current;
+    if (!menu || !menu.open) {
+      setOpenUpwards(false);
+      return;
+    }
+
+    const menuRect = menu.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - menuRect.bottom;
+    const listHeight = actionsListRef.current?.offsetHeight ?? 170;
+    setOpenUpwards(spaceBelow < listHeight + 12);
+  };
+
   const closeCompactMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     const menu = event.currentTarget.closest('details');
     if (menu) {
       menu.removeAttribute('open');
+      setOpenUpwards(false);
     }
   };
 
@@ -67,18 +85,14 @@ function TimerControls({
         </div>
       </div>
 
-      <div className="controls-right">
-        <button onClick={onReset} className="control-btn reset-btn">
-          Reset
-        </button>
-        <button onClick={onSkipPhase} disabled={!canSkip} className="control-btn skip-btn">
-          Skip Phase
-        </button>
-      </div>
-
-      <details className="compact-actions-menu" role="group">
+      <details
+        ref={actionsMenuRef}
+        className={`compact-actions-menu ${openUpwards ? 'open-upwards' : ''}`}
+        role="group"
+        onToggle={handleActionsToggle}
+      >
         <summary className="compact-actions-trigger">Actions ▾</summary>
-        <div className="compact-actions-list">
+        <div ref={actionsListRef} className="compact-actions-list">
           <button
             className="compact-action-item"
             onClick={event => {

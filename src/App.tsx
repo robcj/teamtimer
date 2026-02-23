@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import TimerDisplay from './components/TimerDisplay';
 import Configuration from './components/Configuration';
@@ -12,70 +12,24 @@ import LocationTimerPanel, {
 import { TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
 import { getExpectedStartTimestamps, LocationStartTimes } from './utils/expectedStartTimes';
-
-import { normalizeTeams } from './utils/teams';
-const DEFAULT_CONFIG: TimerConfig = {
-  countdownToStart: 20,
-  firstHalfDuration: 600, // 10 minutes in seconds
-  halfTimeDuration: 120, // 2 minutes
-  secondHalfDuration: 600, // 10 minutes
-  betweenGamesDuration: 180, // 3 minutes
-  keepScreenAwake: true,
-  locations: [],
-  divisions: [],
-  teams: [],
-  games: [],
-  leftTeamLabel: 'White',
-  rightTeamLabel: 'Black',
-  tournamentStartAt: '',
-  competitionName: '',
-};
+import { useSyncedConfig } from './hooks/useSyncedConfig';
+import { useSyncedLocationStartTimes } from './hooks/useSyncedLocationStartTimes';
+import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
+import { useGlobalTimerAggregateState } from './hooks/useGlobalTimerAggregateState';
+import { useAppTimerController } from './hooks/useAppTimerController';
 
 function App() {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isDisplayOnly = urlParams.get('view') === 'display';
   const initialLayoutParam = urlParams.get('layout');
   const initialLocationParam = urlParams.get('location');
   const [view, setView] = useState<ViewType>('timer');
-  const [config, setConfig] = useState<TimerConfig>(() => {
-    const saved = localStorage.getItem('teamTimerConfig');
-    if (!saved) {
-      return DEFAULT_CONFIG;
-    }
-    const parsed = JSON.parse(saved) as Partial<TimerConfig>;
-    return {
-      ...DEFAULT_CONFIG,
-      ...parsed,
-      keepScreenAwake: parsed.keepScreenAwake ?? DEFAULT_CONFIG.keepScreenAwake,
-      locations: parsed.locations || [],
-      divisions: parsed.divisions || [],
-      teams: normalizeTeams(parsed.teams),
-      games: parsed.games || [],
-      tournamentStartAt: parsed.tournamentStartAt || '',
-    };
-  });
+  const [config, setConfig] = useSyncedConfig(isDisplayOnly);
   const [timerLayout, setTimerLayout] = useState<'single' | 'split'>(
     initialLayoutParam === 'split' ? 'split' : 'single'
   );
   const [selectedLocation, setSelectedLocation] = useState<string>(initialLocationParam || '');
-  const [startAllSignal, setStartAllSignal] = useState<number>(0);
-  const [pauseAllSignal, setPauseAllSignal] = useState<number>(0);
-  const [resumeAllSignal, setResumeAllSignal] = useState<number>(0);
-  const [resetAllSignal, setResetAllSignal] = useState<number>(0);
-  const [hasStartedGames, setHasStartedGames] = useState<boolean>(false);
-  const [allStartedGamesPaused, setAllStartedGamesPaused] = useState<boolean>(false);
-  const [locationStartTimes, setLocationStartTimes] = useState<LocationStartTimes>(() => {
-    const saved = localStorage.getItem('teamTimerLocationStartTimes');
-    if (!saved) {
-      return {};
-    }
-    try {
-      return JSON.parse(saved) as LocationStartTimes;
-    } catch {
-      return {};
-    }
-  });
-  const autoStartedTournamentAtRef = useRef<string | null>(null);
+  const [locationStartTimes, setLocationStartTimes] = useSyncedLocationStartTimes(isDisplayOnly);
 
   useWakeLock(config.keepScreenAwake);
 
@@ -98,71 +52,6 @@ function App() {
     }
   }, [locations, selectedLocation, defaultLocation, timerLayout]);
 
-  useEffect(() => {
-    if (isDisplayOnly) {
-      return;
-    }
-    localStorage.setItem('teamTimerConfig', JSON.stringify(config));
-  }, [config, isDisplayOnly]);
-
-  useEffect(() => {
-    if (!isDisplayOnly) {
-      return;
-    }
-
-    const handleStorage = (event: StorageEvent): void => {
-      if (event.key !== 'teamTimerConfig' || !event.newValue) {
-        return;
-      }
-
-      try {
-        const parsed = JSON.parse(event.newValue) as Partial<TimerConfig>;
-        setConfig({
-          ...DEFAULT_CONFIG,
-          ...parsed,
-          keepScreenAwake: parsed.keepScreenAwake ?? DEFAULT_CONFIG.keepScreenAwake,
-          locations: parsed.locations || [],
-          divisions: parsed.divisions || [],
-          teams: normalizeTeams(parsed.teams),
-          games: parsed.games || [],
-          tournamentStartAt: parsed.tournamentStartAt || '',
-        });
-      } catch {}
-    };
-
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, [isDisplayOnly]);
-
-  useEffect(() => {
-    if (isDisplayOnly) {
-      return;
-    }
-    localStorage.setItem('teamTimerLocationStartTimes', JSON.stringify(locationStartTimes));
-  }, [locationStartTimes, isDisplayOnly]);
-
-  useEffect(() => {
-    if (!isDisplayOnly) {
-      return;
-    }
-
-    const handleStorage = (event: StorageEvent): void => {
-      if (event.key !== 'teamTimerLocationStartTimes' || !event.newValue) {
-        return;
-      }
-      try {
-        setLocationStartTimes(JSON.parse(event.newValue) as LocationStartTimes);
-      } catch {}
-    };
-
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, [isDisplayOnly]);
-
   const handleConfigSave = (newConfig: TimerConfig): void => {
     setConfig(newConfig);
     setView('timer');
@@ -181,200 +70,35 @@ function App() {
     setView('timer');
   };
 
-  const handleOpenSecondScreen = (): void => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('view', 'display');
+  const { hasStartedGames, allStartedGamesPaused } = useGlobalTimerAggregateState(
+    locations,
+    getLocationTimerStorageKey
+  );
+  const {
+    startAllSignal,
+    pauseAllSignal,
+    resumeAllSignal,
+    resetAllSignal,
+    globalControlLabel,
+    handleOpenSecondScreen,
+    handleLocationManualStart,
+    handleAutoStartAll,
+    handleResetAll,
+    handleGlobalControl,
+  } = useAppTimerController({
+    tournamentStartAt: config.tournamentStartAt,
+    locations,
+    selectedLocation,
+    setLocationStartTimes,
+    hasStartedGames,
+    allStartedGamesPaused,
+  });
 
-    if (locations.length > 1) {
-      const optionsText = locations
-        .map((location, index) => `${index + 1}. ${location}`)
-        .join('\n');
-      const choice = window.prompt(
-        `Open second screen for which location?\n\n${optionsText}\n\nType a number, or type "all" for split screen.`,
-        selectedLocation ? String(locations.indexOf(selectedLocation) + 1) : '1'
-      );
-
-      if (!choice) {
-        return;
-      }
-
-      if (choice.trim().toLowerCase() === 'all') {
-        url.searchParams.set('layout', 'split');
-        url.searchParams.delete('location');
-      } else {
-        const indexChoice = Number(choice.trim());
-        const locationChoice = Number.isInteger(indexChoice)
-          ? locations[indexChoice - 1]
-          : locations.find(location => location.toLowerCase() === choice.trim().toLowerCase());
-
-        if (!locationChoice) {
-          alert('Invalid location choice.');
-          return;
-        }
-
-        url.searchParams.set('layout', 'single');
-        url.searchParams.set('location', locationChoice);
-      }
-    } else {
-      url.searchParams.set('layout', 'single');
-      url.searchParams.set('location', locations[0]);
-    }
-
-    window.open(url.toString(), '_blank', 'noopener,noreferrer');
-  };
-
-  const handleLocationManualStart = (location: string): void => {
-    if (config.tournamentStartAt?.trim()) {
-      return;
-    }
-    setLocationStartTimes(prev => ({ ...prev, [location]: Date.now() }));
-  };
-
-  const handleStartAll = (): void => {
-    const now = Date.now();
-    if (!config.tournamentStartAt?.trim()) {
-      const nextStartTimes = locations.reduce<LocationStartTimes>((acc, location) => {
-        acc[location] = now;
-        return acc;
-      }, {});
-      setLocationStartTimes(prev => ({ ...prev, ...nextStartTimes }));
-    }
-    setStartAllSignal(prev => prev + 1);
-  };
-
-  const handlePauseAll = (): void => {
-    setPauseAllSignal(prev => prev + 1);
-  };
-
-  const handleResumeAll = (): void => {
-    setResumeAllSignal(prev => prev + 1);
-  };
-
-  const handleResetAll = (): void => {
-    const confirmed = window.confirm(
-      'This will reset all times and scores for every location. Are you sure you want to continue?'
-    );
-    if (!confirmed) {
-      return;
-    }
-
-    setLocationStartTimes({});
-    setResetAllSignal(prev => prev + 1);
-  };
-
-  useEffect(() => {
-    if (isDisplayOnly) {
-      return;
-    }
-
-    const tournamentStartAt = config.tournamentStartAt?.trim();
-    if (!tournamentStartAt) {
-      autoStartedTournamentAtRef.current = null;
-      return;
-    }
-
-    const startTimestamp = new Date(tournamentStartAt).getTime();
-    if (!Number.isFinite(startTimestamp)) {
-      return;
-    }
-
-    if (autoStartedTournamentAtRef.current === tournamentStartAt) {
-      return;
-    }
-
-    const startAllNow = (): void => {
-      setStartAllSignal(prev => prev + 1);
-      autoStartedTournamentAtRef.current = tournamentStartAt;
-    };
-
-    if (Date.now() >= startTimestamp) {
-      startAllNow();
-      return;
-    }
-
-    const interval = setInterval(() => {
-      if (Date.now() >= startTimestamp && Date.now() <= startTimestamp + 5000) {
-        startAllNow();
-        clearInterval(interval);
-      }
-    }, 500);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [config.tournamentStartAt, isDisplayOnly]);
-
-  useEffect(() => {
-    const detectTimerAggregateState = (): { hasStarted: boolean; allPaused: boolean } => {
-      let activeCount = 0;
-      let pausedCount = 0;
-
-      locations.forEach(location => {
-        const rawState = localStorage.getItem(getLocationTimerStorageKey(location));
-        if (!rawState) {
-          return;
-        }
-
-        try {
-          const parsed = JSON.parse(rawState) as {
-            phase?: string;
-            isRunning?: boolean;
-            isPaused?: boolean;
-            timeRemaining?: number;
-            currentGameIndex?: number;
-            gameResults?: Array<{ startTime: string | null; score: unknown }>;
-          };
-
-          const isActive = Boolean(parsed.isRunning) || Boolean(parsed.isPaused);
-
-          if (isActive) {
-            activeCount += 1;
-            if (Boolean(parsed.isPaused)) {
-              pausedCount += 1;
-            }
-          }
-        } catch {}
-      });
-
-      return {
-        hasStarted: activeCount > 0,
-        allPaused: activeCount > 0 && pausedCount === activeCount,
-      };
-    };
-
-    const updateDetectedState = (): void => {
-      const state = detectTimerAggregateState();
-      setHasStartedGames(state.hasStarted);
-      setAllStartedGamesPaused(state.allPaused);
-    };
-
-    updateDetectedState();
-    const interval = setInterval(() => {
-      updateDetectedState();
-    }, 500);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [locations]);
-
-  const globalControlLabel = !hasStartedGames
-    ? 'Start All'
-    : allStartedGamesPaused
-      ? 'Resume All'
-      : 'Pause All';
-
-  const handleGlobalControl = (): void => {
-    if (!hasStartedGames) {
-      handleStartAll();
-      return;
-    }
-    if (allStartedGamesPaused) {
-      handleResumeAll();
-      return;
-    }
-    handlePauseAll();
-  };
+  useTournamentAutoStart({
+    tournamentStartAt: config.tournamentStartAt,
+    isDisplayOnly,
+    onStartAll: handleAutoStartAll,
+  });
 
   const gameResults = getLocationGameResultsSnapshot(config.games, locations);
   const expectedStartTimes = getExpectedStartTimestamps(
@@ -407,31 +131,6 @@ function App() {
       <main className="app-main">
         {view === 'timer' || isDisplayOnly ? (
           <>
-            {locations.length > 1 && (
-              <div className="location-view-controls">
-                <label>
-                  Location:
-                  <select
-                    value={selectedLocation}
-                    onChange={event => setSelectedLocation(event.target.value)}
-                  >
-                    {locations.map(location => (
-                      <option key={`view-location-${location}`} value={location}>
-                        {location}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <div className="location-layout-buttons">
-                  {!isDisplayOnly && (
-                    <button className="config-button" onClick={handleGlobalControl}>
-                      {globalControlLabel}
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-
             <div className={`location-timer-grid ${isSplitView ? 'split' : 'single'}`}>
               {locations.map(location => {
                 const locationGames = config.games.filter(
@@ -453,6 +152,13 @@ function App() {
                     resumeAllSignal={resumeAllSignal}
                     locationStartTime={locationStartTimes[location]}
                     onManualStart={handleLocationManualStart}
+                    locations={locations}
+                    selectedLocation={selectedLocation}
+                    showLocationSelector={!isSplitView && locations.length > 1}
+                    onSelectLocation={setSelectedLocation}
+                    showGlobalControl={!isDisplayOnly && (isSplitView ? location === locations[0] : true)}
+                    globalControlLabel={globalControlLabel}
+                    onGlobalControl={handleGlobalControl}
                   />
                 );
               })}
