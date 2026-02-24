@@ -7,7 +7,7 @@ import TimerControls from './TimerControls';
 import GameHeader from './GameHeader';
 import { PHASES, Phase, PHASE_LABELS } from '../utils/phases';
 import { formatTimerDuration } from '../utils/timerDisplay';
-import { resolveGamesFromResults } from '../utils/drawResolution';
+import { resolveGamesFromResults } from '../utils/gameSetupResolution';
 
 interface TimerDisplayProps {
   config: TimerConfig;

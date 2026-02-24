@@ -1,7 +1,7 @@
 import React from 'react';
 import { Game, GameResult, Team } from '../types';
 import { formatTeamWithDivision } from '../utils/teams';
-import { resolveGamesFromResults } from '../utils/drawResolution';
+import { resolveGamesFromResults } from '../utils/gameSetupResolution';
 import { formatExpectedStartTime } from '../utils/expectedStartTimes';
 
 interface GameScoresViewProps {

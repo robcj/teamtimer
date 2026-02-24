@@ -1,16 +1,16 @@
 import React from 'react';
 import './Configuration.scss';
 import { GameResult, TimerConfig } from '../types';
-import CollapsibleSection from './draw/CollapsibleSection';
-import DivisionsSection from './draw/DivisionsSection';
-import TeamsSection from './draw/TeamsSection';
-import GamesSection from './draw/GamesSection';
-import ImportExportSection from './draw/ImportExportSection';
-import LocationsSection from './draw/LocationsSection';
-import TournamentStartSection from './draw/TournamentStartSection';
-import useDrawEditor from './draw/useDrawEditor';
+import CollapsibleSection from './gameSetup/CollapsibleSection';
+import DivisionsSection from './gameSetup/DivisionsSection';
+import TeamsSection from './gameSetup/TeamsSection';
+import GamesSection from './gameSetup/GamesSection';
+import ImportExportSection from './gameSetup/ImportExportSection';
+import LocationsSection from './gameSetup/LocationsSection';
+import TournamentStartSection from './gameSetup/TournamentStartSection';
+import useGameSetupEditor from './gameSetup/useGameSetupEditor';
 
-interface DrawProps {
+interface GameSetupProps {
   config: TimerConfig;
   gameResults: GameResult[];
   expectedStartTimes: Array<number | null>;
@@ -18,7 +18,7 @@ interface DrawProps {
   onCancel: () => void;
 }
 
-function Draw({ config, gameResults, expectedStartTimes, onSave, onCancel }: DrawProps) {
+function GameSetup({ config, gameResults, expectedStartTimes, onSave, onCancel }: GameSetupProps) {
   const {
     locations,
     games,
@@ -75,11 +75,11 @@ function Draw({ config, gameResults, expectedStartTimes, onSave, onCancel }: Dra
     handleExportConfig,
     handleImportConfig,
     getConfigForSave,
-  } = useDrawEditor(config, gameResults);
+  } = useGameSetupEditor(config, gameResults);
 
   return (
     <div className="configuration">
-      <h2>Draw</h2>
+      <h2>Game Setup</h2>
 
       <CollapsibleSection
         title="Locations"
@@ -138,7 +138,7 @@ function Draw({ config, gameResults, expectedStartTimes, onSave, onCancel }: Dra
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Game Draw"
+        title="Game Setup"
         isOpen={isGamesOpen}
         onToggle={() => setIsGamesOpen(prev => !prev)}
       >
@@ -190,4 +190,4 @@ function Draw({ config, gameResults, expectedStartTimes, onSave, onCancel }: Dra
   );
 }
 
-export default Draw;
+export default GameSetup;

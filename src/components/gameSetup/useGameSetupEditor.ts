@@ -1,7 +1,7 @@
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { Game, GameResult, Team, TimerConfig } from '../../types';
 import { normalizeTeams, sortTeamsByDivisionThenName } from '../../utils/teams';
-import { resolveGamesFromResults } from '../../utils/drawResolution';
+import { resolveGamesFromResults } from '../../utils/gameSetupResolution';
 import { EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from './types';
 import {
   buildExportConfig,
@@ -10,7 +10,7 @@ import {
   parseImportedConfig,
 } from './utils';
 
-interface UseDrawEditorResult {
+interface UseGameSetupEditorResult {
   editableConfig: TimerConfig;
   locations: string[];
   tournamentStartAt: string;
@@ -70,7 +70,10 @@ interface UseDrawEditorResult {
   getConfigForSave: () => TimerConfig;
 }
 
-function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawEditorResult {
+function useGameSetupEditor(
+  config: TimerConfig,
+  gameResults: GameResult[]
+): UseGameSetupEditorResult {
   const [editableConfig, setEditableConfig] = useState<TimerConfig>(config);
   const [locations, setLocations] = useState<string[]>(config.locations || []);
   const [tournamentStartAt, setTournamentStartAt] = useState<string>(
@@ -391,4 +394,4 @@ function useDrawEditor(config: TimerConfig, gameResults: GameResult[]): UseDrawE
   };
 }
 
-export default useDrawEditor;
+export default useGameSetupEditor;

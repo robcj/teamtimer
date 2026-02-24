@@ -4,7 +4,7 @@ import TimerDisplay from './components/TimerDisplay';
 import Configuration from './components/Configuration';
 import GameScoresView from './components/GameScoresView';
 import AppHeader from './components/AppHeader';
-import Draw from './components/Draw';
+import GameSetup from './components/GameSetup';
 import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
   getLocationTimerStorageKey,
@@ -61,12 +61,12 @@ function App() {
     setView('timer');
   };
 
-  const handleDrawSave = (newConfig: TimerConfig): void => {
+  const handleGameSetupSave = (newConfig: TimerConfig): void => {
     setConfig(newConfig);
     setView('timer');
   };
 
-  const handleDrawCancel = (): void => {
+  const handleGameSetupCancel = (): void => {
     setView('timer');
   };
 
@@ -116,7 +116,7 @@ function App() {
           view={view}
           competitionName={config.competitionName}
           onOpenScores={() => setView('scores')}
-          onOpenDraw={() => setView('draw')}
+          onOpenGameSetup={() => setView('gameSetup')}
           onOpenConfig={() => setView('config')}
           onViewTimer={() => setView('timer')}
           canToggleLayout={locations.length > 1}
@@ -166,13 +166,13 @@ function App() {
               })}
             </div>
           </>
-        ) : view === 'draw' ? (
-          <Draw
+        ) : view === 'gameSetup' ? (
+          <GameSetup
             config={config}
             gameResults={gameResults}
             expectedStartTimes={expectedStartTimes}
-            onSave={handleDrawSave}
-            onCancel={handleDrawCancel}
+            onSave={handleGameSetupSave}
+            onCancel={handleGameSetupCancel}
           />
         ) : view === 'scores' ? (
           <GameScoresView

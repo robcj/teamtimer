@@ -5,7 +5,7 @@ interface AppHeaderProps {
   view: ViewType;
   competitionName?: string;
   onOpenScores: () => void;
-  onOpenDraw: () => void;
+  onOpenGameSetup: () => void;
   onOpenConfig: () => void;
   onViewTimer: () => void;
   onOpenSecondScreen?: () => void;
@@ -20,7 +20,7 @@ function AppHeader({
   view,
   competitionName,
   onOpenScores,
-  onOpenDraw,
+  onOpenGameSetup,
   onOpenConfig,
   onViewTimer,
   onOpenSecondScreen,
@@ -67,11 +67,11 @@ function AppHeader({
           <button
             onClick={event => {
               closeMenu(event);
-              onOpenDraw();
+              onOpenGameSetup();
             }}
-            className={`header-menu-item ${view === 'draw' ? 'active' : ''}`}
+            className={`header-menu-item ${view === 'gameSetup' ? 'active' : ''}`}
           >
-            Draw
+            GameSetup
           </button>
           <button
             onClick={event => {
@@ -82,27 +82,28 @@ function AppHeader({
           >
             Configuration
           </button>
-          {canToggleLayout && onSetSingleLayout && onSetSplitLayout && (
-            <>
-              <button
-                onClick={event => {
-                  closeMenu(event);
-                  onSetSingleLayout();
-                }}
-                className={`header-menu-item ${!isSplitLayout ? 'active' : ''}`}
-              >
-                Single
-              </button>
-              <button
-                onClick={event => {
-                  closeMenu(event);
-                  onSetSplitLayout();
-                }}
-                className={`header-menu-item ${isSplitLayout ? 'active' : ''}`}
-              >
-                Split
-              </button>
-            </>
+          {canToggleLayout && onSetSingleLayout && isSplitLayout && (
+            <button
+              onClick={event => {
+                closeMenu(event);
+                onSetSingleLayout();
+              }}
+              className={`header-menu-item ${!isSplitLayout ? 'active' : ''}`}
+            >
+              Single Scoreboard
+            </button>
+          )}
+
+          {canToggleLayout && onSetSplitLayout && !isSplitLayout && (
+            <button
+              onClick={event => {
+                closeMenu(event);
+                onSetSplitLayout();
+              }}
+              className={`header-menu-item ${isSplitLayout ? 'active' : ''}`}
+            >
+              Split Scoreboard
+            </button>
           )}
           {onOpenSecondScreen && (
             <button
