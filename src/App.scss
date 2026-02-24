@@ -131,6 +131,7 @@
   min-height: 0;
   display: grid;
   gap: 10px;
+  overflow: hidden;
 
   &.single {
     grid-template-columns: 1fr;
@@ -146,6 +147,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: hidden;
 }
 
 .location-hidden {
