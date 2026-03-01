@@ -793,6 +793,25 @@
   overflow-y: auto;
 }
 
+.grouping-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.grouping-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: $text-secondary;
+
+  input[type='checkbox'] {
+    accent-color: $brand-primary;
+  }
+}
+
 .scores-empty {
   color: $text-muted;
   text-align: center;
@@ -849,6 +868,12 @@
       border-right: none;
     }
   }
+}
+
+.table-group-row td {
+  font-weight: 700;
+  color: $brand-primary;
+  background: $scores-header-bg;
 }
 
 .scores-game-number {
@@ -916,7 +941,6 @@
   .next-game-result {
     font-size: 1rem;
   }
-
 }
 
 @media (max-height: 600px) {

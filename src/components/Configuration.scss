@@ -215,6 +215,25 @@
   overflow-x: auto;
 }
 
+.grouping-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.grouping-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: $text-secondary;
+
+  input[type='checkbox'] {
+    accent-color: $brand-primary;
+  }
+}
+
 .game-number {
   font-weight: bold;
   color: $brand-primary;
@@ -235,6 +254,12 @@
 .games-table th:last-child,
 .games-table td:last-child {
   min-width: 170px;
+}
+
+.table-group-row td {
+  font-weight: 700;
+  color: $brand-primary;
+  background: rgba($brand-primary, 0.08);
 }
 
 .move-btn {
@@ -356,6 +381,10 @@
   .game-controls {
     justify-content: flex-end;
     flex-wrap: wrap;
+  }
+
+  .grouping-controls {
+    justify-content: flex-start;
   }
 
   .games-table th,

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Game, Team } from '../../types';
-import { formatTeamWithDivision } from '../../utils/teams';
+import { formatTeamWithDivision, getTeamDivision } from '../../utils/teams';
 import { EMPTY_SLOT_LABEL, EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from './types';
 import { formatExpectedStartTime } from '../../utils/expectedStartTimes';
 
@@ -63,6 +63,10 @@ function GamesSection({
   onMoveGameDown,
   onRemoveGame,
 }: GamesSectionProps) {
+  const [groupByLocation, setGroupByLocation] = useState<boolean>(false);
+  const [groupByDivision, setGroupByDivision] = useState<boolean>(false);
+  const hasGrouping = groupByLocation || groupByDivision;
+
   const hasRequiredLocation = !requireLocationSelection || Boolean(selectedLocation);
   const isEmptySlotSelection =
     selectedTeam1 === EMPTY_SLOT_OPTION_VALUE && selectedTeam2 === EMPTY_SLOT_OPTION_VALUE;
@@ -104,6 +108,48 @@ function GamesSection({
     }
     return locations[0] || 'Unassigned';
   };
+
+  const divisionLabel = (game: Game): string => {
+    const team1Division = getTeamDivision(teams, game.team1);
+    const team2Division = getTeamDivision(teams, game.team2);
+    if (team1Division && team2Division) {
+      return team1Division === team2Division ? team1Division : `${team1Division} / ${team2Division}`;
+    }
+    return team1Division ?? team2Division ?? 'Unassigned';
+  };
+
+  const groupedRows = useMemo(() => {
+    const rows = resolvedGames.map((game, index) => ({
+      game,
+      index,
+      location: locationLabel(games[index]),
+      division: divisionLabel(game),
+    }));
+
+    if (!hasGrouping) {
+      return [{ label: 'All Games', rows }];
+    }
+
+    const groups = new Map<string, typeof rows>();
+    rows.forEach(row => {
+      const labels: string[] = [];
+      if (groupByLocation) {
+        labels.push(`Location: ${row.location}`);
+      }
+      if (groupByDivision) {
+        labels.push(`Division: ${row.division}`);
+      }
+      const key = labels.join(' • ');
+      const existingRows = groups.get(key) || [];
+      existingRows.push(row);
+      groups.set(key, existingRows);
+    });
+
+    return Array.from(groups.entries()).map(([label, grouped]) => ({
+      label,
+      rows: grouped,
+    }));
+  }, [resolvedGames, games, hasGrouping, groupByLocation, groupByDivision, teams, locations]);
 
   return (
     <>
@@ -199,6 +245,24 @@ function GamesSection({
       </div>
 
       <div className="games-list">
+        <div className="grouping-controls">
+          <label className="grouping-option">
+            <input
+              type="checkbox"
+              checked={groupByLocation}
+              onChange={event => setGroupByLocation(event.target.checked)}
+            />
+            Group by Location
+          </label>
+          <label className="grouping-option">
+            <input
+              type="checkbox"
+              checked={groupByDivision}
+              onChange={event => setGroupByDivision(event.target.checked)}
+            />
+            Group by Division
+          </label>
+        </div>
         <table className="scores-table games-table">
           <thead>
             <tr>
@@ -211,39 +275,48 @@ function GamesSection({
             </tr>
           </thead>
           <tbody>
-            {resolvedGames.map((game, index) => (
-              <tr key={index}>
-                <td className="scores-game-number">{index + 1}</td>
-                <td>
-                  <strong className="game-location">{locationLabel(games[index])}</strong>
-                </td>
-                <td className="game-teams">{formatTeamWithDivision(teams, game.team1)}</td>
-                <td className="game-teams">{formatTeamWithDivision(teams, game.team2)}</td>
-                <td className="scores-time-cell">
-                  {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
-                </td>
-                <td>
-                  <div className="game-controls">
-                    <button
-                      onClick={() => onMoveGameUp(index)}
-                      disabled={index === 0}
-                      className="move-btn"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      onClick={() => onMoveGameDown(index)}
-                      disabled={index === games.length - 1}
-                      className="move-btn"
-                    >
-                      ↓
-                    </button>
-                    <button onClick={() => onRemoveGame(index)} className="remove-btn">
-                      Remove
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            {groupedRows.map(group => (
+              <React.Fragment key={group.label}>
+                {hasGrouping && (
+                  <tr className="table-group-row">
+                    <td colSpan={6}>{group.label}</td>
+                  </tr>
+                )}
+                {group.rows.map(({ game, index, location }) => (
+                  <tr key={index}>
+                    <td className="scores-game-number">{index + 1}</td>
+                    <td>
+                      <strong className="game-location">{location}</strong>
+                    </td>
+                    <td className="game-teams">{formatTeamWithDivision(teams, game.team1)}</td>
+                    <td className="game-teams">{formatTeamWithDivision(teams, game.team2)}</td>
+                    <td className="scores-time-cell">
+                      {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
+                    </td>
+                    <td>
+                      <div className="game-controls">
+                        <button
+                          onClick={() => onMoveGameUp(index)}
+                          disabled={index === 0}
+                          className="move-btn"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          onClick={() => onMoveGameDown(index)}
+                          disabled={index === games.length - 1}
+                          className="move-btn"
+                        >
+                          ↓
+                        </button>
+                        <button onClick={() => onRemoveGame(index)} className="remove-btn">
+                          Remove
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
