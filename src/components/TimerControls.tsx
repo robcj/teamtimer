@@ -73,8 +73,8 @@ function TimerControls({
         <div className="last-game-summary" aria-live="polite">
           <span className="last-game-label">Last game:</span>{' '}
           <span className="last-game-result">
-            {previousGame?.game.team1} <b>{previousGame?.score?.team1 ?? '—'}</b> -{' '}
-            <b>{previousGame?.score?.team2 ?? '—'}</b> {previousGame?.game.team2}
+            {previousGame?.game?.team1} <b>{previousGame?.score?.team1 ?? '—'}</b> -{' '}
+            <b>{previousGame?.score?.team2 ?? '—'}</b> {previousGame?.game?.team2}
           </span>
         </div>
         <div className="next-game-summary" aria-live="polite">

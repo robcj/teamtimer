@@ -15,7 +15,7 @@ export const DEFAULT_CONFIG: TimerConfig = {
   leftTeamLabel: 'White',
   rightTeamLabel: 'Black',
   tournamentStartAt: '',
-  competitionName: '',
+  competitionName: 'Tournament',
 };
 
 export const hydrateConfig = (parsed?: Partial<TimerConfig>): TimerConfig => {

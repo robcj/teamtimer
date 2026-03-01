@@ -110,6 +110,7 @@ function GameScoresView({
               <thead>
                 <tr>
                   <th>Game</th>
+                  <th>Location</th>
                   <th>Expected Start</th>
                   <th>Start Time</th>
                   <th>{leftTeamLabel}</th>
@@ -121,6 +122,7 @@ function GameScoresView({
               <tbody>
                 {resolvedGames.map((game, index) => {
                   const result = results[index];
+                  const location = game.location?.trim() || '—';
                   const startTime = result?.startTime ?? '—';
                   const hasScore = Boolean(result?.score);
                   const team1Score = result?.score?.team1 ?? '—';
@@ -131,6 +133,7 @@ function GameScoresView({
                   return (
                     <tr key={`${game.team1}-${game.team2}-${index}`}>
                       <td className="scores-game-number">{index + 1}</td>
+                      <td>{location}</td>
                       <td className="scores-time-cell">
                         {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
                       </td>

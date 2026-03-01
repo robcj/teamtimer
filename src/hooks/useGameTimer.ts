@@ -24,6 +24,7 @@ interface UseGameTimerResult {
 }
 
 interface UseGameTimerOptions {
+  selectedLocation?: string;
   readOnlyMirror?: boolean;
   storageKey?: string;
   externalStartSignal?: number;
@@ -37,6 +38,7 @@ export const useGameTimer = (
   options: UseGameTimerOptions = {}
 ): UseGameTimerResult => {
   const {
+    selectedLocation,
     readOnlyMirror = false,
     storageKey = 'teamTimerState',
     externalStartSignal = 0,
@@ -434,7 +436,7 @@ export const useGameTimer = (
 
   const handleResetTimer = (): void => {
     const confirmed = window.confirm(
-      'This will reset all times and scores. Are you sure you want to continue?'
+      `This will reset all times and scores for ${selectedLocation || 'this location'}. Are you sure you want to continue?`
     );
     if (!confirmed) {
       return;

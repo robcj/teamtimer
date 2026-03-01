@@ -199,39 +199,54 @@ function GamesSection({
       </div>
 
       <div className="games-list">
-        {resolvedGames.map((game, index) => (
-          <div key={index} className="game-item">
-            <span className="game-number">Game {index + 1}:</span>
-            <span className="game-teams">
-              {formatTeamWithDivision(teams, game.team1)} vs{' '}
-              {formatTeamWithDivision(teams, game.team2)}
-              <strong className="game-location"> @ {locationLabel(games[index])}</strong>
-              <span className="game-expected-start">
-                {' '}
-                (Expected: {formatExpectedStartTime(expectedStartTimes[index] ?? null)})
-              </span>
-            </span>
-            <div className="game-controls">
-              <button
-                onClick={() => onMoveGameUp(index)}
-                disabled={index === 0}
-                className="move-btn"
-              >
-                ↑
-              </button>
-              <button
-                onClick={() => onMoveGameDown(index)}
-                disabled={index === games.length - 1}
-                className="move-btn"
-              >
-                ↓
-              </button>
-              <button onClick={() => onRemoveGame(index)} className="remove-btn">
-                Remove
-              </button>
-            </div>
-          </div>
-        ))}
+        <table className="scores-table games-table">
+          <thead>
+            <tr>
+              <th>Game</th>
+              <th>Location</th>
+              <th>Team 1</th>
+              <th>Team 2</th>
+              <th>Expected Start</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resolvedGames.map((game, index) => (
+              <tr key={index}>
+                <td className="scores-game-number">{index + 1}</td>
+                <td>
+                  <strong className="game-location">{locationLabel(games[index])}</strong>
+                </td>
+                <td className="game-teams">{formatTeamWithDivision(teams, game.team1)}</td>
+                <td className="game-teams">{formatTeamWithDivision(teams, game.team2)}</td>
+                <td className="scores-time-cell">
+                  {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
+                </td>
+                <td>
+                  <div className="game-controls">
+                    <button
+                      onClick={() => onMoveGameUp(index)}
+                      disabled={index === 0}
+                      className="move-btn"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => onMoveGameDown(index)}
+                      disabled={index === games.length - 1}
+                      className="move-btn"
+                    >
+                      ↓
+                    </button>
+                    <button onClick={() => onRemoveGame(index)} className="remove-btn">
+                      Remove
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </>
   );

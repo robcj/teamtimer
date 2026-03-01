@@ -74,6 +74,25 @@ function useGameSetupEditor(
   config: TimerConfig,
   gameResults: GameResult[]
 ): UseGameSetupEditorResult {
+  const clearPersistedDataForImport = (): void => {
+    const timerStateKeyPrefix = 'teamTimerState:';
+    const keysToRemove: string[] = [];
+
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key) {
+        continue;
+      }
+      if (key.startsWith(timerStateKeyPrefix)) {
+        keysToRemove.push(key);
+      }
+    }
+
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    localStorage.removeItem('teamTimerLocationStartTimes');
+    localStorage.removeItem('teamTimerConfig');
+  };
+
   const [editableConfig, setEditableConfig] = useState<TimerConfig>(config);
   const [locations, setLocations] = useState<string[]>(config.locations || []);
   const [tournamentStartAt, setTournamentStartAt] = useState<string>(
@@ -309,6 +328,7 @@ function useGameSetupEditor(
           const result = e.target?.result;
           if (typeof result === 'string') {
             const importedConfig = parseImportedConfig(JSON.parse(result) as TimerConfig);
+            clearPersistedDataForImport();
             setEditableConfig(importedConfig);
             setLocations(importedConfig.locations || []);
             setTournamentStartAt(importedConfig.tournamentStartAt || '');

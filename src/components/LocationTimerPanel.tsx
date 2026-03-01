@@ -64,6 +64,7 @@ function LocationTimerPanel({
     setScores,
     handleResetTimer,
   } = useGameTimer(locationConfig, {
+    selectedLocation,
     readOnlyMirror,
     storageKey: getLocationTimerStorageKey(location),
     externalStartSignal: startAllSignal,

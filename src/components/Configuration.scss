@@ -211,23 +211,8 @@
 }
 
 .games-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.game-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 15px;
-  background: $panel-bg;
-  border-radius: $radius-md;
-  transition: background 0.3s ease;
-
-  &:hover {
-    background: $surface-hover;
-  }
+  margin-top: 8px;
+  overflow-x: auto;
 }
 
 .game-number {
@@ -237,13 +222,19 @@
 }
 
 .game-teams {
-  flex: 1;
-  font-size: 1.1rem;
+  font-size: 1rem;
+  min-width: 280px;
 }
 
 .game-controls {
   display: flex;
   gap: 8px;
+  justify-content: flex-end;
+}
+
+.games-table th:last-child,
+.games-table td:last-child {
+  min-width: 170px;
 }
 
 .move-btn {
@@ -364,6 +355,12 @@
 
   .game-controls {
     justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .games-table th,
+  .games-table td {
+    white-space: nowrap;
   }
 
   .config-actions {

@@ -96,7 +96,7 @@ function GameSetup({ config, gameResults, expectedStartTimes, onSave, onCancel }
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Tournament Start"
+        title="Auto-Start Time"
         isOpen={isTournamentStartOpen}
         onToggle={() => setIsTournamentStartOpen(prev => !prev)}
       >
@@ -138,7 +138,7 @@ function GameSetup({ config, gameResults, expectedStartTimes, onSave, onCancel }
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Game Setup"
+        title="Game Schedule"
         isOpen={isGamesOpen}
         onToggle={() => setIsGamesOpen(prev => !prev)}
       >

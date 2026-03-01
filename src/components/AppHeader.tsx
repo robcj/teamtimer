@@ -13,6 +13,7 @@ interface AppHeaderProps {
   onGlobalControl?: () => void;
   onOpenSecondScreen?: () => void;
   onResetAll?: () => void;
+  onClearAllData?: () => void;
   canToggleLayout?: boolean;
   isSplitLayout?: boolean;
   onSetSingleLayout?: () => void;
@@ -31,6 +32,7 @@ function AppHeader({
   onGlobalControl,
   onOpenSecondScreen,
   onResetAll,
+  onClearAllData,
   canToggleLayout = false,
   isSplitLayout = false,
   onSetSingleLayout,
@@ -147,6 +149,17 @@ function AppHeader({
                 className="header-menu-item"
               >
                 Reset All
+              </button>
+            )}
+            {onClearAllData && (
+              <button
+                onClick={event => {
+                  closeMenu(event);
+                  onClearAllData();
+                }}
+                className="header-menu-item"
+              >
+                Clear All Data
               </button>
             )}
           </div>

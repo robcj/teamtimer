@@ -21,6 +21,7 @@ import { useSyncedLocationStartTimes } from './hooks/useSyncedLocationStartTimes
 import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
 import { useGlobalTimerAggregateState } from './hooks/useGlobalTimerAggregateState';
 import { useAppTimerController } from './hooks/useAppTimerController';
+import { DEFAULT_CONFIG } from './app/defaultConfig';
 
 function App() {
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -71,6 +72,21 @@ function App() {
   };
 
   const handleGameSetupCancel = (): void => {
+    setView('timer');
+  };
+
+  const handleClearAllData = (): void => {
+    const confirmed = window.confirm(
+      'Clear all saved game and configuration data. This cannot be undone.\n' +
+        'It is recommended that you export your configuration and game data before proceeding. Are you sure you want to continue?'
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    localStorage.clear();
+    setConfig(DEFAULT_CONFIG);
+    setLocationStartTimes({});
     setView('timer');
   };
 
@@ -198,6 +214,7 @@ function App() {
           onSetSplitLayout={() => setTimerLayout('split')}
           onOpenSecondScreen={handleOpenSecondScreen}
           onResetAll={handleResetAll}
+          onClearAllData={handleClearAllData}
         />
       )}
 
