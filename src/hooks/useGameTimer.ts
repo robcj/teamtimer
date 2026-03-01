@@ -65,8 +65,6 @@ export const useGameTimer = (
   });
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const autoStartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const autoStartIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastExternalStartSignalRef = useRef<number>(externalStartSignal);
   const lastExternalResetSignalRef = useRef<number>(externalResetSignal);
   const lastExternalPauseSignalRef = useRef<number>(externalPauseSignal);
@@ -273,99 +271,6 @@ export const useGameTimer = (
     if (readOnlyMirror) {
       return;
     }
-    if (config.games.length === 0) {
-      return;
-    }
-
-    const tournamentStartAt = config.tournamentStartAt?.trim();
-    if (!tournamentStartAt) {
-      return;
-    }
-
-    const startTimestamp = new Date(tournamentStartAt).getTime();
-    if (!Number.isFinite(startTimestamp)) {
-      return;
-    }
-
-    const hasStartedAnyGame = gameResults.some(result => result.startTime || result.score);
-    if (hasStartedAnyGame || currentGameIndex !== 0) {
-      return;
-    }
-
-    const startCountdown = (secondsRemaining: number): void => {
-      setPhase('countdown');
-      setTimeRemaining(Math.max(1, secondsRemaining));
-      setIsRunning(true);
-      setIsPaused(false);
-    };
-
-    const tick = (): boolean => {
-      const now = Date.now();
-      const countdownStartTimestamp = startTimestamp - config.countdownToStart * 1000;
-
-      if (now >= startTimestamp) {
-        const elapsedSeconds = Math.floor((now - startTimestamp) / 1000);
-        const firstHalfRemaining = Math.max(config.firstHalfDuration - elapsedSeconds, 0);
-
-        if (firstHalfRemaining > 0) {
-          setPhase('firstHalf');
-          setTimeRemaining(firstHalfRemaining);
-          setIsRunning(true);
-          setIsPaused(false);
-        }
-        return true;
-      }
-
-      if (now >= countdownStartTimestamp) {
-        const secondsUntilStart = Math.ceil((startTimestamp - now) / 1000);
-        startCountdown(secondsUntilStart);
-        return true;
-      }
-
-      return false;
-    };
-
-    if (autoStartIntervalRef.current) {
-      clearInterval(autoStartIntervalRef.current);
-      autoStartIntervalRef.current = null;
-    }
-
-    if (tick()) {
-      return;
-    }
-
-    autoStartIntervalRef.current = setInterval(() => {
-      if (tick() && autoStartIntervalRef.current) {
-        clearInterval(autoStartIntervalRef.current);
-        autoStartIntervalRef.current = null;
-      }
-    }, 500);
-
-    return () => {
-      if (autoStartTimeoutRef.current) {
-        clearTimeout(autoStartTimeoutRef.current);
-        autoStartTimeoutRef.current = null;
-      }
-      if (autoStartIntervalRef.current) {
-        clearInterval(autoStartIntervalRef.current);
-        autoStartIntervalRef.current = null;
-      }
-    };
-  }, [
-    config.tournamentStartAt,
-    config.countdownToStart,
-    config.firstHalfDuration,
-    config.games.length,
-    readOnlyMirror,
-    phase,
-    currentGameIndex,
-    gameResults,
-  ]);
-
-  useEffect(() => {
-    if (readOnlyMirror) {
-      return;
-    }
     if (isRunning && !isPaused) {
       timerIntervalRef.current = setInterval(() => {
         setTimeRemaining(prev => {
@@ -383,14 +288,6 @@ export const useGameTimer = (
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
-      }
-      if (autoStartTimeoutRef.current) {
-        clearTimeout(autoStartTimeoutRef.current);
-        autoStartTimeoutRef.current = null;
-      }
-      if (autoStartIntervalRef.current) {
-        clearInterval(autoStartIntervalRef.current);
-        autoStartIntervalRef.current = null;
       }
     };
   }, [isRunning, isPaused, readOnlyMirror]);

@@ -12,6 +12,10 @@ import { resolveGamesFromResults } from '../utils/gameSetupResolution';
 interface TimerDisplayProps {
   config: TimerConfig;
   displayOnly?: boolean;
+  showLocationSelector?: boolean;
+  locations?: string[];
+  selectedLocation?: string;
+  onSelectLocation?: (location: string) => void;
   onManualStart?: () => void;
   expectedStartTimes?: Array<number | null>;
   currentGameIndex: number;
@@ -32,6 +36,10 @@ interface TimerDisplayProps {
 function TimerDisplay({
   config,
   displayOnly = false,
+  showLocationSelector = false,
+  locations = [],
+  selectedLocation = '',
+  onSelectLocation,
   onManualStart,
   expectedStartTimes = [],
   currentGameIndex,
@@ -160,6 +168,10 @@ function TimerDisplay({
           game={currentGame}
           currentIndex={currentGameIndex}
           totalGames={config.games.length}
+          showLocationSelector={showLocationSelector}
+          locations={locations}
+          selectedLocation={selectedLocation}
+          onSelectLocation={onSelectLocation}
           startTime={gameResults[currentGameIndex]?.startTime ?? null}
           expectedStartTime={expectedStartTimes[currentGameIndex] ?? null}
         />

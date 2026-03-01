@@ -9,8 +9,6 @@ interface LocationTimerPanelProps {
   locations: string[];
   selectedLocation: string;
   showLocationSelector: boolean;
-  showGlobalControl: boolean;
-  globalControlLabel: string;
   config: TimerConfig;
   games: Game[];
   readOnlyMirror: boolean;
@@ -23,7 +21,6 @@ interface LocationTimerPanelProps {
   locationStartTime?: number;
   onManualStart: (location: string) => void;
   onSelectLocation: (location: string) => void;
-  onGlobalControl: () => void;
 }
 
 export const getLocationTimerStorageKey = (location: string): string =>
@@ -34,8 +31,6 @@ function LocationTimerPanel({
   locations,
   selectedLocation,
   showLocationSelector,
-  showGlobalControl,
-  globalControlLabel,
   config,
   games,
   readOnlyMirror,
@@ -48,7 +43,6 @@ function LocationTimerPanel({
   locationStartTime,
   onManualStart,
   onSelectLocation,
-  onGlobalControl,
 }: LocationTimerPanelProps) {
   const locationConfig: TimerConfig = {
     ...config,
@@ -87,33 +81,18 @@ function LocationTimerPanel({
 
   return (
     <section className={`location-timer-panel ${hidden ? 'location-hidden' : ''}`}>
-      <div className="location-panel-header">
-        {showLocationSelector ? (
-          <label className="location-panel-selector">
-            Location:
-            <select
-              value={selectedLocation}
-              onChange={event => onSelectLocation(event.target.value)}
-            >
-              {locations.map(nextLocation => (
-                <option key={`view-location-${nextLocation}`} value={nextLocation}>
-                  {nextLocation}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : (
+      {!showLocationSelector && (
+        <div className="location-panel-header">
           <div className="location-panel-title">{location}</div>
-        )}
-        {showGlobalControl && (
-          <button className="config-button" onClick={onGlobalControl}>
-            {globalControlLabel}
-          </button>
-        )}
-      </div>
+        </div>
+      )}
       <TimerDisplay
         config={locationConfig}
         displayOnly={displayOnly}
+        showLocationSelector={showLocationSelector}
+        locations={locations}
+        selectedLocation={selectedLocation}
+        onSelectLocation={onSelectLocation}
         onManualStart={() => onManualStart(location)}
         expectedStartTimes={expectedStartTimes}
         currentGameIndex={currentGameIndex}

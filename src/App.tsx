@@ -9,9 +9,13 @@ import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
   getLocationTimerStorageKey,
 } from './components/LocationTimerPanel';
-import { TimerConfig, ViewType } from './types';
+import { GameResult, TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
-import { getExpectedStartTimestamps, LocationStartTimes } from './utils/expectedStartTimes';
+import {
+  formatExpectedStartTime,
+  getExpectedStartTimestamps,
+  LocationStartTimes,
+} from './utils/expectedStartTimes';
 import { useSyncedConfig } from './hooks/useSyncedConfig';
 import { useSyncedLocationStartTimes } from './hooks/useSyncedLocationStartTimes';
 import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
@@ -107,6 +111,72 @@ function App() {
     locations,
     locationStartTimes
   );
+
+  const headerStartTimeText = useMemo(() => {
+    if (isDisplayOnly || config.games.length === 0) {
+      return '';
+    }
+
+    const activeLocation = selectedLocation || defaultLocation;
+    const locationGameIndexes = config.games
+      .map((game, index) => ({ game, index }))
+      .filter(({ game }) => getGameLocation(game.location) === activeLocation)
+      .map(({ index }) => index);
+
+    if (locationGameIndexes.length === 0) {
+      return '';
+    }
+
+    const rawState = localStorage.getItem(getLocationTimerStorageKey(activeLocation));
+    let localGameIndex = 0;
+    let gameResultsForLocation: GameResult[] = [];
+
+    if (rawState) {
+      try {
+        const parsed = JSON.parse(rawState) as {
+          currentGameIndex?: number;
+          gameResults?: GameResult[];
+        };
+        if (typeof parsed.currentGameIndex === 'number') {
+          localGameIndex = parsed.currentGameIndex;
+        }
+        if (Array.isArray(parsed.gameResults)) {
+          gameResultsForLocation = parsed.gameResults;
+        }
+      } catch {}
+    }
+
+    const clampedLocalGameIndex = Math.min(
+      Math.max(localGameIndex, 0),
+      Math.max(locationGameIndexes.length - 1, 0)
+    );
+    const globalGameIndex = locationGameIndexes[clampedLocalGameIndex];
+    const startTime = gameResultsForLocation[clampedLocalGameIndex]?.startTime ?? null;
+
+    if (startTime) {
+      return `Started: ${startTime}`;
+    }
+
+    const expectedStartTime = expectedStartTimes[globalGameIndex] ?? null;
+    if (!expectedStartTime) {
+      return '';
+    }
+
+    return `Start: ${formatExpectedStartTime(expectedStartTime)}`;
+  }, [
+    isDisplayOnly,
+    config.games,
+    selectedLocation,
+    defaultLocation,
+    expectedStartTimes,
+    locations,
+    startAllSignal,
+    pauseAllSignal,
+    resumeAllSignal,
+    resetAllSignal,
+  ]);
+
+  const headerStatusText = headerStartTimeText;
   const isSplitView = timerLayout === 'split' && locations.length > 1;
 
   return (
@@ -115,10 +185,13 @@ function App() {
         <AppHeader
           view={view}
           competitionName={config.competitionName}
+          globalControlLabel={globalControlLabel}
+          headerStatusText={headerStatusText}
           onOpenScores={() => setView('scores')}
           onOpenGameSetup={() => setView('gameSetup')}
           onOpenConfig={() => setView('config')}
           onViewTimer={() => setView('timer')}
+          onGlobalControl={handleGlobalControl}
           canToggleLayout={locations.length > 1}
           isSplitLayout={isSplitView}
           onSetSingleLayout={() => setTimerLayout('single')}
@@ -156,11 +229,6 @@ function App() {
                     selectedLocation={selectedLocation}
                     showLocationSelector={!isSplitView && locations.length > 1}
                     onSelectLocation={setSelectedLocation}
-                    showGlobalControl={
-                      !isDisplayOnly && (isSplitView ? location === locations[0] : true)
-                    }
-                    globalControlLabel={globalControlLabel}
-                    onGlobalControl={handleGlobalControl}
                   />
                 );
               })}

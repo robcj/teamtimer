@@ -39,19 +39,18 @@ export const useTournamentAutoStart = ({
     };
 
     if (Date.now() >= startTimestamp) {
-      startAllNow();
       return;
     }
 
-    const interval = setInterval(() => {
-      if (Date.now() >= startTimestamp && Date.now() <= startTimestamp + 5000) {
+    const timeoutDelay = Math.max(startTimestamp - Date.now(), 0);
+    const timeout = window.setTimeout(() => {
+      if (autoStartedTournamentAtRef.current !== trimmedTournamentStartAt) {
         startAllNow();
-        clearInterval(interval);
       }
-    }, 500);
+    }, timeoutDelay);
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(timeout);
     };
   }, [tournamentStartAt, isDisplayOnly, onStartAll]);
 };

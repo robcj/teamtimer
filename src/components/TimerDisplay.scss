@@ -11,6 +11,7 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  container-type: size;
 }
 
 .location-timer-grid {
@@ -33,6 +34,7 @@
 
     .timer-container {
       margin: clamp(2px, 0.5vh, 6px) 0;
+      flex: 1 1 0;
     }
 
     .phase-label {
@@ -41,13 +43,14 @@
     }
 
     .timer {
-      font-size: clamp(1.8rem, 8vh, 4.6rem);
+      font-size: clamp(2rem, 22cqh, 10rem);
       line-height: 1;
     }
 
     .score-display {
       gap: clamp(4px, 0.8vw, 8px);
       margin: clamp(3px, 0.6vh, 8px) 0;
+      flex: 1.55 1 0;
     }
 
     .score-team {
@@ -61,7 +64,7 @@
     }
 
     .team-name {
-      font-size: clamp(0.72rem, 1.3vh, 1.02rem);
+      font-size: clamp(0.85rem, 4cqh, 2rem);
     }
 
     .score-row {
@@ -69,8 +72,8 @@
     }
 
     .score-value {
-      font-size: clamp(1.5rem, 7.2vh, 4rem);
-      min-width: clamp(42px, 6vw, 84px);
+      font-size: clamp(2rem, 20cqh, 8rem);
+      min-width: clamp(54px, 10cqi, 110px);
     }
 
     .score-btn {
@@ -116,11 +119,11 @@
     }
 
     .timer {
-      font-size: clamp(3.2rem, 22vh, 14rem);
+      font-size: clamp(3.2rem, 20vh, 14rem);
     }
 
     .score-value {
-      font-size: clamp(3rem, 21vh, 13rem);
+      font-size: clamp(3rem, 20vh, 15rem);
       min-width: clamp(90px, 12vw, 160px);
     }
 
@@ -150,6 +153,11 @@
   }
 }
 
+.game-info-location-selector {
+  grid-column: 1;
+  justify-self: start;
+}
+
 .game-start-meta {
   grid-column: 3;
   justify-self: end;
@@ -161,7 +169,11 @@
 .timer-container {
   text-align: center;
   margin: clamp(8px, 1.5vh, 15px) 0;
-  flex-shrink: 0;
+  flex: 0.9 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .phase-label {
@@ -179,7 +191,8 @@
   margin: clamp(8px, 1.5vh, 15px) 0;
   background: $panel-bg;
   border-radius: $radius-lg;
-  flex-shrink: 0;
+  flex: 1.4 1 0;
+  min-height: 0;
 }
 
 .score-team {
@@ -187,11 +200,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: clamp(2px, 0.5vh, 6px);
   padding: clamp(8px, 1.5vh, 15px);
   background: $white;
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
+  min-height: 0;
 }
 
 .left-team {
@@ -627,10 +642,6 @@
 }
 
 @media (max-width: 900px) {
-  .score-display {
-    flex-direction: column;
-  }
-
   .controls,
   .game-navigation {
     flex-wrap: wrap;
@@ -675,6 +686,52 @@
   .compact-actions-menu,
   .compact-nav-menu {
     display: block;
+  }
+}
+
+@container (max-aspect-ratio: 999 / 1000) {
+  .score-display {
+    flex-direction: column;
+    gap: clamp(6px, 2cqi, 12px);
+    flex: 1.65 1 0;
+  }
+
+  .score-team {
+    padding: clamp(8px, 2.2cqi, 14px);
+  }
+
+  .left-team {
+    border-left: 4px solid $border-light;
+    border-right: none;
+  }
+
+  .right-team {
+    border-left: 4px solid $text-primary;
+    border-right: none;
+  }
+
+  .team-color-label {
+    font-size: clamp(0.62rem, 2.2cqi, 0.88rem);
+  }
+
+  .team-name {
+    font-size: clamp(1.08rem, 4.2cqh, 1.85rem);
+    line-height: 1.08;
+  }
+
+  .score-row {
+    gap: clamp(8px, 3cqi, 18px);
+  }
+
+  .score-value {
+    font-size: clamp(2.5rem, 14cqh, 8rem);
+    min-width: clamp(78px, 18cqi, 152px);
+  }
+
+  .score-btn {
+    width: clamp(32px, 9cqi, 50px);
+    height: clamp(32px, 9cqi, 50px);
+    font-size: clamp(1rem, 4cqi, 1.7rem);
   }
 }
 
@@ -821,9 +878,6 @@
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
-  .score-display {
-    flex-direction: column;
-  }
 }
 
 @media (max-width: 768px) {
@@ -832,7 +886,6 @@
   }
 
   .score-display {
-    flex-direction: column;
     margin: 8px 0;
   }
 
@@ -864,11 +917,6 @@
     font-size: 1rem;
   }
 
-  .left-team,
-  .right-team {
-    border-left: 3px solid #667eea;
-    border-right: none;
-  }
 }
 
 @media (max-height: 600px) {
