@@ -3,7 +3,7 @@ import './App.scss';
 import TimerDisplay from './components/TimerDisplay';
 import Results from './components/Results';
 import AppHeader from './components/AppHeader';
-import Setup from './components/GameSetup';
+import Setup from './components/Setup';
 import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
   getLocationTimerStorageKey,

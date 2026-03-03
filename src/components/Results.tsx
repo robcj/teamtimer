@@ -180,7 +180,6 @@ function Results({
                 <tr>
                   <th>Game</th>
                   <th>Location</th>
-                  <th>Expected Start</th>
                   <th>Start Time</th>
                   <th>{leftTeamLabel}</th>
                   <th>Score</th>
@@ -209,9 +208,10 @@ function Results({
                           <td className="scores-game-number">{index + 1}</td>
                           <td>{location}</td>
                           <td className="scores-time-cell">
-                            {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
+                            {result?.startTime
+                              ? startTime
+                              : formatExpectedStartTime(expectedStartTimes[index] ?? null)}
                           </td>
-                          <td className="scores-time-cell">{startTime}</td>
                           <td className={team1Wins ? 'scores-winner' : ''}>
                             <strong>{formatTeamWithDivision(teams, game.team1)}</strong>
                           </td>

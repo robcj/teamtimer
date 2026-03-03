@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import './Configuration.scss';
 import { GameResult, TimerConfig } from '../types';
 import { secondsToMinutesAndSeconds, minutesAndSecondsToSeconds } from '../utils/time';
 import CollapsibleSection from './gameSetup/CollapsibleSection';
@@ -10,6 +9,7 @@ import ImportExportSection from './gameSetup/ImportExportSection';
 import LocationsSection from './gameSetup/LocationsSection';
 import TournamentStartSection from './gameSetup/TournamentStartSection';
 import useGameSetupEditor from './gameSetup/useGameSetupEditor';
+import './Setup.scss';
 
 interface SetupProps {
   config: TimerConfig;
@@ -82,17 +82,29 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
   const [isTimerDurationsOpen, setIsTimerDurationsOpen] = useState<boolean>(false);
   const [isTeamLabelsOpen, setIsTeamLabelsOpen] = useState<boolean>(false);
   const [isImportExportOpen, setIsImportExportOpen] = useState<boolean>(false);
-  const [competitionName, setCompetitionName] = useState<string>(editableConfig.competitionName || '');
+  const [competitionName, setCompetitionName] = useState<string>(
+    editableConfig.competitionName || ''
+  );
   const [countdownToStart, setCountdownToStart] = useState<number>(editableConfig.countdownToStart);
-  const [firstHalfDuration, setFirstHalfDuration] = useState<number>(editableConfig.firstHalfDuration);
+  const [firstHalfDuration, setFirstHalfDuration] = useState<number>(
+    editableConfig.firstHalfDuration
+  );
   const [halfTimeDuration, setHalfTimeDuration] = useState<number>(editableConfig.halfTimeDuration);
-  const [secondHalfDuration, setSecondHalfDuration] = useState<number>(editableConfig.secondHalfDuration);
+  const [secondHalfDuration, setSecondHalfDuration] = useState<number>(
+    editableConfig.secondHalfDuration
+  );
   const [betweenGamesDuration, setBetweenGamesDuration] = useState<number>(
     editableConfig.betweenGamesDuration
   );
-  const [keepScreenAwake, setKeepScreenAwake] = useState<boolean>(editableConfig.keepScreenAwake ?? true);
-  const [leftTeamLabel, setLeftTeamLabel] = useState<string>(editableConfig.leftTeamLabel || 'White');
-  const [rightTeamLabel, setRightTeamLabel] = useState<string>(editableConfig.rightTeamLabel || 'Black');
+  const [keepScreenAwake, setKeepScreenAwake] = useState<boolean>(
+    editableConfig.keepScreenAwake ?? true
+  );
+  const [leftTeamLabel, setLeftTeamLabel] = useState<string>(
+    editableConfig.leftTeamLabel || 'White'
+  );
+  const [rightTeamLabel, setRightTeamLabel] = useState<string>(
+    editableConfig.rightTeamLabel || 'Black'
+  );
 
   useEffect(() => {
     setCompetitionName(editableConfig.competitionName || '');

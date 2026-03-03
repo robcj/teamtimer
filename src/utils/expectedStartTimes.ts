@@ -53,7 +53,8 @@ export const getExpectedStartTimestamps = (
 };
 
 export const formatExpectedStartTime = (timestamp: number | null): string => {
-  if (!timestamp) {
+  // If timestamp is null or undefined, or in the past, return a placeholder
+  if (!timestamp || timestamp < Date.now()) {
     return '—';
   }
   return formatClockTime(new Date(timestamp));
