@@ -142,10 +142,11 @@ function TimerDisplay({
 
   const hasCompletedCurrentGame = Boolean(gameResults[currentGameIndex]?.score);
   const lastPlayedGameIndex =
-    (phase === PHASES.BETWEEN_GAMES || phase === PHASES.IDLE) && hasCompletedCurrentGame
+    phase === PHASES.BETWEEN_GAMES && hasCompletedCurrentGame
       ? currentGameIndex
       : currentGameIndex - 1;
-  const nextGameIndex = lastPlayedGameIndex + 1;
+  const nextGameIndex = phase === PHASES.IDLE ? currentGameIndex : currentGameIndex + 1;
+
   const previousGame =
     lastPlayedGameIndex >= 0
       ? {
