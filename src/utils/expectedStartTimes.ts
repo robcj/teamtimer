@@ -1,5 +1,5 @@
 import { Game, Location, TimerConfig } from '../types';
-import { formatClockTime } from './time';
+import { formatClockTime, formatDateTime } from './time';
 
 export type LocationStartTimes = Record<string, number>;
 
@@ -58,4 +58,21 @@ export const formatExpectedStartTime = (timestamp: number | null): string => {
     return '—';
   }
   return formatClockTime(new Date(timestamp));
+};
+
+export const formatExpectedStartDateTime = (timestamp: number | null): string => {
+  // If timestamp is null or undefined, or in the past, return a placeholder
+  if (!timestamp || timestamp < Date.now()) {
+    return '—';
+  }
+  // Only show date if it's not today
+  const now = new Date();
+  const isToday =
+    timestamp >= new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime() &&
+    timestamp < new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime();
+
+  if (isToday) {
+    return formatClockTime(new Date(timestamp));
+  }
+  return formatDateTime(new Date(timestamp));
 };

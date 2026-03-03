@@ -9,7 +9,11 @@ import LocationTimerPanel, {
 } from './components/LocationTimerPanel';
 import { GameResult, TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
-import { formatExpectedStartTime, getExpectedStartTimestamps } from './utils/expectedStartTimes';
+import {
+  formatExpectedStartDateTime,
+  formatExpectedStartTime,
+  getExpectedStartTimestamps,
+} from './utils/expectedStartTimes';
 import { useSyncedConfig } from './hooks/useSyncedConfig';
 import { useSyncedLocationStartTimes } from './hooks/useSyncedLocationStartTimes';
 import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
@@ -169,7 +173,7 @@ function App() {
       return '';
     }
 
-    return `Start: ${formatExpectedStartTime(expectedStartTime)}`;
+    return `Start: ${formatExpectedStartDateTime(expectedStartTime)}`;
   }, [
     isDisplayOnly,
     config.games,
