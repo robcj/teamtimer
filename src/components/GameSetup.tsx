@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './Configuration.scss';
 import { GameResult, TimerConfig } from '../types';
 import { secondsToMinutesAndSeconds, minutesAndSecondsToSeconds } from '../utils/time';
 import CollapsibleSection from './gameSchedule/CollapsibleSection';
@@ -9,7 +10,6 @@ import ImportExportSection from './gameSchedule/ImportExportSection';
 import LocationsSection from './gameSchedule/LocationsSection';
 import TournamentStartSection from './gameSchedule/TournamentStartSection';
 import useGameSetupEditor from './gameSchedule/useGameSetupEditor';
-import './Setup.scss';
 
 interface SetupProps {
   config: TimerConfig;

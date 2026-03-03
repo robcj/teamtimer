@@ -1,11 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { Game, GameResult, Team } from '../types';
+import { Division, Game, GameResult, Location, Team } from '../types';
 import { formatTeamWithDivision, getTeamDivision } from '../utils/teams';
 import { resolveGamesFromResults } from '../utils/gameSetupResolution';
 import { formatExpectedStartTime } from '../utils/expectedStartTimes';
 
 interface ResultsProps {
   games: Game[];
+  locations: Location[];
+  divisions: Division[];
   teams: Team[];
   results: GameResult[];
   expectedStartTimes: Array<number | null>;
@@ -16,6 +18,8 @@ interface ResultsProps {
 
 function Results({
   games,
+  locations,
+  divisions,
   teams,
   results,
   expectedStartTimes,
@@ -27,10 +31,14 @@ function Results({
   const [groupByLocation, setGroupByLocation] = useState<boolean>(false);
   const [groupByDivision, setGroupByDivision] = useState<boolean>(false);
   const hasGrouping = groupByLocation || groupByDivision;
+  const locationById = useMemo(
+    () => new Map(locations.map(location => [location.id, location.name] as const)),
+    [locations]
+  );
 
   const getDivisionLabel = (game: Game): string => {
-    const team1Division = getTeamDivision(teams, game.team1);
-    const team2Division = getTeamDivision(teams, game.team2);
+    const team1Division = getTeamDivision(teams, divisions, game.team1);
+    const team2Division = getTeamDivision(teams, divisions, game.team2);
     if (team1Division && team2Division) {
       return team1Division === team2Division
         ? team1Division
@@ -46,7 +54,10 @@ function Results({
         game,
         index,
         result,
-        location: game.location?.trim() || '—',
+        location:
+          game.locationId?.trim() && game.locationId.trim()
+            ? locationById.get(game.locationId) || game.locationId
+            : '—',
         division: getDivisionLabel(game),
       };
     });
@@ -74,7 +85,16 @@ function Results({
       label,
       rows: grouped,
     }));
-  }, [resolvedGames, results, hasGrouping, groupByLocation, groupByDivision, teams]);
+  }, [
+    resolvedGames,
+    results,
+    hasGrouping,
+    groupByLocation,
+    groupByDivision,
+    teams,
+    divisions,
+    locationById,
+  ]);
 
   const exportCsv = (): void => {
     const header = [
@@ -96,9 +116,9 @@ function Results({
         String(index + 1),
         formatExpectedStartTime(expectedStartTimes[index] ?? null),
         startTime,
-        formatTeamWithDivision(teams, game.team1),
+        formatTeamWithDivision(teams, divisions, game.team1),
         String(leftScore),
-        formatTeamWithDivision(teams, game.team2),
+        formatTeamWithDivision(teams, divisions, game.team2),
         String(rightScore),
       ];
     });
@@ -213,11 +233,11 @@ function Results({
                               : formatExpectedStartTime(expectedStartTimes[index] ?? null)}
                           </td>
                           <td className={team1Wins ? 'scores-winner' : ''}>
-                            <strong>{formatTeamWithDivision(teams, game.team1)}</strong>
+                            <strong>{formatTeamWithDivision(teams, divisions, game.team1)}</strong>
                           </td>
                           <td className="scores-score-cell">{team1Score}</td>
                           <td className={team2Wins ? 'scores-winner' : ''}>
-                            <strong>{formatTeamWithDivision(teams, game.team2)}</strong>
+                            <strong>{formatTeamWithDivision(teams, divisions, game.team2)}</strong>
                           </td>
                           <td className="scores-score-cell">{team2Score}</td>
                         </tr>

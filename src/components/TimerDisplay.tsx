@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, Dispatch, SetStateAction } from 'react';
 import './TimerDisplay.scss';
-import { TimerConfig, Scores, GameResult } from '../types';
+import { TimerConfig, Scores, GameResult, Location } from '../types';
 import ScoreBoard from './ScoreBoard';
 import TimerHeader from './TimerHeader';
 import TimerControls from './TimerControls';
@@ -8,16 +8,16 @@ import GameHeader from './GameHeader';
 import { PHASES, Phase, PHASE_LABELS } from '../utils/phases';
 import { formatTimerDuration } from '../utils/timerDisplay';
 import { resolveGamesFromResults } from '../utils/gameSetupResolution';
+import { getTeamName } from '../utils/teams';
 
 interface TimerDisplayProps {
   config: TimerConfig;
   displayOnly?: boolean;
   showLocationSelector?: boolean;
-  locations?: string[];
+  locations?: Location[];
   selectedLocation?: string;
   onSelectLocation?: (location: string) => void;
   onManualStart?: () => void;
-  expectedStartTimes?: Array<number | null>;
   currentGameIndex: number;
   gameResults: GameResult[];
   phase: string;
@@ -41,7 +41,6 @@ function TimerDisplay({
   selectedLocation = '',
   onSelectLocation,
   onManualStart,
-  expectedStartTimes = [],
   currentGameIndex,
   gameResults,
   phase,
@@ -158,22 +157,28 @@ function TimerDisplay({
     nextGameIndex >= 0 && nextGameIndex < resolvedGames.length
       ? {
           game: resolvedGames[nextGameIndex],
+          team1Name: getTeamName(config.teams, resolvedGames[nextGameIndex].team1),
+          team2Name: getTeamName(config.teams, resolvedGames[nextGameIndex].team2),
         }
       : null;
+
+  const previousGameSummary = previousGame && {
+    game: previousGame.game,
+    score: previousGame.score,
+    team1Name: getTeamName(config.teams, previousGame.game.team1),
+    team2Name: getTeamName(config.teams, previousGame.game.team2),
+  };
 
   return (
     <div className="timer-display">
       {currentGame && (
         <GameHeader
-          game={currentGame}
           currentIndex={currentGameIndex}
           totalGames={config.games.length}
           showLocationSelector={showLocationSelector}
           locations={locations}
           selectedLocation={selectedLocation}
           onSelectLocation={onSelectLocation}
-          startTime={gameResults[currentGameIndex]?.startTime ?? null}
-          expectedStartTime={expectedStartTimes[currentGameIndex] ?? null}
         />
       )}
 
@@ -199,7 +204,7 @@ function TimerDisplay({
           <TimerControls
             isRunning={isRunning}
             isPaused={isPaused}
-            previousGame={previousGame}
+            previousGame={previousGameSummary}
             nextGame={nextGame}
             onStart={handleStart}
             onPause={handlePause}

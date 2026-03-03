@@ -26,7 +26,9 @@ function ScoreBoard({
     <div className="score-display">
       <div className="score-team left-team">
         <div className="team-color-label">{config.leftTeamLabel}</div>
-        <div className="team-name">{formatTeamWithDivision(config.teams, game.team1)}</div>
+        <div className="team-name">
+          {formatTeamWithDivision(config.teams, config.divisions, game.team1)}
+        </div>
         <div className="score-row">
           {!readOnly && (
             <button
@@ -52,7 +54,9 @@ function ScoreBoard({
 
       <div className="score-team right-team">
         <div className="team-color-label">{config.rightTeamLabel}</div>
-        <div className="team-name">{formatTeamWithDivision(config.teams, game.team2)}</div>
+        <div className="team-name">
+          {formatTeamWithDivision(config.teams, config.divisions, game.team2)}
+        </div>
         <div className="score-row">
           {!readOnly && (
             <button

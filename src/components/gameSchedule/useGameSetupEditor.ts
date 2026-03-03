@@ -1,8 +1,8 @@
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
-import { Game, GameResult, Team, TimerConfig } from '../../types';
-import { normalizeTeams, sortTeamsByDivisionThenName } from '../../utils/teams';
+import { Division, Game, GameResult, Location, Team, TimerConfig } from '../../types';
+import { createEntityId, sortTeamsByDivisionThenName } from '../../utils/teams';
 import { resolveGamesFromResults } from '../../utils/gameSetupResolution';
-import { EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from './types';
+import { EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from '../../types';
 import {
   buildExportConfig,
   buildSpecialPlaceholder,
@@ -12,14 +12,14 @@ import {
 
 interface UseGameSetupEditorResult {
   editableConfig: TimerConfig;
-  locations: string[];
+  locations: Location[];
   tournamentStartAt: string;
-  divisions: string[];
+  divisions: Division[];
   teams: Team[];
   games: Game[];
   isLocationsOpen: boolean;
   isTournamentStartOpen: boolean;
-  sortedDivisions: string[];
+  sortedDivisions: Division[];
   sortedTeams: Team[];
   resolvedGames: Game[];
   priorGameNumbers: number[];
@@ -55,9 +55,9 @@ interface UseGameSetupEditorResult {
   setSpecialGameNumber1: Dispatch<SetStateAction<number>>;
   setSpecialGameNumber2: Dispatch<SetStateAction<number>>;
   handleAddLocation: () => void;
-  handleRemoveLocation: (locationToRemove: string) => void;
+  handleRemoveLocation: (locationIdToRemove: string) => void;
   handleAddDivision: () => void;
-  handleRemoveDivision: (divisionToRemove: string) => void;
+  handleRemoveDivision: (divisionIdToRemove: string) => void;
   handleAddTeam: () => void;
   handleRemoveTeam: (teamToRemove: Team) => void;
   handleAddGame: () => void;
@@ -94,12 +94,12 @@ function useGameSetupEditor(
   };
 
   const [editableConfig, setEditableConfig] = useState<TimerConfig>(config);
-  const [locations, setLocations] = useState<string[]>(config.locations || []);
+  const [locations, setLocations] = useState<Location[]>(config.locations || []);
   const [tournamentStartAt, setTournamentStartAt] = useState<string>(
     config.tournamentStartAt || ''
   );
-  const [divisions, setDivisions] = useState<string[]>(config.divisions || []);
-  const [teams, setTeams] = useState<Team[]>(normalizeTeams(config.teams));
+  const [divisions, setDivisions] = useState<Division[]>(config.divisions || []);
+  const [teams, setTeams] = useState<Team[]>(config.teams || []);
   const [games, setGames] = useState<Game[]>(config.games || []);
   const [isLocationsOpen, setIsLocationsOpen] = useState<boolean>(false);
   const [isTournamentStartOpen, setIsTournamentStartOpen] = useState<boolean>(false);
@@ -119,9 +119,9 @@ function useGameSetupEditor(
   const [specialGameNumber2, setSpecialGameNumber2] = useState<number>(1);
 
   const sortedDivisions = [...divisions].sort((left, right) =>
-    left.localeCompare(right, undefined, { sensitivity: 'base' })
+    left.name.localeCompare(right.name, undefined, { sensitivity: 'base' })
   );
-  const sortedTeams = sortTeamsByDivisionThenName(teams);
+  const sortedTeams = sortTeamsByDivisionThenName(teams, divisions);
   const resolvedGames = resolveGamesFromResults(games, gameResults);
   const priorGameNumbers = games.map((_, index) => index + 1);
   const hasMultipleLocations = locations.length > 1;
@@ -131,33 +131,38 @@ function useGameSetupEditor(
     if (!locationName) {
       return;
     }
-    if (locations.some(location => location.toLowerCase() === locationName.toLowerCase())) {
+    if (locations.some(location => location.name.toLowerCase() === locationName.toLowerCase())) {
       return;
     }
-    setLocations([...locations, locationName]);
+
+    const addedLocation: Location = {
+      id: createEntityId('loc', locationName),
+      name: locationName,
+    };
+    setLocations([...locations, addedLocation]);
     if (!selectedLocation) {
-      setSelectedLocation(locationName);
+      setSelectedLocation(addedLocation.id);
     }
     setNewLocationName('');
   };
 
-  const handleRemoveLocation = (locationToRemove: string): void => {
-    const remainingLocations = locations.filter(location => location !== locationToRemove);
+  const handleRemoveLocation = (locationIdToRemove: string): void => {
+    const remainingLocations = locations.filter(location => location.id !== locationIdToRemove);
     setLocations(remainingLocations);
     setGames(prevGames =>
       prevGames.map(game => {
-        if (game.location !== locationToRemove) {
+        if (game.locationId !== locationIdToRemove) {
           return game;
         }
         if (remainingLocations.length === 0) {
-          const { location, ...rest } = game;
+          const { locationId, ...rest } = game;
           return rest;
         }
-        return { ...game, location: remainingLocations[0] };
+        return { ...game, locationId: remainingLocations[0].id };
       })
     );
-    if (selectedLocation === locationToRemove) {
-      setSelectedLocation(remainingLocations[0] || '');
+    if (selectedLocation === locationIdToRemove) {
+      setSelectedLocation(remainingLocations[0]?.id || '');
     }
   };
 
@@ -166,33 +171,38 @@ function useGameSetupEditor(
     if (!divisionName) {
       return;
     }
-    if (divisions.some(division => division.toLowerCase() === divisionName.toLowerCase())) {
+    if (divisions.some(division => division.name.toLowerCase() === divisionName.toLowerCase())) {
       return;
     }
-    setDivisions([...divisions, divisionName]);
-    setSelectedDivision(divisionName);
+
+    const addedDivision: Division = {
+      id: createEntityId('div', divisionName),
+      name: divisionName,
+    };
+    setDivisions([...divisions, addedDivision]);
+    setSelectedDivision(addedDivision.id);
     setNewDivisionName('');
   };
 
-  const handleRemoveDivision = (divisionToRemove: string): void => {
-    setDivisions(divisions.filter(division => division !== divisionToRemove));
-    const remainingTeams = teams.filter(team => team.division !== divisionToRemove);
+  const handleRemoveDivision = (divisionIdToRemove: string): void => {
+    setDivisions(divisions.filter(division => division.id !== divisionIdToRemove));
+    const remainingTeams = teams.filter(team => team.divisionId !== divisionIdToRemove);
     setTeams(remainingTeams);
 
-    const removedTeamNames = new Set(
-      teams.filter(team => team.division === divisionToRemove).map(team => team.name)
+    const removedTeamIds = new Set(
+      teams.filter(team => team.divisionId === divisionIdToRemove).map(team => team.id)
     );
     setGames(
-      games.filter(game => !removedTeamNames.has(game.team1) && !removedTeamNames.has(game.team2))
+      games.filter(game => !removedTeamIds.has(game.team1) && !removedTeamIds.has(game.team2))
     );
 
-    if (selectedDivision === divisionToRemove) {
+    if (selectedDivision === divisionIdToRemove) {
       setSelectedDivision('');
     }
-    if (removedTeamNames.has(selectedTeam1)) {
+    if (removedTeamIds.has(selectedTeam1)) {
       setSelectedTeam1('');
     }
-    if (removedTeamNames.has(selectedTeam2)) {
+    if (removedTeamIds.has(selectedTeam2)) {
       setSelectedTeam2('');
     }
   };
@@ -205,25 +215,33 @@ function useGameSetupEditor(
     if (teams.some(team => team.name.toLowerCase() === teamName.toLowerCase())) {
       return;
     }
-    setTeams([...teams, { name: teamName, division: selectedDivision }]);
+
+    setTeams([
+      ...teams,
+      {
+        id: createEntityId('team', teamName),
+        name: teamName,
+        divisionId: selectedDivision,
+      },
+    ]);
     setNewTeamName('');
   };
 
   const handleRemoveTeam = (teamToRemove: Team): void => {
-    setTeams(teams.filter(team => team.name !== teamToRemove.name));
+    setTeams(teams.filter(team => team.id !== teamToRemove.id));
     setGames(
-      games.filter(game => game.team1 !== teamToRemove.name && game.team2 !== teamToRemove.name)
+      games.filter(game => game.team1 !== teamToRemove.id && game.team2 !== teamToRemove.id)
     );
-    if (selectedTeam1 === teamToRemove.name) {
+    if (selectedTeam1 === teamToRemove.id) {
       setSelectedTeam1('');
     }
-    if (selectedTeam2 === teamToRemove.name) {
+    if (selectedTeam2 === teamToRemove.id) {
       setSelectedTeam2('');
     }
   };
 
   const handleAddGame = (): void => {
-    const locationForGame = hasMultipleLocations ? selectedLocation : locations[0] || undefined;
+    const locationForGame = hasMultipleLocations ? selectedLocation : locations[0]?.id || undefined;
     if (hasMultipleLocations && !locationForGame) {
       return;
     }
@@ -237,7 +255,7 @@ function useGameSetupEditor(
         {
           team1: '',
           team2: '',
-          location: locationForGame,
+          locationId: locationForGame,
         },
       ]);
       setSelectedTeam1('');
@@ -251,7 +269,7 @@ function useGameSetupEditor(
         {
           team1: selectedTeam1,
           team2: selectedTeam2,
-          location: locationForGame,
+          locationId: locationForGame,
         },
       ]);
       setSelectedTeam1('');
@@ -263,7 +281,7 @@ function useGameSetupEditor(
     if (games.length === 0) {
       return;
     }
-    const locationForGame = hasMultipleLocations ? selectedLocation : locations[0] || undefined;
+    const locationForGame = hasMultipleLocations ? selectedLocation : locations[0]?.id || undefined;
     if (hasMultipleLocations && !locationForGame) {
       return;
     }
@@ -278,7 +296,7 @@ function useGameSetupEditor(
       {
         team1: participant1,
         team2: participant2,
-        location: locationForGame,
+        locationId: locationForGame,
       },
     ]);
   };
@@ -335,7 +353,7 @@ function useGameSetupEditor(
             setDivisions(importedConfig.divisions);
             setTeams(importedConfig.teams);
             setGames(importedConfig.games);
-            setSelectedLocation((importedConfig.locations || [])[0] || '');
+            setSelectedLocation(importedConfig.locations[0]?.id || '');
             setSelectedDivision('');
             setSelectedTeam1('');
             setSelectedTeam2('');

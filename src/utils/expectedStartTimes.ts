@@ -1,4 +1,4 @@
-import { Game, TimerConfig } from '../types';
+import { Game, Location, TimerConfig } from '../types';
 import { formatClockTime } from './time';
 
 export type LocationStartTimes = Record<string, number>;
@@ -6,7 +6,7 @@ export type LocationStartTimes = Record<string, number>;
 export const getExpectedStartTimestamps = (
   config: TimerConfig,
   games: Game[],
-  locations: string[],
+  locations: Location[],
   locationStartTimes: LocationStartTimes
 ): Array<number | null> => {
   const expectedStartTimes: Array<number | null> = games.map(() => null);
@@ -25,8 +25,8 @@ export const getExpectedStartTimestamps = (
     const gameIndexesForLocation = games
       .map((game, index) => ({ game, index }))
       .filter(({ game }) => {
-        const gameLocation = game.location || locations[0];
-        return gameLocation === location;
+        const gameLocationId = game.locationId || locations[0]?.id;
+        return gameLocationId === location.id;
       })
       .map(({ index }) => index);
 
@@ -36,8 +36,8 @@ export const getExpectedStartTimestamps = (
 
     const locationBaseStart = hasTournamentStart
       ? validTournamentStart
-      : locationStartTimes[location]
-        ? locationStartTimes[location] + config.countdownToStart * 1000
+      : locationStartTimes[location.id]
+        ? locationStartTimes[location.id] + config.countdownToStart * 1000
         : null;
 
     if (!locationBaseStart) {

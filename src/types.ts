@@ -1,12 +1,23 @@
-export interface Game {
-  team1: string;
-  team2: string;
-  location?: string;
+export interface Location {
+  id: string;
+  name: string;
+}
+
+export interface Division {
+  id: string;
+  name: string;
 }
 
 export interface Team {
+  id: string;
   name: string;
-  division: string;
+  divisionId: string;
+}
+
+export interface Game {
+  team1: Team['id'];
+  team2: Team['id'];
+  locationId?: string;
 }
 
 export interface TimerConfig {
@@ -16,8 +27,8 @@ export interface TimerConfig {
   secondHalfDuration: number;
   betweenGamesDuration: number;
   keepScreenAwake: boolean;
-  locations: string[];
-  divisions: string[];
+  locations: Location[];
+  divisions: Division[];
   teams: Team[];
   games: Game[];
   leftTeamLabel: string;
@@ -47,3 +58,9 @@ export interface TimerState {
 }
 
 export type ViewType = 'timer' | 'setup' | 'scores';
+
+export type SpecialOutcome = 'Winner' | 'Loser';
+
+export const EMPTY_SLOT_OPTION_VALUE = '__EMPTY_SLOT__';
+
+export const EMPTY_SLOT_LABEL = 'Empty slot';

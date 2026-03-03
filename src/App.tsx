@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
-import TimerDisplay from './components/TimerDisplay';
 import Results from './components/Results';
 import AppHeader from './components/AppHeader';
 import Setup from './components/Setup';
@@ -10,11 +9,7 @@ import LocationTimerPanel, {
 } from './components/LocationTimerPanel';
 import { GameResult, TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
-import {
-  formatExpectedStartTime,
-  getExpectedStartTimestamps,
-  LocationStartTimes,
-} from './utils/expectedStartTimes';
+import { formatExpectedStartTime, getExpectedStartTimestamps } from './utils/expectedStartTimes';
 import { useSyncedConfig } from './hooks/useSyncedConfig';
 import { useSyncedLocationStartTimes } from './hooks/useSyncedLocationStartTimes';
 import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
@@ -37,24 +32,27 @@ function App() {
 
   useWakeLock(config.keepScreenAwake);
 
-  const locations = config.locations.length > 0 ? config.locations : ['Location 1'];
-  const defaultLocation = locations[0];
+  const locations =
+    config.locations.length > 0
+      ? config.locations
+      : [{ id: 'default-location', name: 'Location 1' }];
+  const defaultLocationId = locations[0].id;
 
-  const getGameLocation = (gameLocation?: string): string => {
-    if (gameLocation && locations.includes(gameLocation)) {
-      return gameLocation;
+  const getGameLocationId = (gameLocationId?: string): string => {
+    if (gameLocationId && locations.some(location => location.id === gameLocationId)) {
+      return gameLocationId;
     }
-    return defaultLocation;
+    return defaultLocationId;
   };
 
   useEffect(() => {
-    if (!selectedLocation || !locations.includes(selectedLocation)) {
-      setSelectedLocation(defaultLocation);
+    if (!selectedLocation || !locations.some(location => location.id === selectedLocation)) {
+      setSelectedLocation(defaultLocationId);
     }
     if (locations.length <= 1 && timerLayout === 'split') {
       setTimerLayout('single');
     }
-  }, [locations, selectedLocation, defaultLocation, timerLayout]);
+  }, [locations, selectedLocation, defaultLocationId, timerLayout]);
 
   const handleSetupSave = (newConfig: TimerConfig): void => {
     setConfig(newConfig);
@@ -81,7 +79,7 @@ function App() {
   };
 
   const { hasStartedGames, allStartedGamesPaused } = useGlobalTimerAggregateState(
-    locations,
+    locations.map(location => location.id),
     getLocationTimerStorageKey
   );
   const {
@@ -97,7 +95,7 @@ function App() {
     handleGlobalControl,
   } = useAppTimerController({
     tournamentStartAt: config.tournamentStartAt,
-    locations,
+    locations: locations.map(location => location.id),
     selectedLocation,
     setLocationStartTimes,
     hasStartedGames,
@@ -110,7 +108,10 @@ function App() {
     onStartAll: handleAutoStartAll,
   });
 
-  const gameResults = getLocationGameResultsSnapshot(config.games, locations);
+  const gameResults = getLocationGameResultsSnapshot(
+    config.games,
+    locations.map(location => location.id)
+  );
   const expectedStartTimes = getExpectedStartTimestamps(
     config,
     config.games,
@@ -123,10 +124,10 @@ function App() {
       return '';
     }
 
-    const activeLocation = selectedLocation || defaultLocation;
+    const activeLocation = selectedLocation || defaultLocationId;
     const locationGameIndexes = config.games
       .map((game, index) => ({ game, index }))
-      .filter(({ game }) => getGameLocation(game.location) === activeLocation)
+      .filter(({ game }) => getGameLocationId(game.locationId) === activeLocation)
       .map(({ index }) => index);
 
     if (locationGameIndexes.length === 0) {
@@ -173,7 +174,7 @@ function App() {
     isDisplayOnly,
     config.games,
     selectedLocation,
-    defaultLocation,
+    defaultLocationId,
     expectedStartTimes,
     locations,
     startAllSignal,
@@ -213,23 +214,24 @@ function App() {
             <div className={`location-timer-grid ${isSplitView ? 'split' : 'single'}`}>
               {locations.map(location => {
                 const locationGames = config.games.filter(
-                  game => getGameLocation(game.location) === location
+                  game => getGameLocationId(game.locationId) === location.id
                 );
 
                 return (
                   <LocationTimerPanel
-                    key={location}
-                    location={location}
+                    key={location.id}
+                    locationId={location.id}
+                    locationName={location.name}
                     config={config}
                     games={locationGames}
                     readOnlyMirror={isDisplayOnly}
                     displayOnly={isDisplayOnly}
-                    hidden={!isSplitView && selectedLocation !== location}
+                    hidden={!isSplitView && selectedLocation !== location.id}
                     startAllSignal={startAllSignal}
                     resetAllSignal={resetAllSignal}
                     pauseAllSignal={pauseAllSignal}
                     resumeAllSignal={resumeAllSignal}
-                    locationStartTime={locationStartTimes[location]}
+                    locationStartTime={locationStartTimes[location.id]}
                     onManualStart={handleLocationManualStart}
                     locations={locations}
                     selectedLocation={selectedLocation}
@@ -251,6 +253,8 @@ function App() {
         ) : view === 'scores' ? (
           <Results
             games={config.games}
+            locations={config.locations}
+            divisions={config.divisions}
             teams={config.teams}
             results={gameResults}
             expectedStartTimes={expectedStartTimes}

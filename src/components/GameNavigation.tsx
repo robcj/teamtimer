@@ -4,6 +4,8 @@ import { Game, Scores } from '../types';
 interface PreviousGameSummary {
   game: Game;
   score: Scores | null;
+  team1Name: string;
+  team2Name: string;
 }
 
 interface GameNavigationProps {
@@ -41,8 +43,8 @@ function GameNavigation({
       <div className="last-game-summary" aria-live="polite">
         <span className="last-game-label">Last game:</span>{' '}
         <span className="last-game-result">
-          {previousGame?.game.team1} <b>{previousGame?.score?.team1 ?? '—'}</b> -{' '}
-          <b>{previousGame?.score?.team2 ?? '—'}</b> {previousGame?.game.team2}
+          {previousGame?.team1Name} <b>{previousGame?.score?.team1 ?? '—'}</b> -{' '}
+          <b>{previousGame?.score?.team2 ?? '—'}</b> {previousGame?.team2Name}
         </span>
       </div>
       {nextGameStartTime && (

@@ -51,7 +51,7 @@ const resolveParticipant = (
 
 export const resolveGamesFromResults = (games: Game[], results: GameResult[]): Game[] =>
   games.map((game, index) => ({
-    location: game.location,
+    locationId: game.locationId,
     team1: resolveParticipant(game.team1, games, results, new Set([index])),
     team2: resolveParticipant(game.team2, games, results, new Set([index])),
   }));
