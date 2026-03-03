@@ -38,6 +38,15 @@
   }
 }
 
+.config-section.collapsed {
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+  padding-bottom: clamp(4px, 0.8vh, 8px);
+}
+
+.config-section.collapsed .config-section-header {
+  margin-bottom: 0;
+}
+
 .config-section-header {
   display: flex;
   align-items: center;

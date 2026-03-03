@@ -9,7 +9,7 @@ interface CollapsibleSectionProps {
 
 function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSectionProps) {
   return (
-    <div className="config-section">
+    <div className={`config-section ${isOpen ? '' : 'collapsed'}`}>
       <div className="config-section-header">
         <h3>{title}</h3>
         <button
@@ -17,6 +17,7 @@ function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSe
           className="section-toggle-btn"
           onClick={onToggle}
           aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
+          aria-expanded={isOpen}
         >
           {isOpen ? '−' : '+'}
         </button>

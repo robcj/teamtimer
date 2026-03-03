@@ -7,8 +7,7 @@ interface AppHeaderProps {
   globalControlLabel?: string;
   headerStatusText?: string;
   onOpenScores: () => void;
-  onOpenGameSetup: () => void;
-  onOpenConfig: () => void;
+  onOpenSetup: () => void;
   onViewTimer: () => void;
   onGlobalControl?: () => void;
   onOpenSecondScreen?: () => void;
@@ -26,8 +25,7 @@ function AppHeader({
   globalControlLabel,
   headerStatusText,
   onOpenScores,
-  onOpenGameSetup,
-  onOpenConfig,
+  onOpenSetup,
   onViewTimer,
   onGlobalControl,
   onOpenSecondScreen,
@@ -86,25 +84,16 @@ function AppHeader({
               }}
               className={`header-menu-item ${view === 'scores' ? 'active' : ''}`}
             >
-              Game Scores
+              Results
             </button>
             <button
               onClick={event => {
                 closeMenu(event);
-                onOpenGameSetup();
+                onOpenSetup();
               }}
-              className={`header-menu-item ${view === 'gameSetup' ? 'active' : ''}`}
+              className={`header-menu-item ${view === 'setup' ? 'active' : ''}`}
             >
-              GameSetup
-            </button>
-            <button
-              onClick={event => {
-                closeMenu(event);
-                onOpenConfig();
-              }}
-              className={`header-menu-item ${view === 'config' ? 'active' : ''}`}
-            >
-              Configuration
+              Setup
             </button>
             {canToggleLayout && onSetSingleLayout && isSplitLayout && (
               <button

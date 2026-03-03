@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import TimerDisplay from './components/TimerDisplay';
-import Configuration from './components/Configuration';
-import GameScoresView from './components/GameScoresView';
+import Results from './components/Results';
 import AppHeader from './components/AppHeader';
-import GameSetup from './components/GameSetup';
+import Setup from './components/GameSetup';
 import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
   getLocationTimerStorageKey,
@@ -57,21 +56,12 @@ function App() {
     }
   }, [locations, selectedLocation, defaultLocation, timerLayout]);
 
-  const handleConfigSave = (newConfig: TimerConfig): void => {
+  const handleSetupSave = (newConfig: TimerConfig): void => {
     setConfig(newConfig);
     setView('timer');
   };
 
-  const handleConfigCancel = (): void => {
-    setView('timer');
-  };
-
-  const handleGameSetupSave = (newConfig: TimerConfig): void => {
-    setConfig(newConfig);
-    setView('timer');
-  };
-
-  const handleGameSetupCancel = (): void => {
+  const handleSetupCancel = (): void => {
     setView('timer');
   };
 
@@ -204,8 +194,7 @@ function App() {
           globalControlLabel={globalControlLabel}
           headerStatusText={headerStatusText}
           onOpenScores={() => setView('scores')}
-          onOpenGameSetup={() => setView('gameSetup')}
-          onOpenConfig={() => setView('config')}
+          onOpenSetup={() => setView('setup')}
           onViewTimer={() => setView('timer')}
           onGlobalControl={handleGlobalControl}
           canToggleLayout={locations.length > 1}
@@ -251,16 +240,16 @@ function App() {
               })}
             </div>
           </>
-        ) : view === 'gameSetup' ? (
-          <GameSetup
+        ) : view === 'setup' ? (
+          <Setup
             config={config}
             gameResults={gameResults}
             expectedStartTimes={expectedStartTimes}
-            onSave={handleGameSetupSave}
-            onCancel={handleGameSetupCancel}
+            onSave={handleSetupSave}
+            onCancel={handleSetupCancel}
           />
         ) : view === 'scores' ? (
-          <GameScoresView
+          <Results
             games={config.games}
             teams={config.teams}
             results={gameResults}
@@ -269,9 +258,7 @@ function App() {
             rightTeamLabel={config.rightTeamLabel}
             competitionName={config.competitionName || ''}
           />
-        ) : (
-          <Configuration config={config} onSave={handleConfigSave} onCancel={handleConfigCancel} />
-        )}
+        ) : null}
       </main>
     </div>
   );

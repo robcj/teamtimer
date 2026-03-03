@@ -4,7 +4,7 @@ import { formatTeamWithDivision, getTeamDivision } from '../utils/teams';
 import { resolveGamesFromResults } from '../utils/gameSetupResolution';
 import { formatExpectedStartTime } from '../utils/expectedStartTimes';
 
-interface GameScoresViewProps {
+interface ResultsProps {
   games: Game[];
   teams: Team[];
   results: GameResult[];
@@ -14,7 +14,7 @@ interface GameScoresViewProps {
   competitionName: string;
 }
 
-function GameScoresView({
+function Results({
   games,
   teams,
   results,
@@ -22,7 +22,7 @@ function GameScoresView({
   leftTeamLabel,
   rightTeamLabel,
   competitionName,
-}: GameScoresViewProps) {
+}: ResultsProps) {
   const resolvedGames = resolveGamesFromResults(games, results);
   const [groupByLocation, setGroupByLocation] = useState<boolean>(false);
   const [groupByDivision, setGroupByDivision] = useState<boolean>(false);
@@ -142,7 +142,7 @@ function GameScoresView({
     <div className="scores-page">
       <div className="scores-panel">
         <div className="scores-header">
-          <h2>Game Scores</h2>
+          <h2>Results</h2>
           <div className="scores-actions">
             <button className="scores-action" onClick={exportCsv} type="button">
               Export CSV
@@ -234,4 +234,4 @@ function GameScoresView({
   );
 }
 
-export default GameScoresView;
+export default Results;
