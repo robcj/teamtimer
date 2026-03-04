@@ -17,17 +17,12 @@ interface UseGameSetupEditorResult {
   divisions: Division[];
   teams: Team[];
   games: Game[];
-  isLocationsOpen: boolean;
-  isTournamentStartOpen: boolean;
   sortedDivisions: Division[];
   sortedTeams: Team[];
   resolvedGames: Game[];
   priorGameNumbers: number[];
   newLocationName: string;
   selectedLocation: string;
-  isDivisionsOpen: boolean;
-  isTeamsOpen: boolean;
-  isGamesOpen: boolean;
   newDivisionName: string;
   selectedDivision: string;
   newTeamName: string;
@@ -37,11 +32,6 @@ interface UseGameSetupEditorResult {
   specialOutcome2: SpecialOutcome;
   specialGameNumber1: number;
   specialGameNumber2: number;
-  setIsDivisionsOpen: Dispatch<SetStateAction<boolean>>;
-  setIsTeamsOpen: Dispatch<SetStateAction<boolean>>;
-  setIsGamesOpen: Dispatch<SetStateAction<boolean>>;
-  setIsLocationsOpen: Dispatch<SetStateAction<boolean>>;
-  setIsTournamentStartOpen: Dispatch<SetStateAction<boolean>>;
   setTournamentStartAt: Dispatch<SetStateAction<string>>;
   setNewLocationName: Dispatch<SetStateAction<string>>;
   setSelectedLocation: Dispatch<SetStateAction<string>>;
@@ -101,11 +91,6 @@ function useGameSetupEditor(
   const [divisions, setDivisions] = useState<Division[]>(config.divisions || []);
   const [teams, setTeams] = useState<Team[]>(config.teams || []);
   const [games, setGames] = useState<Game[]>(config.games || []);
-  const [isLocationsOpen, setIsLocationsOpen] = useState<boolean>(false);
-  const [isTournamentStartOpen, setIsTournamentStartOpen] = useState<boolean>(false);
-  const [isDivisionsOpen, setIsDivisionsOpen] = useState<boolean>(false);
-  const [isTeamsOpen, setIsTeamsOpen] = useState<boolean>(false);
-  const [isGamesOpen, setIsGamesOpen] = useState<boolean>(false);
   const [newLocationName, setNewLocationName] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [newDivisionName, setNewDivisionName] = useState<string>('');
@@ -378,17 +363,12 @@ function useGameSetupEditor(
     divisions,
     teams,
     games,
-    isLocationsOpen,
-    isTournamentStartOpen,
     sortedDivisions,
     sortedTeams,
     resolvedGames,
     priorGameNumbers,
     newLocationName,
     selectedLocation,
-    isDivisionsOpen,
-    isTeamsOpen,
-    isGamesOpen,
     newDivisionName,
     selectedDivision,
     newTeamName,
@@ -398,11 +378,6 @@ function useGameSetupEditor(
     specialOutcome2,
     specialGameNumber1,
     specialGameNumber2,
-    setIsDivisionsOpen,
-    setIsTeamsOpen,
-    setIsGamesOpen,
-    setIsLocationsOpen,
-    setIsTournamentStartOpen,
     setTournamentStartAt,
     setNewLocationName,
     setSelectedLocation,

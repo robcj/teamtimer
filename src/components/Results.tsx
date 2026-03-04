@@ -4,6 +4,8 @@ import { formatTeamWithDivision, getTeamDivision } from '../utils/teams';
 import { resolveGamesFromResults } from '../utils/gameSetupResolution';
 import { formatExpectedStartTime } from '../utils/expectedStartTimes';
 
+import './Results.scss';
+
 interface ResultsProps {
   games: Game[];
   locations: Location[];
@@ -163,6 +165,7 @@ function Results({
       <div className="scores-panel">
         <div className="scores-header">
           <h2>Results</h2>
+          {competitionName && <div className="scores-competition-name">{competitionName}</div>}
           <div className="scores-actions">
             <button className="scores-action" onClick={exportCsv} type="button">
               Export CSV
@@ -173,7 +176,6 @@ function Results({
           </div>
         </div>
         <div className="scores-body">
-          {competitionName && <div className="scores-competition-name">{competitionName}</div>}
           <div className="grouping-controls">
             <label className="grouping-option">
               <input

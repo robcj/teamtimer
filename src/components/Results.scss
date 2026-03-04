@@ -1,0 +1,176 @@
+@use '../styles/tokens' as *;
+
+.scores-page {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.scores-panel {
+  background: $white;
+  border-radius: 16px;
+  width: min(1000px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.scores-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: $scores-header-bg;
+  border-bottom: 1px solid $border-scores-header;
+
+  h2 {
+    margin: 0;
+    color: $brand-scores;
+  }
+}
+
+.scores-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scores-action {
+  border: none;
+  background: $scores-action-bg;
+  color: $brand-scores;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: $scores-action-hover;
+  }
+}
+
+.scores-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+}
+
+.grouping-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.grouping-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: $text-secondary;
+
+  input[type='checkbox'] {
+    accent-color: $brand-primary;
+  }
+}
+
+.scores-empty {
+  color: $text-muted;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.scores-competition-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: $text-primary;
+  text-align: center;
+}
+
+.scores-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  thead {
+    background: $table-header-bg;
+    border-bottom: 2px solid $border-scores;
+  }
+
+  th {
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 700;
+    color: $text-primary;
+    border-right: 1px solid $border-table;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border-table;
+    transition: background-color 150ms ease;
+
+    &:hover {
+      background-color: $table-row-hover;
+    }
+  }
+
+  td {
+    padding: 10px 10px;
+    color: $text-secondary;
+    border-right: 1px solid $border-table;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+.table-group-row td {
+  font-weight: 700;
+  color: $brand-primary;
+  background: $scores-header-bg;
+}
+
+.scores-game-number {
+  font-weight: 600;
+  color: $text-primary;
+  min-width: 80px;
+}
+
+.scores-score-cell {
+  text-align: center;
+  font-weight: 600;
+  color: $text-primary;
+  min-width: 50px;
+}
+
+.scores-time-cell {
+  font-size: 0.9rem;
+  color: $text-muted;
+  min-width: 100px;
+}
+
+.scores-winner {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  background-color: #fef3c7;
+}
+
+@media (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
+  .scores-panel {
+    max-height: 88vh;
+  }
+
+  .scores-header,
+  .scores-body {
+    padding: 10px 12px;
+  }
+}

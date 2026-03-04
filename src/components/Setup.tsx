@@ -25,8 +25,6 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     locations,
     games,
     teams,
-    isLocationsOpen,
-    isTournamentStartOpen,
     sortedDivisions,
     sortedTeams,
     resolvedGames,
@@ -34,9 +32,6 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     newLocationName,
     selectedLocation,
     tournamentStartAt,
-    isDivisionsOpen,
-    isTeamsOpen,
-    isGamesOpen,
     newDivisionName,
     selectedDivision,
     newTeamName,
@@ -46,14 +41,9 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     specialOutcome2,
     specialGameNumber1,
     specialGameNumber2,
-    setIsLocationsOpen,
-    setIsTournamentStartOpen,
     setNewLocationName,
     setSelectedLocation,
     setTournamentStartAt,
-    setIsDivisionsOpen,
-    setIsTeamsOpen,
-    setIsGamesOpen,
     setNewDivisionName,
     setSelectedDivision,
     setNewTeamName,
@@ -78,10 +68,6 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     getConfigForSave,
   } = useGameSetupEditor(config, gameResults);
 
-  const [isCompetitionOpen, setIsCompetitionOpen] = useState<boolean>(false);
-  const [isTimerDurationsOpen, setIsTimerDurationsOpen] = useState<boolean>(false);
-  const [isTeamLabelsOpen, setIsTeamLabelsOpen] = useState<boolean>(false);
-  const [isImportExportOpen, setIsImportExportOpen] = useState<boolean>(false);
   const [competitionName, setCompetitionName] = useState<string>(
     editableConfig.competitionName || ''
   );
@@ -146,11 +132,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     <div className="configuration">
       <h2>Setup</h2>
 
-      <CollapsibleSection
-        title="Competition"
-        isOpen={isCompetitionOpen}
-        onToggle={() => setIsCompetitionOpen(prev => !prev)}
-      >
+      <CollapsibleSection title="Competition">
         <div className="config-group">
           <label>
             Competition Name:
@@ -173,11 +155,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Timer Durations"
-        isOpen={isTimerDurationsOpen}
-        onToggle={() => setIsTimerDurationsOpen(prev => !prev)}
-      >
+      <CollapsibleSection title="Timer Durations">
         <div className="config-group">
           <label>
             Countdown to Start (seconds):
@@ -335,11 +313,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Opposing Team Labels"
-        isOpen={isTeamLabelsOpen}
-        onToggle={() => setIsTeamLabelsOpen(prev => !prev)}
-      >
+      <CollapsibleSection title="Opposing Team Labels">
         <div className="config-group">
           <label>
             Left Team Label:
@@ -363,11 +337,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         </div>
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Locations"
-        isOpen={isLocationsOpen}
-        onToggle={() => setIsLocationsOpen((prev: boolean) => !prev)}
-      >
+      <CollapsibleSection title="Locations">
         <LocationsSection
           locations={locations}
           newLocationName={newLocationName}
@@ -377,22 +347,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         />
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Auto-Start Time"
-        isOpen={isTournamentStartOpen}
-        onToggle={() => setIsTournamentStartOpen((prev: boolean) => !prev)}
-      >
-        <TournamentStartSection
-          tournamentStartAt={tournamentStartAt}
-          onTournamentStartAtChange={setTournamentStartAt}
-        />
-      </CollapsibleSection>
-
-      <CollapsibleSection
-        title="Divisions"
-        isOpen={isDivisionsOpen}
-        onToggle={() => setIsDivisionsOpen((prev: boolean) => !prev)}
-      >
+      <CollapsibleSection title="Divisions">
         <DivisionsSection
           divisions={sortedDivisions}
           newDivisionName={newDivisionName}
@@ -402,11 +357,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         />
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Teams"
-        isOpen={isTeamsOpen}
-        onToggle={() => setIsTeamsOpen((prev: boolean) => !prev)}
-      >
+      <CollapsibleSection title="Teams">
         <TeamsSection
           divisions={sortedDivisions}
           teams={sortedTeams}
@@ -419,11 +370,14 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         />
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Game Schedule"
-        isOpen={isGamesOpen}
-        onToggle={() => setIsGamesOpen((prev: boolean) => !prev)}
-      >
+      <CollapsibleSection title="Auto-Start Time">
+        <TournamentStartSection
+          tournamentStartAt={tournamentStartAt}
+          onTournamentStartAtChange={setTournamentStartAt}
+        />
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Game Schedule">
         <GamesSection
           games={games}
           teams={teams}
@@ -456,11 +410,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         />
       </CollapsibleSection>
 
-      <CollapsibleSection
-        title="Import / Export"
-        isOpen={isImportExportOpen}
-        onToggle={() => setIsImportExportOpen(prev => !prev)}
-      >
+      <CollapsibleSection title="Import / Export">
         <ImportExportSection
           onExportConfig={handleExportConfig}
           onImportConfig={handleImportConfig}
@@ -469,7 +419,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
 
       <div className="config-actions">
         <button onClick={() => onSave(getSetupConfigForSave())} className="save-btn">
-          Save
+          Apply
         </button>
         <button onClick={onCancel} className="cancel-btn">
           Cancel

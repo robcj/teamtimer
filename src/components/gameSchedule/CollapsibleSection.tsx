@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface CollapsibleSectionProps {
   title: string;
-  isOpen: boolean;
-  onToggle: () => void;
+  defaultOpen?: boolean;
   children: React.ReactNode;
 }
 
-function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSectionProps) {
+function CollapsibleSection({ title, defaultOpen = false, children }: CollapsibleSectionProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(defaultOpen);
+
+  const handleToggle = () => {
+    setIsOpen(prev => !prev);
+  };
+
   return (
     <div className={`config-section ${isOpen ? '' : 'collapsed'}`}>
       <div className="config-section-header">
@@ -15,7 +20,7 @@ function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSe
         <button
           type="button"
           className="section-toggle-btn"
-          onClick={onToggle}
+          onClick={handleToggle}
           aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
           aria-expanded={isOpen}
         >
