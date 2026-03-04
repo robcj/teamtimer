@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { GameResult, TimerConfig } from '../types';
-import { secondsToMinutesAndSeconds, minutesAndSecondsToSeconds } from '../utils/time';
+import { GameResult, TimerConfig } from '../../types';
 import CollapsibleSection from './gameSchedule/CollapsibleSection';
+import CompetitionSection from './CompetitionSection';
+import TimerDurationsSection from './TimerDurationsSection';
+import TeamLabelsSection from './TeamLabelsSection';
 import DivisionsSection from './gameSchedule/DivisionsSection';
 import TeamsSection from './gameSchedule/TeamsSection';
 import GamesSection from './gameSchedule/GamesSection';
@@ -133,208 +135,36 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
       <h2>Setup</h2>
 
       <CollapsibleSection title="Competition">
-        <div className="config-group">
-          <label>
-            Competition Name:
-            <input
-              type="text"
-              value={competitionName}
-              onChange={e => setCompetitionName(e.target.value)}
-              placeholder="e.g., Regional Tournament 2026"
-            />
-          </label>
-
-          <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={keepScreenAwake}
-              onChange={e => setKeepScreenAwake(e.target.checked)}
-            />
-            <span>Keep screen awake while using the timer (where supported)</span>
-          </label>
-        </div>
+        <CompetitionSection
+          competitionName={competitionName}
+          keepScreenAwake={keepScreenAwake}
+          onCompetitionNameChange={setCompetitionName}
+          onKeepScreenAwakeChange={setKeepScreenAwake}
+        />
       </CollapsibleSection>
 
       <CollapsibleSection title="Timer Durations">
-        <div className="config-group">
-          <label>
-            Countdown to Start (seconds):
-            <input
-              type="number"
-              value={countdownToStart}
-              onChange={e => setCountdownToStart(Number(e.target.value))}
-              min="0"
-            />
-          </label>
-
-          <label>
-            First Half Duration:
-            <div className="time-input-group">
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(firstHalfDuration).minutes}
-                onChange={e =>
-                  setFirstHalfDuration(
-                    minutesAndSecondsToSeconds(
-                      Number(e.target.value),
-                      secondsToMinutesAndSeconds(firstHalfDuration).seconds
-                    )
-                  )
-                }
-                min="0"
-                placeholder="mins"
-              />
-              <span>:</span>
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(firstHalfDuration).seconds}
-                onChange={e =>
-                  setFirstHalfDuration(
-                    minutesAndSecondsToSeconds(
-                      secondsToMinutesAndSeconds(firstHalfDuration).minutes,
-                      Number(e.target.value)
-                    )
-                  )
-                }
-                min="0"
-                max="59"
-                placeholder="secs"
-              />
-            </div>
-          </label>
-
-          <label>
-            Half Time Duration:
-            <div className="time-input-group">
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(halfTimeDuration).minutes}
-                onChange={e =>
-                  setHalfTimeDuration(
-                    minutesAndSecondsToSeconds(
-                      Number(e.target.value),
-                      secondsToMinutesAndSeconds(halfTimeDuration).seconds
-                    )
-                  )
-                }
-                min="0"
-                placeholder="mins"
-              />
-              <span>:</span>
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(halfTimeDuration).seconds}
-                onChange={e =>
-                  setHalfTimeDuration(
-                    minutesAndSecondsToSeconds(
-                      secondsToMinutesAndSeconds(halfTimeDuration).minutes,
-                      Number(e.target.value)
-                    )
-                  )
-                }
-                min="0"
-                max="59"
-                placeholder="secs"
-              />
-            </div>
-          </label>
-
-          <label>
-            Second Half Duration:
-            <div className="time-input-group">
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(secondHalfDuration).minutes}
-                onChange={e =>
-                  setSecondHalfDuration(
-                    minutesAndSecondsToSeconds(
-                      Number(e.target.value),
-                      secondsToMinutesAndSeconds(secondHalfDuration).seconds
-                    )
-                  )
-                }
-                min="0"
-                placeholder="mins"
-              />
-              <span>:</span>
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(secondHalfDuration).seconds}
-                onChange={e =>
-                  setSecondHalfDuration(
-                    minutesAndSecondsToSeconds(
-                      secondsToMinutesAndSeconds(secondHalfDuration).minutes,
-                      Number(e.target.value)
-                    )
-                  )
-                }
-                min="0"
-                max="59"
-                placeholder="secs"
-              />
-            </div>
-          </label>
-
-          <label>
-            Between Games Duration:
-            <div className="time-input-group">
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(betweenGamesDuration).minutes}
-                onChange={e =>
-                  setBetweenGamesDuration(
-                    minutesAndSecondsToSeconds(
-                      Number(e.target.value),
-                      secondsToMinutesAndSeconds(betweenGamesDuration).seconds
-                    )
-                  )
-                }
-                min="0"
-                placeholder="mins"
-              />
-              <span>:</span>
-              <input
-                type="number"
-                value={secondsToMinutesAndSeconds(betweenGamesDuration).seconds}
-                onChange={e =>
-                  setBetweenGamesDuration(
-                    minutesAndSecondsToSeconds(
-                      secondsToMinutesAndSeconds(betweenGamesDuration).minutes,
-                      Number(e.target.value)
-                    )
-                  )
-                }
-                min="0"
-                max="59"
-                placeholder="secs"
-              />
-            </div>
-          </label>
-        </div>
+        <TimerDurationsSection
+          countdownToStart={countdownToStart}
+          firstHalfDuration={firstHalfDuration}
+          halfTimeDuration={halfTimeDuration}
+          secondHalfDuration={secondHalfDuration}
+          betweenGamesDuration={betweenGamesDuration}
+          onCountdownToStartChange={setCountdownToStart}
+          onFirstHalfDurationChange={setFirstHalfDuration}
+          onHalfTimeDurationChange={setHalfTimeDuration}
+          onSecondHalfDurationChange={setSecondHalfDuration}
+          onBetweenGamesDurationChange={setBetweenGamesDuration}
+        />
       </CollapsibleSection>
 
       <CollapsibleSection title="Opposing Team Labels">
-        <div className="config-group">
-          <label>
-            Left Team Label:
-            <input
-              type="text"
-              value={leftTeamLabel}
-              onChange={e => setLeftTeamLabel(e.target.value)}
-              placeholder="White"
-            />
-          </label>
-
-          <label>
-            Right Team Label:
-            <input
-              type="text"
-              value={rightTeamLabel}
-              onChange={e => setRightTeamLabel(e.target.value)}
-              placeholder="Black"
-            />
-          </label>
-        </div>
+        <TeamLabelsSection
+          leftTeamLabel={leftTeamLabel}
+          rightTeamLabel={rightTeamLabel}
+          onLeftTeamLabelChange={setLeftTeamLabel}
+          onRightTeamLabelChange={setRightTeamLabel}
+        />
       </CollapsibleSection>
 
       <CollapsibleSection title="Locations">

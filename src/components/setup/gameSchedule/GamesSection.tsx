@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { Division, Game, Location, Team } from '../../types';
-import { formatTeamWithDivision, getTeamDivision } from '../../utils/teams';
-import { EMPTY_SLOT_LABEL, EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from '../../types';
-import { formatExpectedStartTime } from '../../utils/expectedStartTimes';
+import { Division, Game, Location, Team } from '../../../types';
+import { formatTeamWithDivision, getTeamDivision } from '../../../utils/teams';
+import { EMPTY_SLOT_LABEL, EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from '../../../types';
+import { formatExpectedStartTime } from '../../../utils/expectedStartTimes';
 
 interface GamesSectionProps {
   games: Game[];
@@ -160,7 +160,16 @@ function GamesSection({
       label,
       rows: grouped,
     }));
-  }, [resolvedGames, games, hasGrouping, groupByLocation, groupByDivision, teams, locations]);
+  }, [
+    resolvedGames,
+    games,
+    hasGrouping,
+    groupByLocation,
+    groupByDivision,
+    teams,
+    locations,
+    divisions,
+  ]);
 
   return (
     <>

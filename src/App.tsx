@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './App.scss';
 import Results from './components/Results';
 import AppHeader from './components/AppHeader';
-import Setup from './components/Setup';
+import Setup from './components/setup/Setup';
 import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
   getLocationTimerStorageKey,

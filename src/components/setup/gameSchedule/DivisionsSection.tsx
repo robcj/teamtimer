@@ -1,5 +1,5 @@
 import React from 'react';
-import { Division } from '../../types';
+import { Division } from '../../../types';
 
 interface DivisionsSectionProps {
   divisions: Division[];

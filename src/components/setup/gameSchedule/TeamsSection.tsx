@@ -1,5 +1,5 @@
 import React from 'react';
-import { Division, Team } from '../../types';
+import { Division, Team } from '../../../types';
 
 interface TeamsSectionProps {
   divisions: Division[];

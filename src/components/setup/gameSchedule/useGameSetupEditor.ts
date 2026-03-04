@@ -1,8 +1,8 @@
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
-import { Division, Game, GameResult, Location, Team, TimerConfig } from '../../types';
-import { createEntityId, sortTeamsByDivisionThenName } from '../../utils/teams';
-import { resolveGamesFromResults } from '../../utils/gameSetupResolution';
-import { EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from '../../types';
+import { Division, Game, GameResult, Location, Team, TimerConfig } from '../../../types';
+import { createEntityId, sortTeamsByDivisionThenName } from '../../../utils/teams';
+import { resolveGamesFromResults } from '../../../utils/gameSetupResolution';
+import { EMPTY_SLOT_OPTION_VALUE, SpecialOutcome } from '../../../types';
 import {
   buildExportConfig,
   buildSpecialPlaceholder,
@@ -140,8 +140,7 @@ function useGameSetupEditor(
           return game;
         }
         if (remainingLocations.length === 0) {
-          const { locationId, ...rest } = game;
-          return rest;
+          return { ...game, locationId: undefined };
         }
         return { ...game, locationId: remainingLocations[0].id };
       })
@@ -347,6 +346,18 @@ function useGameSetupEditor(
           }
         } catch (error) {
           alert('Error importing configuration. Please check the file format.');
+          console.error(
+            'Failed to import timer configuration. Expected a JSON file previously exported from the game setup editor (team-timer-config.json).',
+            error
+          );
+          window.alert(
+            [
+              'Could not import configuration.',
+              '',
+              'Please select a valid JSON configuration file that was exported from this page (typically named "team-timer-config.json").',
+              'If you edited the file manually, make sure it contains valid JSON and matches the expected timer configuration structure.',
+            ].join('\n')
+          );
         }
       };
       reader.readAsText(file);

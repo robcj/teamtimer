@@ -1,11 +1,11 @@
-import { Division, Game, Location, Team, TimerConfig } from '../../types';
+import { Division, Game, Location, Team, TimerConfig } from '../../../types';
 import {
   createEntityId,
   normalizeDivisions,
   normalizeLocations,
   normalizeTeams,
-} from '../../utils/teams';
-import { SpecialOutcome } from '../../types';
+} from '../../../utils/teams';
+import { SpecialOutcome } from '../../../types';
 
 export const buildSpecialPlaceholder = (outcome: SpecialOutcome, gameNumber: number): string =>
   `${outcome} of Game ${gameNumber}`;
