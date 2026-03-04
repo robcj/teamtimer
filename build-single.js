@@ -23,13 +23,13 @@ const inlineScript = '<script>' + safeJs + '</script>';
 const inlineHtml = htmlWithoutBundle.replace(/<\/body>/i, inlineScript + '</body>');
 
 // Create output directory
-const outputDir = path.join(__dirname, 'dist-single');
+const outputDir = path.join(__dirname, 'dist/dist-single');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
 // Write the single file
-const outputPath = path.join(outputDir, 'team-timer.html');
+const outputPath = path.join(outputDir, 'team-timer-offline.html');
 fs.writeFileSync(outputPath, inlineHtml, 'utf8');
 
 console.log('✓ Single-file build created successfully!');

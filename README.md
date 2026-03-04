@@ -59,7 +59,7 @@ The app will open at `http://localhost:3000`
 
 ### Production Build
 
-Build for production (outputs to `dist/` folder):
+Build for production (outputs to `dist/` and also generates an offline single-file app in `dist/dist-single/`):
 
 ```bash
 npm run build
@@ -67,13 +67,13 @@ npm run build
 
 ### Single-File Build
 
-Build as a single HTML file for offline use (outputs to `dist-single/` folder):
+Generate the same production build plus the single-file offline app:
 
 ```bash
 npm run build:single
 ```
 
-The single file `team-timer.html` can be downloaded and opened directly in any web browser without a server.
+The single file `team-timer-offline.html` can be downloaded and opened directly in any web browser without a server.
 
 ## How to Use
 

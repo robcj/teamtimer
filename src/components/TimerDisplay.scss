@@ -736,6 +736,10 @@
 }
 
 @media (max-width: 1024px) and (orientation: portrait) {
+  .location-timer-grid.single .score-value {
+    font-size: clamp(2.5rem, 14cqh, 8rem);
+    min-width: clamp(78px, 18cqi, 152px);
+  }
 }
 
 @media (max-width: 768px) {

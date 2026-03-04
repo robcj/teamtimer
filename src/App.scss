@@ -88,10 +88,15 @@
   border: none;
   border-radius: $radius-md;
   padding: 8px 10px;
+  display: block;
   background: $table-header-bg;
   color: $text-primary;
+  font-family: inherit;
+  font-size: 80%;
+  line-height: inherit;
   font-weight: 600;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 
   &:hover {

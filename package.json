@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack serve --mode development --open",
-    "build": "webpack --mode production",
-    "build:single": "npm run build && node build-single.js"
+    "build:bundle": "webpack --mode production",
+    "build": "npm run build:bundle && node build-single.js",
+    "build:single": "npm run build"
   },
   "keywords": [
     "timer",

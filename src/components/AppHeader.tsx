@@ -129,6 +129,19 @@ function AppHeader({
                 Second Screen
               </button>
             )}
+            <a
+              href="dist-single/team-timer-offline.html"
+              download="team-timer.html"
+              onClick={event => {
+                const menu = event.currentTarget.closest('details');
+                if (menu) {
+                  menu.removeAttribute('open');
+                }
+              }}
+              className="header-menu-item"
+            >
+              Download Offline App
+            </a>
             {onResetAll && (
               <button
                 onClick={event => {
