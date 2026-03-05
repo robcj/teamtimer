@@ -1,8 +1,9 @@
 import React from 'react';
-import { Game, GameResult, Location, TimerConfig } from '../types';
+import { Game, Location, TimerConfig } from '../types';
 import { useGameTimer } from '../hooks/useGameTimer';
 import TimerDisplay from './TimerDisplay';
 import { getExpectedStartTimestamps } from '../utils/expectedStartTimes';
+import { getLocationTimerStorageKey } from '../utils/gameResults';
 
 export const QUICK_MODE_DIVISION_ID = 'quick-mode-division';
 export const QUICK_MODE_TEAM_A_ID = 'quick-mode-team-a';
@@ -23,17 +24,12 @@ interface LocationTimerPanelProps {
   pauseAllSignal: number;
   resumeAllSignal: number;
   resetAllSignal: number;
-  locationStartTime?: number;
   onManualStart: (locationId: string) => void;
   onSelectLocation: (location: string) => void;
 }
 
-export const getLocationTimerStorageKey = (location: string): string =>
-  `teamTimerState:${encodeURIComponent(location)}`;
-
 function LocationTimerPanel({
   locationId,
-  locationName,
   locations,
   selectedLocation,
   showLocationSelector,
@@ -46,7 +42,6 @@ function LocationTimerPanel({
   pauseAllSignal,
   resumeAllSignal,
   resetAllSignal,
-  locationStartTime,
   onManualStart,
   onSelectLocation,
 }: LocationTimerPanelProps) {
@@ -92,13 +87,6 @@ function LocationTimerPanel({
     loopGames: useQuickMode,
   });
 
-  const expectedStartTimes = getExpectedStartTimestamps(
-    locationConfig,
-    effectiveGames,
-    [{ id: locationId, name: locationName }],
-    locationStartTime ? { [locationId]: locationStartTime } : {}
-  );
-
   return (
     <section className={`location-timer-panel ${hidden ? 'location-hidden' : ''}`}>
       <TimerDisplay
@@ -126,39 +114,5 @@ function LocationTimerPanel({
     </section>
   );
 }
-
-export const getLocationGameResultsSnapshot = (
-  allGames: Game[],
-  locationIds: string[]
-): GameResult[] => {
-  const results: GameResult[] = allGames.map(() => ({ startTime: null, score: null }));
-
-  locationIds.forEach(locationId => {
-    const gameIndexesForLocation = allGames
-      .map((game, index) => ({ game, index }))
-      .filter(({ game }) => {
-        const gameLocation = game.locationId || locationIds[0];
-        return gameLocation === locationId;
-      })
-      .map(({ index }) => index);
-
-    const rawState = localStorage.getItem(getLocationTimerStorageKey(locationId));
-    if (!rawState) {
-      return;
-    }
-
-    try {
-      const parsed = JSON.parse(rawState) as { gameResults?: GameResult[] };
-      gameIndexesForLocation.forEach((gameIndex, locationGameIndex) => {
-        const nextResult = parsed.gameResults?.[locationGameIndex];
-        if (nextResult) {
-          results[gameIndex] = nextResult;
-        }
-      });
-    } catch {}
-  });
-
-  return results;
-};
 
 export default LocationTimerPanel;

@@ -20,8 +20,8 @@ interface TimerDisplayProps {
   onManualStart?: () => void;
   currentGameIndex: number;
   gameResults: GameResult[];
-  phase: string;
-  setPhase: Dispatch<SetStateAction<string>>;
+  phase: Phase;
+  setPhase: Dispatch<SetStateAction<Phase>>;
   timeRemaining: number;
   setTimeRemaining: Dispatch<SetStateAction<number>>;
   isRunning: boolean;
@@ -91,6 +91,22 @@ function TimerDisplay({
         setPhase(PHASES.BETWEEN_GAMES);
         setTimeRemaining(config.betweenGamesDuration);
         break;
+      case PHASES.EXTRA_TIME_COUNTDOWN:
+        setPhase(PHASES.EXTRA_TIME_FIRST_HALF);
+        setTimeRemaining(config.extraTimeHalfDuration);
+        break;
+      case PHASES.EXTRA_TIME_FIRST_HALF:
+        setPhase(PHASES.EXTRA_TIME_HALF_TIME);
+        setTimeRemaining(config.halfTimeDuration);
+        break;
+      case PHASES.EXTRA_TIME_HALF_TIME:
+        setPhase(PHASES.EXTRA_TIME_SECOND_HALF);
+        setTimeRemaining(config.extraTimeHalfDuration);
+        break;
+      case PHASES.EXTRA_TIME_SECOND_HALF:
+        setPhase(PHASES.BETWEEN_GAMES);
+        setTimeRemaining(config.betweenGamesDuration);
+        break;
       case PHASES.BETWEEN_GAMES:
         setPhase(PHASES.IDLE);
         setIsRunning(false);
@@ -124,6 +140,12 @@ function TimerDisplay({
 
   const handleSkipPhase = (): void => {
     moveToNextPhase();
+  };
+
+  const handleStartExtraTime = (): void => {
+    setPhase(PHASES.EXTRA_TIME_COUNTDOWN);
+    setIsRunning(true);
+    setIsPaused(false);
   };
 
   const incrementScore = (team: keyof Scores): void => {
@@ -203,6 +225,7 @@ function TimerDisplay({
       {!displayOnly && (
         <>
           <TimerControls
+            phase={phase}
             isRunning={isRunning}
             isPaused={isPaused}
             previousGame={previousGameSummary}
@@ -210,6 +233,7 @@ function TimerDisplay({
             onStart={handleStart}
             onPause={handlePause}
             onReset={onResetTimer}
+            onStartExtraTime={handleStartExtraTime}
             onSkipPhase={handleSkipPhase}
             canSkip={phase !== PHASES.IDLE && isRunning}
           />

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Game, Scores } from '../types';
+import { Phase, PHASES } from '../utils/phases';
 
 interface PreviousGameSummary {
   game: Game;
@@ -22,8 +23,10 @@ interface TimerControlsProps {
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
+  onStartExtraTime: () => void;
   onSkipPhase: () => void;
   canSkip: boolean;
+  phase: Phase;
 }
 
 function TimerControls({
@@ -34,8 +37,10 @@ function TimerControls({
   onStart,
   onPause,
   onReset,
+  onStartExtraTime,
   onSkipPhase,
   canSkip,
+  phase,
 }: TimerControlsProps) {
   const [openUpwards, setOpenUpwards] = useState<boolean>(false);
   const actionsMenuRef = useRef<HTMLDetailsElement | null>(null);
@@ -71,6 +76,11 @@ function TimerControls({
         >
           {isRunning && !isPaused ? 'Pause' : isPaused ? 'Resume' : 'Start'}
         </button>
+        {phase === PHASES.BETWEEN_GAMES && (
+          <button onClick={onStartExtraTime} className={`control-btn 'start-extra-time-btn'}`}>
+            Start Extra Time
+          </button>
+        )}
       </div>
 
       <div className="controls-middle">

@@ -4,8 +4,6 @@ import Results from './components/Results';
 import AppHeader from './components/AppHeader';
 import Setup from './components/setup/Setup';
 import LocationTimerPanel, {
-  getLocationGameResultsSnapshot,
-  getLocationTimerStorageKey,
   QUICK_MODE_DIVISION_ID,
   QUICK_MODE_TEAM_A_ID,
   QUICK_MODE_TEAM_B_ID,
@@ -23,6 +21,7 @@ import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
 import { useGlobalTimerAggregateState } from './hooks/useGlobalTimerAggregateState';
 import { useAppTimerController } from './hooks/useAppTimerController';
 import { DEFAULT_CONFIG } from './app/defaultConfig';
+import { getLocationGameResultsSnapshot, getLocationTimerStorageKey } from './utils/gameResults';
 
 function App() {
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -291,7 +290,6 @@ function App() {
                     resetAllSignal={resetAllSignal}
                     pauseAllSignal={pauseAllSignal}
                     resumeAllSignal={resumeAllSignal}
-                    locationStartTime={locationStartTimes[location.id]}
                     onManualStart={handleLocationManualStart}
                     locations={locations}
                     selectedLocation={selectedLocation}

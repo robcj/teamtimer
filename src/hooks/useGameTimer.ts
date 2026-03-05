@@ -3,12 +3,13 @@ import { GameResult, Scores, TimerConfig, TimerState } from '../types';
 import { createEmptyResults } from '../utils/gameResults';
 import { formatClockTime } from '../utils/time';
 import { playTimerTone, TimerToneStyle } from '../utils/audio';
+import { Phase, PHASES } from '../utils/phases';
 
 interface UseGameTimerResult {
   currentGameIndex: number;
   gameResults: GameResult[];
-  phase: string;
-  setPhase: Dispatch<SetStateAction<string>>;
+  phase: Phase;
+  setPhase: Dispatch<SetStateAction<Phase>>;
   timeRemaining: number;
   setTimeRemaining: Dispatch<SetStateAction<number>>;
   isRunning: boolean;
@@ -59,7 +60,7 @@ export const useGameTimer = (
   const [currentGameIndex, setCurrentGameIndex] = useState<number>(
     () => timerState?.currentGameIndex ?? 0
   );
-  const [phase, setPhase] = useState<string>(() => timerState?.phase || 'idle');
+  const [phase, setPhase] = useState<Phase>(() => timerState?.phase || PHASES.IDLE);
   const [timeRemaining, setTimeRemaining] = useState<number>(() => timerState?.timeRemaining || 0);
   const [isRunning, setIsRunning] = useState<boolean>(() => timerState?.isRunning || false);
   const [isPaused, setIsPaused] = useState<boolean>(() => timerState?.isPaused || false);
@@ -81,7 +82,7 @@ export const useGameTimer = (
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const resetState = (): void => {
-    setPhase('idle');
+    setPhase(PHASES.IDLE);
     setTimeRemaining(0);
     setIsRunning(false);
     setIsPaused(false);
@@ -113,8 +114,8 @@ export const useGameTimer = (
 
     lastExternalStartSignalRef.current = externalStartSignal;
 
-    if (phase === 'idle') {
-      setPhase('countdown');
+    if (phase === PHASES.IDLE) {
+      setPhase(PHASES.COUNTDOWN);
       setTimeRemaining(config.countdownToStart);
       setIsRunning(true);
       setIsPaused(false);
@@ -142,7 +143,7 @@ export const useGameTimer = (
     }
 
     lastExternalPauseSignalRef.current = externalPauseSignal;
-    if (phase !== 'idle' && isRunning && !isPaused) {
+    if (phase !== PHASES.IDLE && isRunning && !isPaused) {
       setIsPaused(true);
     }
   }, [externalPauseSignal, readOnlyMirror, phase, isRunning, isPaused]);
@@ -159,7 +160,7 @@ export const useGameTimer = (
     }
 
     lastExternalResumeSignalRef.current = externalResumeSignal;
-    if (phase !== 'idle' && isRunning && isPaused) {
+    if (phase !== PHASES.IDLE && isRunning && isPaused) {
       setIsPaused(false);
     }
   }, [externalResumeSignal, readOnlyMirror, phase, isRunning, isPaused]);
@@ -171,7 +172,7 @@ export const useGameTimer = (
     if (
       isRunning ||
       isPaused ||
-      phase !== 'idle' ||
+      phase !== PHASES.IDLE ||
       timeRemaining > 0 ||
       scores.team1 > 0 ||
       scores.team2 > 0 ||
@@ -207,7 +208,7 @@ export const useGameTimer = (
     }
     const prevPhase = prevPhaseRef.current;
 
-    if (phase === 'firstHalf' && prevPhase !== 'firstHalf') {
+    if (phase === PHASES.FIRST_HALF && prevPhase !== PHASES.FIRST_HALF) {
       setGameResults(prev => {
         if (loopGames) {
           return [...prev, { startTime: formatClockTime(new Date()), score: null }];
@@ -225,7 +226,7 @@ export const useGameTimer = (
       });
     }
 
-    if (prevPhase === 'secondHalf' && phase === 'betweenGames') {
+    if (prevPhase === PHASES.SECOND_HALF && phase === PHASES.BETWEEN_GAMES) {
       setGameResults(prev => {
         const resultIndex = loopGames ? prev.length - 1 : currentGameIndex;
         if (resultIndex < 0 || resultIndex >= prev.length) {
@@ -245,7 +246,7 @@ export const useGameTimer = (
     if (readOnlyMirror) {
       return;
     }
-    if (phase === 'idle' || phase === 'betweenGames') {
+    if (phase === PHASES.IDLE || phase === PHASES.BETWEEN_GAMES) {
       isLoadingScoresRef.current = true;
       const resultIndex = loopGames
         ? Math.max(gameResults.length - 1, 0)
@@ -268,7 +269,7 @@ export const useGameTimer = (
     }
     if (
       !isLoadingScoresRef.current &&
-      (phase === 'idle' || phase === 'betweenGames') &&
+      (phase === PHASES.IDLE || phase === PHASES.BETWEEN_GAMES) &&
       currentGameIndex >= 0
     ) {
       setGameResults(prev => {
@@ -335,39 +336,55 @@ export const useGameTimer = (
     if (readOnlyMirror) {
       return;
     }
-    if (timeRemaining === 0 && isRunning && !isPaused && phase !== 'idle') {
+    if (timeRemaining === 0 && isRunning && !isPaused && phase !== PHASES.IDLE) {
       playBeep(2, 'siren');
 
       switch (phase) {
-        case 'countdown':
-          setPhase('firstHalf');
+        case PHASES.COUNTDOWN:
+          setPhase(PHASES.FIRST_HALF);
           setTimeRemaining(config.gameHalfDuration);
           break;
-        case 'firstHalf':
-          setPhase('halfTime');
+        case PHASES.FIRST_HALF:
+          setPhase(PHASES.HALF_TIME);
           setTimeRemaining(config.halfTimeDuration);
           break;
-        case 'halfTime':
-          setPhase('secondHalf');
+        case PHASES.HALF_TIME:
+          setPhase(PHASES.SECOND_HALF);
           setTimeRemaining(config.gameHalfDuration);
           break;
-        case 'secondHalf':
-          setPhase('betweenGames');
+        case PHASES.SECOND_HALF:
+          setPhase(PHASES.BETWEEN_GAMES);
           setTimeRemaining(config.betweenGamesDuration);
           break;
-        case 'betweenGames':
+        case PHASES.EXTRA_TIME_COUNTDOWN:
+          setPhase(PHASES.EXTRA_TIME_FIRST_HALF);
+          setTimeRemaining(config.extraTimeHalfDuration);
+          break;
+        case PHASES.EXTRA_TIME_FIRST_HALF:
+          setPhase(PHASES.EXTRA_TIME_HALF_TIME);
+          setTimeRemaining(config.halfTimeDuration);
+          break;
+        case PHASES.EXTRA_TIME_HALF_TIME:
+          setPhase(PHASES.EXTRA_TIME_SECOND_HALF);
+          setTimeRemaining(config.extraTimeHalfDuration);
+          break;
+        case PHASES.EXTRA_TIME_SECOND_HALF:
+          setPhase(PHASES.BETWEEN_GAMES);
+          setTimeRemaining(config.betweenGamesDuration);
+          break;
+        case PHASES.BETWEEN_GAMES:
           if (currentGameIndex < config.games.length - 1) {
             setCurrentGameIndex(currentGameIndex + 1);
             setScores({ team1: 0, team2: 0 });
-            setPhase('firstHalf');
+            setPhase(PHASES.FIRST_HALF);
             setTimeRemaining(config.gameHalfDuration);
           } else if (loopGames && config.games.length > 0) {
             setCurrentGameIndex(0);
             setScores({ team1: 0, team2: 0 });
-            setPhase('firstHalf');
+            setPhase(PHASES.FIRST_HALF);
             setTimeRemaining(config.gameHalfDuration);
           } else {
-            setPhase('idle');
+            setPhase(PHASES.IDLE);
             setIsRunning(false);
             setTimeRemaining(0);
           }
@@ -385,7 +402,7 @@ export const useGameTimer = (
 
     const applyExternalState = (nextState: TimerState | null): void => {
       if (!nextState) {
-        setPhase('idle');
+        setPhase(PHASES.IDLE);
         setTimeRemaining(0);
         setIsRunning(false);
         setIsPaused(false);
@@ -396,7 +413,7 @@ export const useGameTimer = (
         return;
       }
 
-      setPhase(nextState.phase || 'idle');
+      setPhase(nextState.phase || PHASES.IDLE);
       setTimeRemaining(nextState.timeRemaining || 0);
       setIsRunning(Boolean(nextState.isRunning));
       setIsPaused(Boolean(nextState.isPaused));

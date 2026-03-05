@@ -1,3 +1,5 @@
+import { Phase } from './utils/phases';
+
 export interface Location {
   id: string;
   name: string;
@@ -48,7 +50,7 @@ export interface GameResult {
 }
 
 export interface TimerState {
-  phase: string;
+  phase: Phase;
   timeRemaining: number;
   isRunning: boolean;
   isPaused: boolean;
