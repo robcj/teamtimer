@@ -226,7 +226,10 @@ export const useGameTimer = (
       });
     }
 
-    if (prevPhase === PHASES.SECOND_HALF && phase === PHASES.BETWEEN_GAMES) {
+    if (
+      (prevPhase === PHASES.SECOND_HALF || prevPhase === PHASES.EXTRA_TIME_SECOND_HALF) &&
+      phase === PHASES.BETWEEN_GAMES
+    ) {
       setGameResults(prev => {
         const resultIndex = loopGames ? prev.length - 1 : currentGameIndex;
         if (resultIndex < 0 || resultIndex >= prev.length) {
@@ -236,6 +239,21 @@ export const useGameTimer = (
         const current = next[resultIndex] ?? { startTime: null, score: null };
         next[resultIndex] = { ...current, score: { ...scores } };
         return next;
+      });
+    }
+
+    if (prevPhase === PHASES.BETWEEN_GAMES && phase === PHASES.EXTRA_TIME_COUNTDOWN) {
+      // Extra time has been triggered, so we need to restore the scores to what they were at the end of the second half
+      setScores(prev => {
+        const resultIndex = loopGames ? gameResults.length - 1 : currentGameIndex;
+        if (resultIndex < 0 || resultIndex >= gameResults.length) {
+          return prev;
+        }
+        const currentResult = gameResults[resultIndex];
+        if (!currentResult?.score) {
+          return prev;
+        }
+        return { ...currentResult.score };
       });
     }
 
