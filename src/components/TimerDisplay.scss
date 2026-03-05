@@ -176,6 +176,13 @@
   justify-content: center;
 }
 
+.timer-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: clamp(8px, 1.2vw, 14px);
+}
+
 .phase-label {
   font-size: clamp(1.1rem, 2.5vh, 1.6rem);
   color: $text-muted;
@@ -307,6 +314,60 @@
   &.warning {
     color: $timer-warning;
     animation: pulse 1s infinite;
+  }
+
+  &.paused {
+    color: $neutral;
+    animation: none;
+    font-size: clamp(2.4rem, 15vh, 9rem);
+  }
+}
+
+.paused-timer {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: $radius-sm;
+  background: $panel-bg;
+  border: 1px solid $border-light;
+}
+
+.paused-timer-label {
+  font-size: clamp(0.65rem, 1.1vh, 0.9rem);
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.paused-timer-value {
+  font-size: clamp(1.5rem, 3vh, 2.4rem);
+  font-weight: 700;
+  color: $text-secondary;
+  font-family: 'Courier New', monospace;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .timer-row {
+    flex-direction: row;
+    align-items: baseline;
+    gap: clamp(4px, 0.8vh, 8px);
+  }
+
+  .timer {
+    font-size: clamp(2.3rem, 14vw, 7.2rem);
+  }
+
+  .paused-timer {
+    align-items: center;
+  }
+
+  .timer.paused {
+    font-size: clamp(1.9rem, 11vh, 6.6rem);
   }
 }
 
@@ -744,208 +805,221 @@
 }
 
 @media (max-width: 768px) {
-  .timer-display {
-    padding: 8px;
-  }
+  .location-timer-grid,
+  .location-timer-grid.single {
+    .timer-display {
+      padding: 8px;
+    }
 
-  .score-display {
-    margin: 8px 0;
-  }
+    .score-display {
+      margin: 8px 0;
+    }
 
-  .phase-label {
-    font-size: clamp(0.95rem, 2vh, 1.2rem);
-  }
+    .phase-label {
+      font-size: clamp(0.95rem, 2vh, 1.2rem);
+    }
 
-  .location-timer-grid.single .timer {
-    font-size: clamp(2.4rem, 12vh, 4.5rem);
-  }
+    .timer {
+      font-size: clamp(2.4rem, 12vh, 4.5rem);
+    }
 
-  .score-value {
-    font-size: clamp(2.2rem, 12vw, 4rem);
-    min-width: 60px;
-  }
+    .team-name {
+      font-size: clamp(0.9rem, 2.2vh, 1.2rem);
+    }
 
-  .control-btn,
-  .nav-btn {
-    padding: 8px 10px;
-    min-width: 90px;
-    font-size: 0.82rem;
-  }
+    .score-value {
+      font-size: clamp(2.2rem, 12vw, 4rem);
+      min-width: 60px;
+    }
 
-  .next-game-time,
-  .last-game-label,
-  .last-game-result,
-  .next-game-label,
-  .next-game-result {
-    font-size: 1rem;
+    .control-btn,
+    .nav-btn {
+      padding: 8px 10px;
+      min-width: 90px;
+      font-size: 0.82rem;
+    }
+
+    .next-game-time,
+    .last-game-label,
+    .last-game-result,
+    .next-game-label,
+    .next-game-result {
+      font-size: 1rem;
+    }
   }
 }
 
 @media (max-height: 600px) {
-  .timer-display {
-    padding: 8px;
-  }
+  .location-timer-grid,
+  .location-timer-grid.single {
+    .timer-display {
+      padding: 8px;
+    }
 
-  .game-info {
-    margin-bottom: 5px;
-  }
+    .game-info {
+      margin-bottom: 5px;
+    }
 
-  .timer-container {
-    margin: 8px 0;
-  }
+    .timer-container {
+      margin: 8px 0;
+    }
 
-  .score-display {
-    margin: 8px 0;
-  }
+    .score-display {
+      margin: 8px 0;
+    }
 
-  .timer {
-    font-size: clamp(2.2rem, 19vh, 8rem);
-  }
+    .timer {
+      font-size: clamp(2.2rem, 19vh, 8rem);
+    }
 
-  .score-value {
-    font-size: clamp(2rem, 19vh, 8rem);
-  }
+    .score-value {
+      font-size: clamp(2rem, 19vh, 8rem);
+    }
 
-  .controls {
-    margin: 8px 0;
-    gap: 5px;
-  }
+    .controls {
+      margin: 8px 0;
+      gap: 5px;
+    }
 
-  .game-navigation {
-    margin-top: 8px;
-    padding-top: 8px;
+    .game-navigation {
+      margin-top: 8px;
+      padding-top: 8px;
+    }
   }
 }
 
 @media (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
-  .timer-display {
-    padding: 6px;
-    border-radius: 10px;
-  }
-
-  .game-info {
-    margin-bottom: 3px;
-
-    h2 {
-      font-size: clamp(0.75rem, 3vh, 0.95rem);
+  .location-timer-grid,
+  .location-timer-grid.single {
+    .timer-display {
+      padding: 6px;
+      border-radius: 10px;
     }
-  }
 
-  .timer-container {
-    margin: 4px 0;
-  }
+    .game-info {
+      margin-bottom: 3px;
 
-  .phase-label {
-    margin-bottom: 4px;
-    font-size: clamp(0.8rem, 3vh, 1rem);
-  }
+      h2 {
+        font-size: clamp(0.75rem, 3vh, 0.95rem);
+      }
+    }
 
-  .timer {
-    font-size: clamp(1.9rem, 9vh, 3.1rem);
-    line-height: 1;
-  }
+    .timer-container {
+      margin: 4px 0;
+    }
 
-  .score-display {
-    gap: 6px;
-    margin: 4px 0;
-  }
+    .phase-label {
+      margin-bottom: 4px;
+      font-size: clamp(0.8rem, 3vh, 1rem);
+    }
 
-  .score-team {
-    padding: 6px;
-    gap: 4px;
-    border: none;
-    box-shadow: none;
-  }
+    .timer {
+      font-size: clamp(1.9rem, 9vh, 3.1rem);
+      line-height: 1;
+    }
 
-  .team-color-label {
-    font-size: clamp(0.55rem, 2.2vh, 0.7rem);
-    padding: 2px 8px;
-  }
+    .score-display {
+      gap: 6px;
+      margin: 4px 0;
+    }
 
-  .team-name {
-    font-size: clamp(0.9rem, 3vh, 1.1rem);
-  }
+    .score-team {
+      padding: 6px;
+      gap: 4px;
+      border: none;
+      box-shadow: none;
+    }
 
-  .score-row {
-    gap: 8px;
-  }
+    .team-color-label {
+      font-size: clamp(0.55rem, 2.2vh, 0.7rem);
+      padding: 2px 8px;
+    }
 
-  .score-value {
-    font-size: clamp(1.7rem, 8vh, 2.7rem);
-    min-width: 56px;
-  }
+    .team-name {
+      font-size: clamp(0.9rem, 3vh, 1.1rem);
+    }
 
-  .score-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 1rem;
-  }
+    .score-row {
+      gap: 8px;
+    }
 
-  .controls {
-    margin: 5px 0;
-    gap: 4px;
-  }
+    .score-value {
+      font-size: clamp(1.7rem, 8vh, 2.7rem);
+      min-width: 56px;
+    }
 
-  .controls-left,
-  .controls-right {
-    gap: 4px;
-  }
+    .score-btn {
+      width: 30px;
+      height: 30px;
+      font-size: 1rem;
+    }
 
-  .controls-right,
-  .game-navigation-buttons {
-    display: none;
-  }
+    .controls {
+      margin: 5px 0;
+      gap: 4px;
+    }
 
-  .compact-actions-menu,
-  .compact-nav-menu {
-    display: block;
-  }
+    .controls-left,
+    .controls-right {
+      gap: 4px;
+    }
 
-  .control-btn {
-    min-width: 72px;
-    padding: 6px 8px;
-    font-size: 0.74rem;
-  }
+    .controls-right,
+    .game-navigation-buttons {
+      display: none;
+    }
 
-  .compact-actions-trigger {
-    padding: 6px 8px;
-    font-size: 0.74rem;
-  }
+    .compact-actions-menu,
+    .compact-nav-menu {
+      display: block;
+    }
 
-  .compact-actions-list {
-    min-width: 150px;
-    gap: 4px;
-    padding: 6px;
-  }
+    .control-btn {
+      min-width: 72px;
+      padding: 6px 8px;
+      font-size: 0.74rem;
+    }
 
-  .compact-action-item {
-    padding: 6px 8px;
-    font-size: 0.74rem;
-  }
+    .compact-actions-trigger {
+      padding: 6px 8px;
+      font-size: 0.74rem;
+    }
 
-  .game-navigation {
-    gap: 4px;
-    padding-top: 5px;
-  }
+    .compact-actions-list {
+      min-width: 150px;
+      gap: 4px;
+      padding: 6px;
+    }
 
-  .last-game-label,
-  .next-game-label {
-    font-size: 0.8rem;
-  }
+    .compact-action-item {
+      padding: 6px 8px;
+      font-size: 0.74rem;
+    }
 
-  .last-game-result,
-  .next-game-result {
-    font-size: 0.74rem;
-  }
+    .game-navigation {
+      gap: 4px;
+      padding-top: 5px;
+    }
 
-  .nav-btn {
-    min-width: 72px;
-    padding: 6px 8px;
-    font-size: 0.74rem;
-  }
+    .last-game-label,
+    .next-game-label {
+      font-size: 0.8rem;
+    }
 
-  .next-game-time {
-    font-size: 0.72rem;
-    padding: 2px 4px;
+    .last-game-result,
+    .next-game-result {
+      font-size: 0.74rem;
+    }
+
+    .nav-btn {
+      min-width: 72px;
+      padding: 6px 8px;
+      font-size: 0.74rem;
+    }
+
+    .next-game-time {
+      font-size: 0.72rem;
+      padding: 2px 4px;
+    }
   }
 }

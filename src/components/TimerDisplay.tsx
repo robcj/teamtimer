@@ -57,6 +57,9 @@ function TimerDisplay({
 }: TimerDisplayProps) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const pauseIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pauseStartedAtRef = useRef<number | null>(null);
+  const [pausedDurationSeconds, setPausedDurationSeconds] = useState<number>(0);
 
   const resolvedGames = resolveGamesFromResults(config.games, gameResults);
   const currentGame = resolvedGames[currentGameIndex];
@@ -70,8 +73,42 @@ function TimerDisplay({
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      if (pauseIntervalRef.current) {
+        clearInterval(pauseIntervalRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!isRunning || !isPaused) {
+      pauseStartedAtRef.current = null;
+      setPausedDurationSeconds(0);
+      if (pauseIntervalRef.current) {
+        clearInterval(pauseIntervalRef.current);
+        pauseIntervalRef.current = null;
+      }
+      return;
+    }
+
+    const startedAt = Date.now();
+    pauseStartedAtRef.current = startedAt;
+    setPausedDurationSeconds(0);
+
+    pauseIntervalRef.current = setInterval(() => {
+      if (!pauseStartedAtRef.current) {
+        return;
+      }
+      const elapsed = Math.floor((Date.now() - pauseStartedAtRef.current) / 1000);
+      setPausedDurationSeconds(elapsed);
+    }, 1000);
+
+    return () => {
+      if (pauseIntervalRef.current) {
+        clearInterval(pauseIntervalRef.current);
+        pauseIntervalRef.current = null;
+      }
+    };
+  }, [isRunning, isPaused]);
 
   const moveToNextPhase = (): void => {
     switch (phase) {
@@ -209,6 +246,8 @@ function TimerDisplay({
         phaseLabel={PHASE_LABELS[phase as Phase]}
         timeText={formatTimerDuration(timeRemaining)}
         isWarning={timeRemaining <= 5 && timeRemaining > 0}
+        isPaused={isPaused}
+        pausedDurationText={formatTimerDuration(pausedDurationSeconds)}
       />
 
       {currentGame && (

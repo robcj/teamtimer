@@ -45,7 +45,12 @@ function AppHeader({
 
   return (
     <header className="app-header">
-      <div className="header-title">
+      <div
+        className="header-title"
+        onClick={() => {
+          onViewTimer();
+        }}
+      >
         <h1>
           Team
           <br />

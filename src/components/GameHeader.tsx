@@ -23,7 +23,6 @@ function GameHeader({
       <div className="game-info-row">
         {showLocationSelector && onSelectLocation && (
           <label className="location-panel-selector game-info-location-selector">
-            Location:
             <select
               value={selectedLocation}
               onChange={event => onSelectLocation(event.target.value)}
