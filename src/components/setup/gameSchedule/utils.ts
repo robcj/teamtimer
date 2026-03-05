@@ -1,3 +1,4 @@
+import { DEFAULT_CONFIG } from '../../../app/defaultConfig';
 import { Division, Game, Location, Team, TimerConfig } from '../../../types';
 import {
   createEntityId,
@@ -60,18 +61,11 @@ export const parseImportedConfig = (rawConfig: Partial<TimerConfig>): TimerConfi
   });
 
   return {
-    countdownToStart: rawConfig.countdownToStart || 20,
-    gameHalfDuration: rawConfig.gameHalfDuration || 600,
-    halfTimeDuration: rawConfig.halfTimeDuration || 120,
-    betweenGamesDuration: rawConfig.betweenGamesDuration || 180,
-    keepScreenAwake: rawConfig.keepScreenAwake ?? true,
+    ...DEFAULT_CONFIG,
+    ...rawConfig,
     locations,
     divisions,
     teams,
-    leftTeamLabel: rawConfig.leftTeamLabel || 'White',
-    rightTeamLabel: rawConfig.rightTeamLabel || 'Black',
-    tournamentStartAt: rawConfig.tournamentStartAt || '',
-    competitionName: rawConfig.competitionName || '',
     games,
   };
 };

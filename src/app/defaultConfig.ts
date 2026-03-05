@@ -11,6 +11,7 @@ export const DEFAULT_CONFIG: TimerConfig = {
   gameHalfDuration: 600,
   halfTimeDuration: 120,
   betweenGamesDuration: 180,
+  extraTimeHalfDuration: 300,
   keepScreenAwake: true,
   locations: [],
   divisions: [],
@@ -19,7 +20,7 @@ export const DEFAULT_CONFIG: TimerConfig = {
   leftTeamLabel: 'White',
   rightTeamLabel: 'Black',
   tournamentStartAt: '',
-  competitionName: 'Tournament',
+  competitionName: '',
 };
 
 export const hydrateConfig = (parsed?: Partial<TimerConfig>): TimerConfig => {

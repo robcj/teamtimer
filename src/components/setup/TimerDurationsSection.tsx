@@ -1,15 +1,17 @@
 import React from 'react';
-import { secondsToMinutesAndSeconds, minutesAndSecondsToSeconds } from '../../utils/time';
+import { DurationInput } from './DurationInput';
 
 interface TimerDurationsSectionProps {
   countdownToStart: number;
   gameHalfDuration: number;
   halfTimeDuration: number;
   betweenGamesDuration: number;
+  extraTimeHalfDuration: number;
   onCountdownToStartChange: (value: number) => void;
   onGameHalfDurationChange: (value: number) => void;
   onHalfTimeDurationChange: (value: number) => void;
   onBetweenGamesDurationChange: (value: number) => void;
+  onExtraTimeHalfDurationChange: (value: number) => void;
 }
 
 function TimerDurationsSection({
@@ -17,10 +19,12 @@ function TimerDurationsSection({
   gameHalfDuration,
   halfTimeDuration,
   betweenGamesDuration,
+  extraTimeHalfDuration,
   onCountdownToStartChange,
   onGameHalfDurationChange,
   onHalfTimeDurationChange,
   onBetweenGamesDurationChange,
+  onExtraTimeHalfDurationChange,
 }: TimerDurationsSectionProps) {
   return (
     <div className="config-group">
@@ -34,113 +38,26 @@ function TimerDurationsSection({
         />
       </label>
 
-      <label>
-        Game-Half Duration:
-        <div className="time-input-group">
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(gameHalfDuration).minutes}
-            onChange={e =>
-              onGameHalfDurationChange(
-                minutesAndSecondsToSeconds(
-                  Number(e.target.value),
-                  secondsToMinutesAndSeconds(gameHalfDuration).seconds
-                )
-              )
-            }
-            min="0"
-            placeholder="mins"
-          />
-          <span>:</span>
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(gameHalfDuration).seconds}
-            onChange={e =>
-              onGameHalfDurationChange(
-                minutesAndSecondsToSeconds(
-                  secondsToMinutesAndSeconds(gameHalfDuration).minutes,
-                  Number(e.target.value)
-                )
-              )
-            }
-            min="0"
-            max="59"
-            placeholder="secs"
-          />
-        </div>
-      </label>
-
-      <label>
-        Half-Time Duration:
-        <div className="time-input-group">
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(halfTimeDuration).minutes}
-            onChange={e =>
-              onHalfTimeDurationChange(
-                minutesAndSecondsToSeconds(
-                  Number(e.target.value),
-                  secondsToMinutesAndSeconds(halfTimeDuration).seconds
-                )
-              )
-            }
-            min="0"
-            placeholder="mins"
-          />
-          <span>:</span>
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(halfTimeDuration).seconds}
-            onChange={e =>
-              onHalfTimeDurationChange(
-                minutesAndSecondsToSeconds(
-                  secondsToMinutesAndSeconds(halfTimeDuration).minutes,
-                  Number(e.target.value)
-                )
-              )
-            }
-            min="0"
-            max="59"
-            placeholder="secs"
-          />
-        </div>
-      </label>
-
-      <label>
-        Between Games Duration:
-        <div className="time-input-group">
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(betweenGamesDuration).minutes}
-            onChange={e =>
-              onBetweenGamesDurationChange(
-                minutesAndSecondsToSeconds(
-                  Number(e.target.value),
-                  secondsToMinutesAndSeconds(betweenGamesDuration).seconds
-                )
-              )
-            }
-            min="0"
-            placeholder="mins"
-          />
-          <span>:</span>
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(betweenGamesDuration).seconds}
-            onChange={e =>
-              onBetweenGamesDurationChange(
-                minutesAndSecondsToSeconds(
-                  secondsToMinutesAndSeconds(betweenGamesDuration).minutes,
-                  Number(e.target.value)
-                )
-              )
-            }
-            min="0"
-            max="59"
-            placeholder="secs"
-          />
-        </div>
-      </label>
+      <DurationInput
+        label="Game-Half Duration:"
+        value={gameHalfDuration}
+        onChange={onGameHalfDurationChange}
+      />
+      <DurationInput
+        label="Half-Time Duration:"
+        value={halfTimeDuration}
+        onChange={onHalfTimeDurationChange}
+      />
+      <DurationInput
+        label="Between Games Duration:"
+        value={betweenGamesDuration}
+        onChange={onBetweenGamesDurationChange}
+      />
+      <DurationInput
+        label="Extra-Time-Half Duration:"
+        value={extraTimeHalfDuration}
+        onChange={onExtraTimeHalfDurationChange}
+      />
     </div>
   );
 }

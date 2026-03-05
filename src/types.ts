@@ -25,6 +25,7 @@ export interface TimerConfig {
   gameHalfDuration: number;
   halfTimeDuration: number;
   betweenGamesDuration: number;
+  extraTimeHalfDuration: number;
   keepScreenAwake: boolean;
   locations: Location[];
   divisions: Division[];

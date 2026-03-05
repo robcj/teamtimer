@@ -79,6 +79,9 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
   const [betweenGamesDuration, setBetweenGamesDuration] = useState<number>(
     editableConfig.betweenGamesDuration
   );
+  const [extraTimeHalfDuration, setExtraTimeHalfDuration] = useState<number>(
+    editableConfig.extraTimeHalfDuration
+  );
   const [keepScreenAwake, setKeepScreenAwake] = useState<boolean>(
     editableConfig.keepScreenAwake ?? true
   );
@@ -141,11 +144,13 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
           countdownToStart={countdownToStart}
           gameHalfDuration={gameHalfDuration}
           halfTimeDuration={halfTimeDuration}
+          extraTimeHalfDuration={extraTimeHalfDuration}
           betweenGamesDuration={betweenGamesDuration}
           onCountdownToStartChange={setCountdownToStart}
           onGameHalfDurationChange={setGameHalfDuration}
           onHalfTimeDurationChange={setHalfTimeDuration}
           onBetweenGamesDurationChange={setBetweenGamesDuration}
+          onExtraTimeHalfDurationChange={setExtraTimeHalfDuration}
         />
       </CollapsibleSection>
 
