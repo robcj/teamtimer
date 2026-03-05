@@ -227,7 +227,9 @@ export const useGameTimer = (
     }
 
     if (
-      (prevPhase === PHASES.SECOND_HALF || prevPhase === PHASES.EXTRA_TIME_SECOND_HALF) &&
+      (prevPhase === PHASES.SECOND_HALF ||
+        prevPhase === PHASES.EXTRA_TIME_SECOND_HALF ||
+        prevPhase === PHASES.SUDDEN_DEATH) &&
       phase === PHASES.BETWEEN_GAMES
     ) {
       setGameResults(prev => {
@@ -242,8 +244,11 @@ export const useGameTimer = (
       });
     }
 
-    if (prevPhase === PHASES.BETWEEN_GAMES && phase === PHASES.EXTRA_TIME_COUNTDOWN) {
-      // Extra time has been triggered, so we need to restore the scores to what they were at the end of the second half
+    if (
+      prevPhase === PHASES.BETWEEN_GAMES &&
+      (phase === PHASES.EXTRA_TIME_COUNTDOWN || phase === PHASES.SUDDEN_DEATH_COUNTDOWN)
+    ) {
+      // Extra Time or Sudden Death has been triggered, so we need to restore the scores to what they were at the end of the previous phase.
       setScores(prev => {
         const resultIndex = loopGames ? gameResults.length - 1 : currentGameIndex;
         if (resultIndex < 0 || resultIndex >= gameResults.length) {
@@ -387,6 +392,16 @@ export const useGameTimer = (
           setTimeRemaining(config.extraTimeHalfDuration);
           break;
         case PHASES.EXTRA_TIME_SECOND_HALF:
+          setPhase(PHASES.BETWEEN_GAMES);
+          setTimeRemaining(config.betweenGamesDuration);
+          break;
+        case PHASES.SUDDEN_DEATH_COUNTDOWN:
+          setPhase(PHASES.SUDDEN_DEATH);
+          // We don't know how long sudden death will last,
+          // so set it to 1 hour to avoid any issues with timers stopping at 0, but it will be immediately cleared when the phase changes
+          setTimeRemaining(60 * 60);
+          break;
+        case PHASES.SUDDEN_DEATH:
           setPhase(PHASES.BETWEEN_GAMES);
           setTimeRemaining(config.betweenGamesDuration);
           break;

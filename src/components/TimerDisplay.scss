@@ -542,7 +542,7 @@
   }
 }
 
-.reset-btn {
+.start-extra-time-btn {
   background: $danger;
   color: $white;
 
@@ -553,7 +553,18 @@
   }
 }
 
-.skip-btn {
+.start-sudden-death-btn {
+  background: $black;
+  color: $white;
+
+  &:hover {
+    background: $danger-hover;
+    transform: translateY(-2px);
+    box-shadow: $shadow-hover-danger;
+  }
+}
+
+.end-sudden-death-btn {
   background: $info;
   color: $white;
 

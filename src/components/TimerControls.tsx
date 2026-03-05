@@ -24,6 +24,8 @@ interface TimerControlsProps {
   onPause: () => void;
   onReset: () => void;
   onStartExtraTime: () => void;
+  onStartSuddenDeath: () => void;
+  onEndSuddenDeath: () => void;
   onSkipPhase: () => void;
   canSkip: boolean;
   phase: Phase;
@@ -38,6 +40,8 @@ function TimerControls({
   onPause,
   onReset,
   onStartExtraTime,
+  onStartSuddenDeath,
+  onEndSuddenDeath,
   onSkipPhase,
   canSkip,
   phase,
@@ -77,8 +81,18 @@ function TimerControls({
           {isRunning && !isPaused ? 'Pause' : isPaused ? 'Resume' : 'Start'}
         </button>
         {phase === PHASES.BETWEEN_GAMES && (
-          <button onClick={onStartExtraTime} className={`control-btn 'start-extra-time-btn'}`}>
-            Start Extra Time
+          <button onClick={onStartExtraTime} className={'control-btn start-extra-time-btn'}>
+            Extra Time
+          </button>
+        )}
+        {phase === PHASES.BETWEEN_GAMES && (
+          <button onClick={onStartSuddenDeath} className={'control-btn start-sudden-death-btn'}>
+            Sudden Death
+          </button>
+        )}
+        {phase === PHASES.SUDDEN_DEATH && (
+          <button onClick={onEndSuddenDeath} className={'control-btn end-sudden-death-btn'}>
+            End Sudden Death
           </button>
         )}
       </div>

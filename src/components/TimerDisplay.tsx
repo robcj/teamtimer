@@ -144,6 +144,16 @@ function TimerDisplay({
     setIsPaused(false);
   };
 
+  const handleStartSuddenDeath = (): void => {
+    setPhase(PHASES.SUDDEN_DEATH_COUNTDOWN);
+    setIsRunning(true);
+    setIsPaused(false);
+  };
+
+  const handleEndSuddenDeath = (): void => {
+    setTimeRemaining(0);
+  };
+
   const incrementScore = (team: keyof Scores): void => {
     setScores(prev => ({
       ...prev,
@@ -203,7 +213,7 @@ function TimerDisplay({
 
       <TimerHeader
         phaseLabel={PHASE_LABELS[phase as Phase]}
-        timeText={formatTimerDuration(timeRemaining)}
+        timeText={phase === PHASES.SUDDEN_DEATH ? ' - : - ' : formatTimerDuration(timeRemaining)}
         isWarning={timeRemaining <= 5 && timeRemaining > 0}
         isPaused={isPaused}
         pausedDurationText={formatTimerDuration(pausedDurationSeconds)}
@@ -232,6 +242,8 @@ function TimerDisplay({
             onPause={handlePause}
             onReset={onResetTimer}
             onStartExtraTime={handleStartExtraTime}
+            onStartSuddenDeath={handleStartSuddenDeath}
+            onEndSuddenDeath={handleEndSuddenDeath}
             onSkipPhase={handleSkipPhase}
             canSkip={phase !== PHASES.IDLE && isRunning}
           />

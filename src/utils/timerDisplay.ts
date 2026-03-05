@@ -57,6 +57,13 @@ export const getNextGameStartTime = ({
     secondsUntilGameStart += config.extraTimeHalfDuration + config.betweenGamesDuration;
   } else if (phase === PHASES.EXTRA_TIME_SECOND_HALF) {
     secondsUntilGameStart += config.betweenGamesDuration;
+  } else if (phase === PHASES.SUDDEN_DEATH_COUNTDOWN) {
+    // Assuming countdown to start of Sudden Death is same as half time.
+    // Sudden death duration is unknown, so we can't calculate an exact time.
+    secondsUntilGameStart += config.halfTimeDuration + config.betweenGamesDuration;
+  } else if (phase === PHASES.SUDDEN_DEATH) {
+    // Sudden death duration is unknown, so we can't calculate an exact time.
+    secondsUntilGameStart += config.betweenGamesDuration;
   } else if (phase === PHASES.BETWEEN_GAMES) {
     secondsUntilGameStart = timeRemaining;
   } else {
