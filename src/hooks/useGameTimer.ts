@@ -341,7 +341,7 @@ export const useGameTimer = (
       switch (phase) {
         case 'countdown':
           setPhase('firstHalf');
-          setTimeRemaining(config.firstHalfDuration);
+          setTimeRemaining(config.gameHalfDuration);
           break;
         case 'firstHalf':
           setPhase('halfTime');
@@ -349,7 +349,7 @@ export const useGameTimer = (
           break;
         case 'halfTime':
           setPhase('secondHalf');
-          setTimeRemaining(config.secondHalfDuration);
+          setTimeRemaining(config.gameHalfDuration);
           break;
         case 'secondHalf':
           setPhase('betweenGames');
@@ -360,12 +360,12 @@ export const useGameTimer = (
             setCurrentGameIndex(currentGameIndex + 1);
             setScores({ team1: 0, team2: 0 });
             setPhase('firstHalf');
-            setTimeRemaining(config.firstHalfDuration);
+            setTimeRemaining(config.gameHalfDuration);
           } else if (loopGames && config.games.length > 0) {
             setCurrentGameIndex(0);
             setScores({ team1: 0, team2: 0 });
             setPhase('firstHalf');
-            setTimeRemaining(config.firstHalfDuration);
+            setTimeRemaining(config.gameHalfDuration);
           } else {
             setPhase('idle');
             setIsRunning(false);

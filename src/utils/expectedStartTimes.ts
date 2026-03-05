@@ -15,9 +15,9 @@ export const getExpectedStartTimestamps = (
     : Number.NaN;
   const hasTournamentStart = Number.isFinite(validTournamentStart);
   const gameCycleMs =
-    (config.firstHalfDuration +
+    (config.gameHalfDuration +
       config.halfTimeDuration +
-      config.secondHalfDuration +
+      config.gameHalfDuration +
       config.betweenGamesDuration) *
     1000;
 

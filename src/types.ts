@@ -22,9 +22,8 @@ export interface Game {
 
 export interface TimerConfig {
   countdownToStart: number;
-  firstHalfDuration: number;
+  gameHalfDuration: number;
   halfTimeDuration: number;
-  secondHalfDuration: number;
   betweenGamesDuration: number;
   keepScreenAwake: boolean;
   locations: Location[];

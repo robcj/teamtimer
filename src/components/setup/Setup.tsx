@@ -74,13 +74,8 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     editableConfig.competitionName || ''
   );
   const [countdownToStart, setCountdownToStart] = useState<number>(editableConfig.countdownToStart);
-  const [firstHalfDuration, setFirstHalfDuration] = useState<number>(
-    editableConfig.firstHalfDuration
-  );
+  const [gameHalfDuration, setGameHalfDuration] = useState<number>(editableConfig.gameHalfDuration);
   const [halfTimeDuration, setHalfTimeDuration] = useState<number>(editableConfig.halfTimeDuration);
-  const [secondHalfDuration, setSecondHalfDuration] = useState<number>(
-    editableConfig.secondHalfDuration
-  );
   const [betweenGamesDuration, setBetweenGamesDuration] = useState<number>(
     editableConfig.betweenGamesDuration
   );
@@ -97,9 +92,8 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
   useEffect(() => {
     setCompetitionName(editableConfig.competitionName || '');
     setCountdownToStart(editableConfig.countdownToStart);
-    setFirstHalfDuration(editableConfig.firstHalfDuration);
+    setGameHalfDuration(editableConfig.gameHalfDuration);
     setHalfTimeDuration(editableConfig.halfTimeDuration);
-    setSecondHalfDuration(editableConfig.secondHalfDuration);
     setBetweenGamesDuration(editableConfig.betweenGamesDuration);
     setKeepScreenAwake(editableConfig.keepScreenAwake ?? true);
     setLeftTeamLabel(editableConfig.leftTeamLabel || 'White');
@@ -109,9 +103,8 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
   const getSetupConfigForSave = (): TimerConfig => ({
     ...getConfigForSave(),
     countdownToStart,
-    firstHalfDuration,
+    gameHalfDuration,
     halfTimeDuration,
-    secondHalfDuration,
     betweenGamesDuration,
     keepScreenAwake,
     leftTeamLabel: leftTeamLabel.trim() || 'White',
@@ -146,14 +139,12 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
       <CollapsibleSection title="Timer Durations">
         <TimerDurationsSection
           countdownToStart={countdownToStart}
-          firstHalfDuration={firstHalfDuration}
+          gameHalfDuration={gameHalfDuration}
           halfTimeDuration={halfTimeDuration}
-          secondHalfDuration={secondHalfDuration}
           betweenGamesDuration={betweenGamesDuration}
           onCountdownToStartChange={setCountdownToStart}
-          onFirstHalfDurationChange={setFirstHalfDuration}
+          onGameHalfDurationChange={setGameHalfDuration}
           onHalfTimeDurationChange={setHalfTimeDuration}
-          onSecondHalfDurationChange={setSecondHalfDuration}
           onBetweenGamesDurationChange={setBetweenGamesDuration}
         />
       </CollapsibleSection>

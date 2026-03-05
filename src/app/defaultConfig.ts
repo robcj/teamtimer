@@ -8,9 +8,8 @@ import {
 
 export const DEFAULT_CONFIG: TimerConfig = {
   countdownToStart: 20,
-  firstHalfDuration: 600,
+  gameHalfDuration: 600,
   halfTimeDuration: 120,
-  secondHalfDuration: 600,
   betweenGamesDuration: 180,
   keepScreenAwake: true,
   locations: [],

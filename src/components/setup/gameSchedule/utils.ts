@@ -61,9 +61,8 @@ export const parseImportedConfig = (rawConfig: Partial<TimerConfig>): TimerConfi
 
   return {
     countdownToStart: rawConfig.countdownToStart || 20,
-    firstHalfDuration: rawConfig.firstHalfDuration || 600,
+    gameHalfDuration: rawConfig.gameHalfDuration || 600,
     halfTimeDuration: rawConfig.halfTimeDuration || 120,
-    secondHalfDuration: rawConfig.secondHalfDuration || 600,
     betweenGamesDuration: rawConfig.betweenGamesDuration || 180,
     keepScreenAwake: rawConfig.keepScreenAwake ?? true,
     locations,

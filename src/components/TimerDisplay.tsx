@@ -77,7 +77,7 @@ function TimerDisplay({
     switch (phase) {
       case PHASES.COUNTDOWN:
         setPhase(PHASES.FIRST_HALF);
-        setTimeRemaining(config.firstHalfDuration);
+        setTimeRemaining(config.gameHalfDuration);
         break;
       case PHASES.FIRST_HALF:
         setPhase(PHASES.HALF_TIME);
@@ -85,7 +85,7 @@ function TimerDisplay({
         break;
       case PHASES.HALF_TIME:
         setPhase(PHASES.SECOND_HALF);
-        setTimeRemaining(config.secondHalfDuration);
+        setTimeRemaining(config.gameHalfDuration);
         break;
       case PHASES.SECOND_HALF:
         setPhase(PHASES.BETWEEN_GAMES);

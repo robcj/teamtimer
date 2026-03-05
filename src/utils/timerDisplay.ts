@@ -33,15 +33,15 @@ export const getNextGameStartTime = ({
 
   if (phase === PHASES.COUNTDOWN) {
     secondsUntilGameStart +=
-      config.firstHalfDuration +
+      config.gameHalfDuration +
       config.halfTimeDuration +
-      config.secondHalfDuration +
+      config.gameHalfDuration +
       config.betweenGamesDuration;
   } else if (phase === PHASES.FIRST_HALF) {
     secondsUntilGameStart +=
-      config.halfTimeDuration + config.secondHalfDuration + config.betweenGamesDuration;
+      config.halfTimeDuration + config.gameHalfDuration + config.betweenGamesDuration;
   } else if (phase === PHASES.HALF_TIME) {
-    secondsUntilGameStart += config.secondHalfDuration + config.betweenGamesDuration;
+    secondsUntilGameStart += config.gameHalfDuration + config.betweenGamesDuration;
   } else if (phase === PHASES.SECOND_HALF) {
     secondsUntilGameStart += config.betweenGamesDuration;
   } else if (phase === PHASES.BETWEEN_GAMES) {

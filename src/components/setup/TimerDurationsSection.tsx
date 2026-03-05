@@ -3,27 +3,23 @@ import { secondsToMinutesAndSeconds, minutesAndSecondsToSeconds } from '../../ut
 
 interface TimerDurationsSectionProps {
   countdownToStart: number;
-  firstHalfDuration: number;
+  gameHalfDuration: number;
   halfTimeDuration: number;
-  secondHalfDuration: number;
   betweenGamesDuration: number;
   onCountdownToStartChange: (value: number) => void;
-  onFirstHalfDurationChange: (value: number) => void;
+  onGameHalfDurationChange: (value: number) => void;
   onHalfTimeDurationChange: (value: number) => void;
-  onSecondHalfDurationChange: (value: number) => void;
   onBetweenGamesDurationChange: (value: number) => void;
 }
 
 function TimerDurationsSection({
   countdownToStart,
-  firstHalfDuration,
+  gameHalfDuration,
   halfTimeDuration,
-  secondHalfDuration,
   betweenGamesDuration,
   onCountdownToStartChange,
-  onFirstHalfDurationChange,
+  onGameHalfDurationChange,
   onHalfTimeDurationChange,
-  onSecondHalfDurationChange,
   onBetweenGamesDurationChange,
 }: TimerDurationsSectionProps) {
   return (
@@ -39,16 +35,16 @@ function TimerDurationsSection({
       </label>
 
       <label>
-        First Half Duration:
+        Game-Half Duration:
         <div className="time-input-group">
           <input
             type="number"
-            value={secondsToMinutesAndSeconds(firstHalfDuration).minutes}
+            value={secondsToMinutesAndSeconds(gameHalfDuration).minutes}
             onChange={e =>
-              onFirstHalfDurationChange(
+              onGameHalfDurationChange(
                 minutesAndSecondsToSeconds(
                   Number(e.target.value),
-                  secondsToMinutesAndSeconds(firstHalfDuration).seconds
+                  secondsToMinutesAndSeconds(gameHalfDuration).seconds
                 )
               )
             }
@@ -58,11 +54,11 @@ function TimerDurationsSection({
           <span>:</span>
           <input
             type="number"
-            value={secondsToMinutesAndSeconds(firstHalfDuration).seconds}
+            value={secondsToMinutesAndSeconds(gameHalfDuration).seconds}
             onChange={e =>
-              onFirstHalfDurationChange(
+              onGameHalfDurationChange(
                 minutesAndSecondsToSeconds(
-                  secondsToMinutesAndSeconds(firstHalfDuration).minutes,
+                  secondsToMinutesAndSeconds(gameHalfDuration).minutes,
                   Number(e.target.value)
                 )
               )
@@ -75,7 +71,7 @@ function TimerDurationsSection({
       </label>
 
       <label>
-        Half Time Duration:
+        Half-Time Duration:
         <div className="time-input-group">
           <input
             type="number"
@@ -99,42 +95,6 @@ function TimerDurationsSection({
               onHalfTimeDurationChange(
                 minutesAndSecondsToSeconds(
                   secondsToMinutesAndSeconds(halfTimeDuration).minutes,
-                  Number(e.target.value)
-                )
-              )
-            }
-            min="0"
-            max="59"
-            placeholder="secs"
-          />
-        </div>
-      </label>
-
-      <label>
-        Second Half Duration:
-        <div className="time-input-group">
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(secondHalfDuration).minutes}
-            onChange={e =>
-              onSecondHalfDurationChange(
-                minutesAndSecondsToSeconds(
-                  Number(e.target.value),
-                  secondsToMinutesAndSeconds(secondHalfDuration).seconds
-                )
-              )
-            }
-            min="0"
-            placeholder="mins"
-          />
-          <span>:</span>
-          <input
-            type="number"
-            value={secondsToMinutesAndSeconds(secondHalfDuration).seconds}
-            onChange={e =>
-              onSecondHalfDurationChange(
-                minutesAndSecondsToSeconds(
-                  secondsToMinutesAndSeconds(secondHalfDuration).minutes,
                   Number(e.target.value)
                 )
               )
