@@ -364,7 +364,8 @@
   .controls-middle .last-game-summary,
   .next-game-summary {
     flex-basis: 100%;
-    max-width: 100%;
+    // max-width: 100%;
+    max-width: min(20vw, 300px);
   }
 }
 
@@ -654,14 +655,14 @@
   .game-navigation-buttons,
   .last-game-summary,
   .next-game-time {
-    width: 100%;
+    width: 20%;
     justify-content: center;
     text-align: center;
   }
 
-  .last-game-summary {
-    max-width: 100%;
-  }
+  // .last-game-summary {
+  //   max-width: 100%;
+  // }
 
   .control-btn,
   .nav-btn {
@@ -674,12 +675,12 @@
   }
 
   .controls-middle .last-game-summary {
-    max-width: 100%;
+    // max-width: 100%;
     text-align: center;
   }
 
   .next-game-summary {
-    max-width: 100%;
+    // max-width: 100%;
     text-align: center;
   }
 
@@ -755,8 +756,8 @@
     font-size: clamp(0.95rem, 2vh, 1.2rem);
   }
 
-  .timer {
-    font-size: clamp(2.4rem, 10vh, 4.5rem);
+  .location-timer-grid.single .timer {
+    font-size: clamp(2.4rem, 12vh, 4.5rem);
   }
 
   .score-value {
@@ -852,6 +853,8 @@
   .score-team {
     padding: 6px;
     gap: 4px;
+    border: none;
+    box-shadow: none;
   }
 
   .team-color-label {

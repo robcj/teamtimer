@@ -31,7 +31,11 @@ interface UseGameTimerOptions {
   externalResetSignal?: number;
   externalPauseSignal?: number;
   externalResumeSignal?: number;
+  loopGames?: boolean;
 }
+
+const createInitialResults = (games: TimerConfig['games'], loopGames: boolean): GameResult[] =>
+  loopGames ? [] : createEmptyResults(games);
 
 export const useGameTimer = (
   config: TimerConfig,
@@ -45,6 +49,7 @@ export const useGameTimer = (
     externalResetSignal = 0,
     externalPauseSignal = 0,
     externalResumeSignal = 0,
+    loopGames = false,
   } = options;
   const [timerState, setTimerState] = useState<TimerState | null>(() => {
     const saved = localStorage.getItem(storageKey);
@@ -63,7 +68,7 @@ export const useGameTimer = (
     if (timerState?.gameResults && Array.isArray(timerState.gameResults)) {
       return timerState.gameResults;
     }
-    return createEmptyResults(config.games);
+    return createInitialResults(config.games, loopGames);
   });
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -82,17 +87,21 @@ export const useGameTimer = (
     setIsPaused(false);
     setScores({ team1: 0, team2: 0 });
     setCurrentGameIndex(0);
-    setGameResults(createEmptyResults(config.games));
+    setGameResults(createInitialResults(config.games, loopGames));
     setTimerState(null);
     localStorage.removeItem(storageKey);
   };
 
   useEffect(() => {
+    if (loopGames) {
+      return;
+    }
+
     setGameResults(prev =>
       config.games.map((_, index) => prev[index] ?? { startTime: null, score: null })
     );
     setCurrentGameIndex(prev => Math.min(prev, Math.max(config.games.length - 1, 0)));
-  }, [config.games.length]);
+  }, [config.games.length, loopGames]);
 
   useEffect(() => {
     if (readOnlyMirror || config.games.length === 0) {
@@ -200,6 +209,10 @@ export const useGameTimer = (
 
     if (phase === 'firstHalf' && prevPhase !== 'firstHalf') {
       setGameResults(prev => {
+        if (loopGames) {
+          return [...prev, { startTime: formatClockTime(new Date()), score: null }];
+        }
+
         if (currentGameIndex < 0 || currentGameIndex >= prev.length) {
           return prev;
         }
@@ -214,18 +227,19 @@ export const useGameTimer = (
 
     if (prevPhase === 'secondHalf' && phase === 'betweenGames') {
       setGameResults(prev => {
-        if (currentGameIndex < 0 || currentGameIndex >= prev.length) {
+        const resultIndex = loopGames ? prev.length - 1 : currentGameIndex;
+        if (resultIndex < 0 || resultIndex >= prev.length) {
           return prev;
         }
         const next = [...prev];
-        const current = next[currentGameIndex] ?? { startTime: null, score: null };
-        next[currentGameIndex] = { ...current, score: { ...scores } };
+        const current = next[resultIndex] ?? { startTime: null, score: null };
+        next[resultIndex] = { ...current, score: { ...scores } };
         return next;
       });
     }
 
     prevPhaseRef.current = phase;
-  }, [phase, currentGameIndex, scores, readOnlyMirror]);
+  }, [phase, currentGameIndex, scores, readOnlyMirror, loopGames]);
 
   useEffect(() => {
     if (readOnlyMirror) {
@@ -233,7 +247,10 @@ export const useGameTimer = (
     }
     if (phase === 'idle' || phase === 'betweenGames') {
       isLoadingScoresRef.current = true;
-      const currentGameResult = gameResults[currentGameIndex];
+      const resultIndex = loopGames
+        ? Math.max(gameResults.length - 1, 0)
+        : Math.max(currentGameIndex, 0);
+      const currentGameResult = gameResults[resultIndex];
       if (currentGameResult?.score) {
         setScores(currentGameResult.score);
       } else {
@@ -243,7 +260,7 @@ export const useGameTimer = (
         isLoadingScoresRef.current = false;
       }, 0);
     }
-  }, [currentGameIndex, phase, gameResults.length, readOnlyMirror]);
+  }, [currentGameIndex, phase, gameResults, readOnlyMirror, loopGames]);
 
   useEffect(() => {
     if (readOnlyMirror) {
@@ -255,19 +272,23 @@ export const useGameTimer = (
       currentGameIndex >= 0
     ) {
       setGameResults(prev => {
+        const resultIndex = loopGames ? prev.length - 1 : currentGameIndex;
+        if (resultIndex < 0) {
+          return prev;
+        }
         const next = [...prev];
-        const current = next[currentGameIndex] ?? { startTime: null, score: null };
+        const current = next[resultIndex] ?? { startTime: null, score: null };
         if (
           !current.score ||
           current.score.team1 !== scores.team1 ||
           current.score.team2 !== scores.team2
         ) {
-          next[currentGameIndex] = { ...current, score: { ...scores } };
+          next[resultIndex] = { ...current, score: { ...scores } };
         }
         return next;
       });
     }
-  }, [scores, phase, currentGameIndex, readOnlyMirror]);
+  }, [scores, phase, currentGameIndex, readOnlyMirror, loopGames]);
 
   useEffect(() => {
     if (readOnlyMirror) {
@@ -340,6 +361,11 @@ export const useGameTimer = (
             setScores({ team1: 0, team2: 0 });
             setPhase('firstHalf');
             setTimeRemaining(config.firstHalfDuration);
+          } else if (loopGames && config.games.length > 0) {
+            setCurrentGameIndex(0);
+            setScores({ team1: 0, team2: 0 });
+            setPhase('firstHalf');
+            setTimeRemaining(config.firstHalfDuration);
           } else {
             setPhase('idle');
             setIsRunning(false);
@@ -365,7 +391,7 @@ export const useGameTimer = (
         setIsPaused(false);
         setScores({ team1: 0, team2: 0 });
         setCurrentGameIndex(0);
-        setGameResults(createEmptyResults(config.games));
+        setGameResults(createInitialResults(config.games, loopGames));
         setTimerState(null);
         return;
       }
@@ -379,9 +405,13 @@ export const useGameTimer = (
         Math.min(nextState.currentGameIndex ?? 0, Math.max(config.games.length - 1, 0))
       );
       setGameResults(
-        config.games.map(
-          (_, index) => nextState.gameResults?.[index] ?? { startTime: null, score: null }
-        )
+        loopGames
+          ? Array.isArray(nextState.gameResults)
+            ? nextState.gameResults
+            : []
+          : config.games.map(
+              (_, index) => nextState.gameResults?.[index] ?? { startTime: null, score: null }
+            )
       );
       setTimerState(nextState);
     };
@@ -416,7 +446,7 @@ export const useGameTimer = (
     return () => {
       window.removeEventListener('storage', handleStorage);
     };
-  }, [readOnlyMirror, config.games, storageKey]);
+  }, [readOnlyMirror, config.games, storageKey, loopGames]);
 
   const handleNextGame = (): void => {
     if (currentGameIndex < config.games.length - 1) {

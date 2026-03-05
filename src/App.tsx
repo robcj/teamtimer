@@ -6,8 +6,11 @@ import Setup from './components/setup/Setup';
 import LocationTimerPanel, {
   getLocationGameResultsSnapshot,
   getLocationTimerStorageKey,
+  QUICK_MODE_DIVISION_ID,
+  QUICK_MODE_TEAM_A_ID,
+  QUICK_MODE_TEAM_B_ID,
 } from './components/LocationTimerPanel';
-import { GameResult, TimerConfig, ViewType } from './types';
+import { Division, Game, GameResult, Team, TimerConfig, ViewType } from './types';
 import { useWakeLock } from './hooks/useWakeLock';
 import {
   formatExpectedStartDateTime,
@@ -37,9 +40,7 @@ function App() {
   useWakeLock(config.keepScreenAwake);
 
   const locations =
-    config.locations.length > 0
-      ? config.locations
-      : [{ id: 'default-location', name: 'Location 1' }];
+    config.locations.length > 0 ? config.locations : [{ id: ' - ', name: 'Location 1' }];
   const defaultLocationId = locations[0].id;
 
   const getGameLocationId = (gameLocationId?: string): string => {
@@ -116,6 +117,61 @@ function App() {
     config.games,
     locations.map(location => location.id)
   );
+
+  const quickModeResultsData = useMemo(() => {
+    if (config.games.length > 0) {
+      return null;
+    }
+
+    const games: Game[] = [];
+    const results: GameResult[] = [];
+
+    locations.forEach(location => {
+      const rawState = localStorage.getItem(getLocationTimerStorageKey(location.id));
+      if (!rawState) {
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(rawState) as { gameResults?: GameResult[] };
+        const locationResults = Array.isArray(parsed.gameResults)
+          ? parsed.gameResults.filter(result => Boolean(result?.score))
+          : [];
+
+        locationResults.forEach(result => {
+          games.push({
+            team1: QUICK_MODE_TEAM_A_ID,
+            team2: QUICK_MODE_TEAM_B_ID,
+            locationId: location.id,
+          });
+          results.push(result);
+        });
+      } catch {}
+    });
+
+    const divisions: Division[] = [{ id: QUICK_MODE_DIVISION_ID, name: 'Open' }];
+    const teams: Team[] = [
+      { id: QUICK_MODE_TEAM_A_ID, name: 'Team A', divisionId: QUICK_MODE_DIVISION_ID },
+      { id: QUICK_MODE_TEAM_B_ID, name: 'Team B', divisionId: QUICK_MODE_DIVISION_ID },
+    ];
+
+    return {
+      games,
+      results,
+      divisions,
+      teams,
+      expectedStartTimes: games.map(() => null),
+    };
+  }, [
+    config.games.length,
+    locations,
+    view,
+    startAllSignal,
+    pauseAllSignal,
+    resumeAllSignal,
+    resetAllSignal,
+  ]);
+
   const expectedStartTimes = getExpectedStartTimestamps(
     config,
     config.games,
@@ -256,12 +312,12 @@ function App() {
           />
         ) : view === 'scores' ? (
           <Results
-            games={config.games}
+            games={quickModeResultsData?.games ?? config.games}
             locations={config.locations}
-            divisions={config.divisions}
-            teams={config.teams}
-            results={gameResults}
-            expectedStartTimes={expectedStartTimes}
+            divisions={quickModeResultsData?.divisions ?? config.divisions}
+            teams={quickModeResultsData?.teams ?? config.teams}
+            results={quickModeResultsData?.results ?? gameResults}
+            expectedStartTimes={quickModeResultsData?.expectedStartTimes ?? expectedStartTimes}
             leftTeamLabel={config.leftTeamLabel}
             rightTeamLabel={config.rightTeamLabel}
             competitionName={config.competitionName || ''}

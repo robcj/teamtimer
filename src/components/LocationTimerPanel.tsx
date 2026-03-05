@@ -4,6 +4,10 @@ import { useGameTimer } from '../hooks/useGameTimer';
 import TimerDisplay from './TimerDisplay';
 import { getExpectedStartTimestamps } from '../utils/expectedStartTimes';
 
+export const QUICK_MODE_DIVISION_ID = 'quick-mode-division';
+export const QUICK_MODE_TEAM_A_ID = 'quick-mode-team-a';
+export const QUICK_MODE_TEAM_B_ID = 'quick-mode-team-b';
+
 interface LocationTimerPanelProps {
   locationId: string;
   locationName: string;
@@ -46,9 +50,21 @@ function LocationTimerPanel({
   onManualStart,
   onSelectLocation,
 }: LocationTimerPanelProps) {
+  const useQuickMode = games.length === 0;
+  const effectiveGames: Game[] = useQuickMode
+    ? [{ team1: QUICK_MODE_TEAM_A_ID, team2: QUICK_MODE_TEAM_B_ID, locationId }]
+    : games;
+
   const locationConfig: TimerConfig = {
     ...config,
-    games,
+    divisions: useQuickMode ? [{ id: QUICK_MODE_DIVISION_ID, name: 'Open' }] : config.divisions,
+    teams: useQuickMode
+      ? [
+          { id: QUICK_MODE_TEAM_A_ID, name: 'Team A', divisionId: QUICK_MODE_DIVISION_ID },
+          { id: QUICK_MODE_TEAM_B_ID, name: 'Team B', divisionId: QUICK_MODE_DIVISION_ID },
+        ]
+      : config.teams,
+    games: effectiveGames,
   };
 
   const {
@@ -73,22 +89,18 @@ function LocationTimerPanel({
     externalPauseSignal: pauseAllSignal,
     externalResumeSignal: resumeAllSignal,
     externalResetSignal: resetAllSignal,
+    loopGames: useQuickMode,
   });
 
   const expectedStartTimes = getExpectedStartTimestamps(
     locationConfig,
-    games,
+    effectiveGames,
     [{ id: locationId, name: locationName }],
     locationStartTime ? { [locationId]: locationStartTime } : {}
   );
 
   return (
     <section className={`location-timer-panel ${hidden ? 'location-hidden' : ''}`}>
-      {!showLocationSelector && (
-        <div className="location-panel-header">
-          <div className="location-panel-title">{locationName}</div>
-        </div>
-      )}
       <TimerDisplay
         config={locationConfig}
         displayOnly={displayOnly}
