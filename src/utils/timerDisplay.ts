@@ -44,6 +44,19 @@ export const getNextGameStartTime = ({
     secondsUntilGameStart += config.gameHalfDuration + config.betweenGamesDuration;
   } else if (phase === PHASES.SECOND_HALF) {
     secondsUntilGameStart += config.betweenGamesDuration;
+  } else if (phase === PHASES.EXTRA_TIME_COUNTDOWN) {
+    secondsUntilGameStart +=
+      config.extraTimeHalfDuration +
+      config.halfTimeDuration +
+      config.extraTimeHalfDuration +
+      config.betweenGamesDuration;
+  } else if (phase === PHASES.EXTRA_TIME_FIRST_HALF) {
+    secondsUntilGameStart +=
+      config.halfTimeDuration + config.extraTimeHalfDuration + config.betweenGamesDuration;
+  } else if (phase === PHASES.EXTRA_TIME_HALF_TIME) {
+    secondsUntilGameStart += config.extraTimeHalfDuration + config.betweenGamesDuration;
+  } else if (phase === PHASES.EXTRA_TIME_SECOND_HALF) {
+    secondsUntilGameStart += config.betweenGamesDuration;
   } else if (phase === PHASES.BETWEEN_GAMES) {
     secondsUntilGameStart = timeRemaining;
   } else {

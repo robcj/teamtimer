@@ -111,49 +111,8 @@ function TimerDisplay({
   }, [isRunning, isPaused]);
 
   const moveToNextPhase = (): void => {
-    switch (phase) {
-      case PHASES.COUNTDOWN:
-        setPhase(PHASES.FIRST_HALF);
-        setTimeRemaining(config.gameHalfDuration);
-        break;
-      case PHASES.FIRST_HALF:
-        setPhase(PHASES.HALF_TIME);
-        setTimeRemaining(config.halfTimeDuration);
-        break;
-      case PHASES.HALF_TIME:
-        setPhase(PHASES.SECOND_HALF);
-        setTimeRemaining(config.gameHalfDuration);
-        break;
-      case PHASES.SECOND_HALF:
-        setPhase(PHASES.BETWEEN_GAMES);
-        setTimeRemaining(config.betweenGamesDuration);
-        break;
-      case PHASES.EXTRA_TIME_COUNTDOWN:
-        setPhase(PHASES.EXTRA_TIME_FIRST_HALF);
-        setTimeRemaining(config.extraTimeHalfDuration);
-        break;
-      case PHASES.EXTRA_TIME_FIRST_HALF:
-        setPhase(PHASES.EXTRA_TIME_HALF_TIME);
-        setTimeRemaining(config.halfTimeDuration);
-        break;
-      case PHASES.EXTRA_TIME_HALF_TIME:
-        setPhase(PHASES.EXTRA_TIME_SECOND_HALF);
-        setTimeRemaining(config.extraTimeHalfDuration);
-        break;
-      case PHASES.EXTRA_TIME_SECOND_HALF:
-        setPhase(PHASES.BETWEEN_GAMES);
-        setTimeRemaining(config.betweenGamesDuration);
-        break;
-      case PHASES.BETWEEN_GAMES:
-        setPhase(PHASES.IDLE);
-        setIsRunning(false);
-        setTimeRemaining(0);
-        break;
-      default:
-        setPhase(PHASES.IDLE);
-        setIsRunning(false);
-        setTimeRemaining(0);
-    }
+    // The phase transition logic is handled in the useGameTimer hook, so we just need to set timeRemaining to 0 here to trigger it
+    setTimeRemaining(0);
   };
 
   const handleStart = (): void => {
