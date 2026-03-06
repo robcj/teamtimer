@@ -6,36 +6,35 @@ Built with React and TypeScript for type safety and better developer experience.
 
 ## Features
 
-- **Multi-phase Timer**: Automatically progresses through game phases
-  - Countdown to start (default: 20 seconds)
-  - First half (default: 10 minutes)
-  - Half-time break (default: 2 minutes)
-  - Second half (default: 10 minutes)
-  - Between games (default: 3 minutes)
-
-- **Audio Alerts**: Beeps every second for the last 5 seconds before each phase ends
-
-- **Score Tracking**:
-  - Displays team names with configurable colour labels (White/Black by default)
-  - Large, easy-to-read score display below the timer
-  - Quick +/- buttons to adjust scores for both teams
-  - Scores tracked per game
-
-- **Tournament Management**:
-  - Enter a draw (list of teams playing against each other)
-  - Navigate between games
-  - Track multiple games in a single tournament
-  - Manage simultaneous games across multiple locations
-  - Start all locations together with a single action
-
-- **Configurable Settings**:
-  - Customize all timer durations
-  - Configure team colour labels (e.g., "White" and "Black" for stick/cap colours)
-  - Optional keep-screen-awake mode to reduce screen dim/lock while timing (where supported, enabled by default)
-  - Save/load configurations to/from JSON files
-  - Settings persist in browser local storage
-
-- **Offline Capable**: Can be built as a single HTML file for offline use
+- **Multi-phase game timer**
+  - Countdown to start, first half, half time, second half, between games
+  - Optional extra time and sudden death flows
+  - Automatic phase progression
+- **Audio alerts**
+  - Beeps every second for the final 5 seconds of active countdown phases
+- **Score tracking**
+  - Live score controls with configurable opposing team labels (White/Black by default)
+  - Per-game score storage
+- **Tournament setup workflow**
+  - Competition name
+  - Locations, divisions, teams, and game schedule
+  - Special games (Winner/Loser of prior games)
+  - Expected start times and optional tournament auto-start
+- **Multi-location control**
+  - Single or split scoreboard layout
+  - Start/Pause/Resume all locations together
+  - Reset all locations
+- **Results tools**
+  - Results table with expected/actual start times
+  - Grouping by location and/or division
+  - CSV export and print support
+- **Second screen mode**
+  - Display-only mirrored view for projectors or external displays
+- **Config persistence and portability**
+  - Import/export JSON config
+  - Browser local storage synchronization
+- **Offline capable**
+  - Downloadable single HTML build
 
 ## Installation
 
@@ -77,55 +76,56 @@ The single file `team-timer-offline.html` can be downloaded and opened directly 
 
 ## How to Use
 
-1. **Configuration**:
-   - Click the "Configuration" button in the header
-   - Set timer durations for each phase
+1. **Set up tournament configuration**
 
-- Enable/disable "Keep screen awake while using the timer" as needed (enabled by default)
-- In Draw, add one or more **Locations** (e.g., North Court, South Court)
-- Optionally set **Tournament Start** date/time
-- When 2+ locations exist, choose a location for each game in **Game Draw**
-- Add games to the tournament draw by entering team names
-- Reorder or remove games as needed
-- Save or load configuration files for reuse
-- Click "Save" to apply changes
+- Open **Menu -> Setup**
+- In **Competition**, optionally set a competition name and keep-screen-awake mode
+- In **Timer Durations**, configure countdown, halves, half-time, extra-time half, and between-games durations
+- In **Opposing Team Labels**, set left/right team label text
+- Add **Locations** (for multi-location events)
+- Add **Divisions** and **Teams**
+- Optionally set **Auto-Start Time**
+- In **Game Schedule**, add standard games and optional special games (Winner/Loser of earlier games)
+- Use **Import / Export** to save or load JSON config files
+- Click **Apply**
 
-2. **Running the Timer**:
-   - Click "Start" to begin the countdown
-   - The timer automatically progresses through each phase
-   - Use "Pause" to pause the current timer
-   - Use "Reset" to reset the current game
-   - Use "Skip Phase" to move to the next phase immediately
+2. **Run the timer**
 
-3. **Score Tracking**:
-   - Use the + and - buttons next to each team's score
-   - Scores are tracked per game
+- Click **Start** to begin the countdown
+- Use **Pause** / **Resume** as needed
+- Use **Reset** to reset current game state
+- Use **Skip Phase** to jump ahead
+- During **Between Games**, you can trigger **Extra Time** or **Sudden Death**
 
-4. **Navigating Games**:
-   - Use "Previous Game", "Next Game", and "First Game" buttons to navigate
-   - Scores and timer reset when switching games
+3. **Manage scores**
 
-5. **Multiple Locations & Split View**:
+- Use `+` and `-` controls for each side
+- Scores are tracked per game result
 
-- If multiple locations are configured, select which location to view in Timer mode
-- Use **Single** to focus on one location
-- Use **Split** to show all locations at once
-- Use **Start All** to begin countdowns in all locations at once
-- Use **Reset All** to reset all location timers and scores together
-- All location timers continue running even when not currently visible
+4. **Control multiple locations**
 
-6. **Second Screen**:
+- Use **Start All**, **Pause All**, and **Resume All** from the header
+- Use **Reset All** from the menu to clear all locations
+- Switch between **Single Scoreboard** and **Split Scoreboard** when multiple locations exist
+- Timers continue for all locations even when not currently visible
 
-- Click **Second Screen** from the header
-- If multiple locations exist, choose one location or "all" (split)
-- The second screen is display-only (no control buttons)
-- You can change displayed location or split view on the second screen
+5. **Use Results view**
 
-7. **Expected Start Times**:
+- Open **Menu -> Results**
+- Review scores with expected/actual start times
+- Optionally group by **Location** and/or **Division**
+- Use **Export CSV** or **Print**
 
-- Expected start times are shown in **Game Draw** and **Game Scores**
-- If Tournament Start is set, schedule times are based on that datetime
-- Otherwise, schedule times are calculated from when the relevant **Start** (or **Start All**) action is clicked
+6. **Open a second screen**
+
+- Open **Menu -> Second Screen**
+- Choose a specific location or `all` (split mode) when prompted
+- The second window is display-only (no control buttons)
+
+7. **Expected start times behavior**
+
+- If **Auto-Start Time** is set, schedule times are based on that datetime
+- Otherwise, expected times begin when **Start** (or **Start All**) is first used
 
 ## Browser Compatibility
 

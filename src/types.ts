@@ -59,7 +59,7 @@ export interface TimerState {
   gameResults?: GameResult[];
 }
 
-export type ViewType = 'timer' | 'setup' | 'scores';
+export type ViewType = 'timer' | 'setup' | 'scores' | 'guide';
 
 export type SpecialOutcome = 'Winner' | 'Loser';
 

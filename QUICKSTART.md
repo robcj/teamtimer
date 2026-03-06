@@ -10,126 +10,105 @@ npm install
 
 ### 2. Run the App
 
-**For Development (with hot-reload):**
+Development (hot reload):
 
 ```bash
 npm start
 ```
 
-Opens at http://localhost:3000
+Opens at `http://localhost:3000`.
 
-**For Production Build (includes offline single-file output):**
+Production build (also generates offline single-file app):
 
 ```bash
 npm run build
 ```
 
-Outputs standard assets in `dist/` and the offline file in `dist/dist-single/`.
-
-**For Offline Single-File Version:**
+Single-file build alias:
 
 ```bash
 npm run build:single
 ```
 
-Also creates `dist/dist-single/team-timer-offline.html` - a single HTML file that works offline!
+Both build commands create `dist/dist-single/team-timer-offline.html`.
 
-### 3. Using the App
+### 3. Use the App
+
+#### Setup
+
+1. Open **Menu -> Setup**.
+2. In **Competition**, set an optional competition name and keep-screen-awake behavior.
+3. In **Timer Durations**, set:
+   - Countdown to Start
+   - First/Second Half duration
+   - Half Time duration
+   - Extra Time half duration
+   - Between Games duration
+4. In **Opposing Team Labels**, set left/right labels (defaults: White/Black).
+5. Add **Locations** (optional, but required for multi-location tournaments).
+6. Add **Divisions** and **Teams**.
+7. In **Auto-Start Time**, optionally set tournament auto-start date/time.
+8. In **Game Schedule**, add games:
+   - Standard games by selecting Team 1 vs Team 2
+   - Special games (Winner/Loser of prior games)
+   - Optional empty-slot games
+9. Use **Import / Export** for JSON config files.
+10. Click **Apply**.
 
 #### Timer Controls
 
-- **Start**: Begin the countdown and start timing
-- **Pause**: Pause the current timer
-- **Reset**: Reset the current game
-- **Skip Phase**: Jump to the next phase immediately
+- **Start / Pause / Resume**: control the active timer.
+- **Reset**: reset current game timer and score.
+- **Skip Phase**: jump to next phase.
+- **Extra Time**: available during Between Games.
+- **Sudden Death** and **End Sudden Death**: available from controls when applicable.
 
-#### Score Tracking
+#### Multi-Location Controls
 
-- Scores are displayed below the timer with team colour labels
-- Use **+** and **-** buttons to adjust scores for both teams
-- Left team shows the configured label (default: "White")
-- Right team shows the configured label (default: "Black")
-- Scores are tracked per game and reset when switching games
+- **Start All / Pause All / Resume All** controls all locations together.
+- **Reset All** resets all locations.
+- Use **Single Scoreboard** or **Split Scoreboard** when multiple locations exist.
+- Each location timer continues running even when not currently visible.
 
-#### Configuration
+#### Results View
 
-1. Click **Configuration** button
-2. Set timer durations (in seconds and minutes)
-3. Configure team colour labels:
-   - Set Left Team Label (e.g., "White", "Home", etc.)
-   - Set Right Team Label (e.g., "Black", "Away", etc.)
-4. Optional: enable **Keep screen awake while using the timer**
-5. In **Draw**, add one or more **Locations** (for example, North Court, South Court)
-6. Optional: set **Tournament Start** date/time
-7. Add games to the tournament:
-   - Enter Team 1 name
-   - Enter Team 2 name
-   - If 2+ locations exist, select a location for each game
-   - Click **Add Game**
-8. Reorder games with **↑** and **↓** buttons
-9. **Save** or **Export** your configuration
-10. Click **Save** to return to timer view
-
-#### Tournament Management
-
-- Navigate between games using:
-  - **Previous Game**
-  - **Next Game**
-  - **First Game** (reset to first game)
-- If multiple locations are configured:
-  - Use the location selector to choose one location
-  - Use **Single** or **Split** to switch between focused and all-location views
-  - Use **Start All** to begin all location countdowns at once
-  - Use **Reset All** to reset all location timers and scores together
-  - Timers continue running for all locations even when another location is being viewed
-  - Expected start times are shown in Draw and Scores
-    - If Tournament Start is set, it drives the schedule
-    - Otherwise, timing starts from when Start/Start All is clicked
+- Open **Menu -> Results**.
+- View game scores and actual/expected start times.
+- Optional grouping by **Location** and/or **Division**.
+- Use **Export CSV** or **Print**.
 
 #### Second Screen
 
-- Click **Second Screen** from the header
-- If multiple locations exist, choose a specific location or type **all** for split view
-- The second screen mirrors timer and scores in display-only mode (no control buttons)
+- Open **Menu -> Second Screen**.
+- Choose a location or **all** (split view) when prompted.
+- Second screen is display-only and mirrors timer state.
 
 ## Timer Phases
 
-The timer automatically progresses through these phases:
+Main flow:
 
-1. **Countdown to Start** (20 seconds default)
-2. **First Half** (10 minutes default)
-3. **Half Time** (2 minutes default)
-4. **Second Half** (10 minutes default)
-5. **Between Games** (3 minutes default)
-6. **Idle** (ready for next game)
+1. Countdown to Start
+2. First Half
+3. Half Time
+4. Second Half
+5. Between Games
+6. Ready to Start
 
-Audio beeps sound for the last 5 seconds of each phase!
+Optional overtime phases:
 
-## Save & Load Configurations
+1. Extra Time Countdown
+2. Extra Time First Half
+3. Extra Time Half Time
+4. Extra Time Second Half
+5. Sudden Death Countdown
+6. Sudden Death
 
-### Export Configuration
-
-- Go to Configuration
-- Click **Export Configuration**
-- Downloads a JSON file
-
-### Import Configuration
-
-- Go to Configuration
-- Click **Import Configuration**
-- Select a JSON file you previously exported
+Audio beeps play for the final 5 seconds of active countdown phases.
 
 ## Offline Use
 
-After running `npm run build` or `npm run build:single`, you can:
+After `npm run build` or `npm run build:single`:
 
-1. Find `team-timer-offline.html` in the `dist/dist-single/` folder
-2. Copy it to a USB drive or email it
-3. Open it in any web browser - **no internet required!**
-4. All features work offline including:
-   - Timer functionality
-   - Score tracking
-   - Configuration saves (in browser storage)
-   - Import/export of configurations
-
-Perfect for tournaments in locations with poor internet!
+1. Open `dist/dist-single/team-timer-offline.html`.
+2. Run it directly in a browser (no server required).
+3. Local storage, timer, scoring, and config import/export continue to work offline.

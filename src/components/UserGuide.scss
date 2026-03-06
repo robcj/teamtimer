@@ -1,0 +1,66 @@
+@use '../styles/tokens' as *;
+
+.user-guide-page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.user-guide-panel {
+  width: min(980px, 100%);
+  background: $white;
+  color: $text-primary;
+  border: 1px solid $border-light-blue;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
+  padding: clamp(16px, 2vw, 28px);
+}
+
+.user-guide-header {
+  margin-bottom: 14px;
+
+  h2 {
+    margin: 0 0 6px;
+    color: $scores-accent;
+  }
+
+  p {
+    margin: 0;
+    color: $text-muted;
+  }
+}
+
+.user-guide-section {
+  margin-top: 14px;
+
+  h3 {
+    margin: 0 0 8px;
+    color: $scores-accent;
+    font-size: 1.02rem;
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.45;
+  }
+
+  li + li {
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 640px) {
+  .user-guide-panel {
+    padding: 14px;
+  }
+
+  .user-guide-section {
+    h3 {
+      font-size: 0.98rem;
+    }
+  }
+}

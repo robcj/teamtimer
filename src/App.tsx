@@ -3,6 +3,7 @@ import './App.scss';
 import Results from './components/Results';
 import AppHeader from './components/AppHeader';
 import Setup from './components/setup/Setup';
+import UserGuide from './components/UserGuide';
 import LocationTimerPanel, {
   QUICK_MODE_DIVISION_ID,
   QUICK_MODE_TEAM_A_ID,
@@ -255,6 +256,7 @@ function App() {
           headerStatusText={headerStatusText}
           onOpenScores={() => setView('scores')}
           onOpenSetup={() => setView('setup')}
+          onOpenGuide={() => setView('guide')}
           onViewTimer={() => setView('timer')}
           onGlobalControl={handleGlobalControl}
           canToggleLayout={locations.length > 1}
@@ -320,6 +322,8 @@ function App() {
             rightTeamLabel={config.rightTeamLabel}
             competitionName={config.competitionName || ''}
           />
+        ) : view === 'guide' ? (
+          <UserGuide />
         ) : null}
       </main>
     </div>

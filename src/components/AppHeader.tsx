@@ -8,6 +8,7 @@ interface AppHeaderProps {
   headerStatusText?: string;
   onOpenScores: () => void;
   onOpenSetup: () => void;
+  onOpenGuide: () => void;
   onViewTimer: () => void;
   onGlobalControl?: () => void;
   onOpenSecondScreen?: () => void;
@@ -26,6 +27,7 @@ function AppHeader({
   headerStatusText,
   onOpenScores,
   onOpenSetup,
+  onOpenGuide,
   onViewTimer,
   onGlobalControl,
   onOpenSecondScreen,
@@ -99,6 +101,15 @@ function AppHeader({
               className={`header-menu-item ${view === 'setup' ? 'active' : ''}`}
             >
               Setup
+            </button>
+            <button
+              onClick={event => {
+                closeMenu(event);
+                onOpenGuide();
+              }}
+              className={`header-menu-item ${view === 'guide' ? 'active' : ''}`}
+            >
+              User Guide
             </button>
             {canToggleLayout && onSetSingleLayout && isSplitLayout && (
               <button
