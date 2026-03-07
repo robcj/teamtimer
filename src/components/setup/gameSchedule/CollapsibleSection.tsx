@@ -14,13 +14,12 @@ function CollapsibleSection({ title, defaultOpen = false, children }: Collapsibl
   };
 
   return (
-    <div className={`config-section ${isOpen ? '' : 'collapsed'}`}>
+    <div className={`config-section ${isOpen ? '' : 'collapsed'}`} onClick={handleToggle}>
       <div className="config-section-header">
         <h3>{title}</h3>
         <button
           type="button"
           className="section-toggle-btn"
-          onClick={handleToggle}
           aria-label={isOpen ? `Collapse ${title}` : `Expand ${title}`}
           aria-expanded={isOpen}
         >

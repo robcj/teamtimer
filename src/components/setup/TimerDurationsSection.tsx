@@ -12,6 +12,8 @@ interface TimerDurationsSectionProps {
   onHalfTimeDurationChange: (value: number) => void;
   onBetweenGamesDurationChange: (value: number) => void;
   onExtraTimeHalfDurationChange: (value: number) => void;
+  keepScreenAwake: boolean;
+  onKeepScreenAwakeChange: (value: boolean) => void;
 }
 
 function TimerDurationsSection({
@@ -25,6 +27,8 @@ function TimerDurationsSection({
   onHalfTimeDurationChange,
   onBetweenGamesDurationChange,
   onExtraTimeHalfDurationChange,
+  keepScreenAwake,
+  onKeepScreenAwakeChange,
 }: TimerDurationsSectionProps) {
   return (
     <div className="config-group">
@@ -58,6 +62,14 @@ function TimerDurationsSection({
         value={extraTimeHalfDuration}
         onChange={onExtraTimeHalfDurationChange}
       />
+      <label className="checkbox-row">
+        <input
+          type="checkbox"
+          checked={keepScreenAwake}
+          onChange={e => onKeepScreenAwakeChange(e.target.checked)}
+        />
+        <span>Keep screen awake while using the timer (where supported)</span>
+      </label>
     </div>
   );
 }

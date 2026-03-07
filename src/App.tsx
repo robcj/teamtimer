@@ -245,6 +245,9 @@ function App() {
 
   const headerStatusText = headerStartTimeText;
   const isSplitView = timerLayout === 'split' && locations.length > 1;
+  const handleCloseSecondaryView = (): void => {
+    setView('timer');
+  };
 
   return (
     <div className="app">
@@ -270,60 +273,78 @@ function App() {
       )}
 
       <main className="app-main">
-        {view === 'timer' || isDisplayOnly ? (
-          <>
-            <div className={`location-timer-grid ${isSplitView ? 'split' : 'single'}`}>
-              {locations.map(location => {
-                const locationGames = config.games.filter(
-                  game => getGameLocationId(game.locationId) === location.id
-                );
+        <div
+          className={`location-timer-grid ${isSplitView ? 'split' : 'single'} ${
+            !isDisplayOnly && view !== 'timer' ? 'background-running-hidden' : ''
+          }`}
+        >
+          {locations.map(location => {
+            const locationGames = config.games.filter(
+              game => getGameLocationId(game.locationId) === location.id
+            );
 
-                return (
-                  <LocationTimerPanel
-                    key={location.id}
-                    locationId={location.id}
-                    locationName={location.name}
-                    config={config}
-                    games={locationGames}
-                    readOnlyMirror={isDisplayOnly}
-                    displayOnly={isDisplayOnly}
-                    hidden={!isSplitView && selectedLocation !== location.id}
-                    startAllSignal={startAllSignal}
-                    resetAllSignal={resetAllSignal}
-                    pauseAllSignal={pauseAllSignal}
-                    resumeAllSignal={resumeAllSignal}
-                    onManualStart={handleLocationManualStart}
-                    locations={locations}
-                    selectedLocation={selectedLocation}
-                    showLocationSelector={!isSplitView && locations.length > 1}
-                    onSelectLocation={setSelectedLocation}
-                  />
-                );
-              })}
-            </div>
-          </>
-        ) : view === 'setup' ? (
-          <Setup
-            config={config}
-            gameResults={gameResults}
-            expectedStartTimes={expectedStartTimes}
-            onSave={handleSetupSave}
-            onCancel={handleSetupCancel}
-          />
-        ) : view === 'scores' ? (
-          <Results
-            games={quickModeResultsData?.games ?? config.games}
-            locations={config.locations}
-            divisions={quickModeResultsData?.divisions ?? config.divisions}
-            teams={quickModeResultsData?.teams ?? config.teams}
-            results={quickModeResultsData?.results ?? gameResults}
-            expectedStartTimes={quickModeResultsData?.expectedStartTimes ?? expectedStartTimes}
-            leftTeamLabel={config.leftTeamLabel}
-            rightTeamLabel={config.rightTeamLabel}
-            competitionName={config.competitionName || ''}
-          />
-        ) : view === 'guide' ? (
-          <UserGuide />
+            return (
+              <LocationTimerPanel
+                key={location.id}
+                locationId={location.id}
+                locationName={location.name}
+                config={config}
+                games={locationGames}
+                readOnlyMirror={isDisplayOnly}
+                displayOnly={isDisplayOnly}
+                hidden={
+                  !isDisplayOnly &&
+                  (view !== 'timer' || (!isSplitView && selectedLocation !== location.id))
+                }
+                startAllSignal={startAllSignal}
+                resetAllSignal={resetAllSignal}
+                pauseAllSignal={pauseAllSignal}
+                resumeAllSignal={resumeAllSignal}
+                onManualStart={handleLocationManualStart}
+                locations={locations}
+                selectedLocation={selectedLocation}
+                showLocationSelector={!isSplitView && locations.length > 1}
+                onSelectLocation={setSelectedLocation}
+              />
+            );
+          })}
+        </div>
+
+        {!isDisplayOnly && view !== 'timer' ? (
+          <section className="secondary-view">
+            <button
+              type="button"
+              className="secondary-view-close"
+              aria-label="Close and return to timer"
+              onClick={handleCloseSecondaryView}
+            >
+              &times;
+            </button>
+
+            {view === 'setup' ? (
+              <Setup
+                config={config}
+                gameResults={gameResults}
+                expectedStartTimes={expectedStartTimes}
+                onSave={handleSetupSave}
+                onCancel={handleSetupCancel}
+              />
+            ) : view === 'scores' ? (
+              <Results
+                games={quickModeResultsData?.games ?? config.games}
+                locations={config.locations}
+                divisions={quickModeResultsData?.divisions ?? config.divisions}
+                teams={quickModeResultsData?.teams ?? config.teams}
+                results={quickModeResultsData?.results ?? gameResults}
+                expectedStartTimes={quickModeResultsData?.expectedStartTimes ?? expectedStartTimes}
+                leftTeamLabel={config.leftTeamLabel}
+                rightTeamLabel={config.rightTeamLabel}
+                competitionName={config.competitionName || ''}
+              />
+            ) : view === 'guide' ? (
+              <UserGuide />
+            ) : null}
+          </section>
         ) : null}
       </main>
     </div>

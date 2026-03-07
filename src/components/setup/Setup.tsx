@@ -133,9 +133,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
       <CollapsibleSection title="Competition">
         <CompetitionSection
           competitionName={competitionName}
-          keepScreenAwake={keepScreenAwake}
           onCompetitionNameChange={setCompetitionName}
-          onKeepScreenAwakeChange={setKeepScreenAwake}
         />
       </CollapsibleSection>
 
@@ -151,6 +149,8 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
           onHalfTimeDurationChange={setHalfTimeDuration}
           onBetweenGamesDurationChange={setBetweenGamesDuration}
           onExtraTimeHalfDurationChange={setExtraTimeHalfDuration}
+          keepScreenAwake={keepScreenAwake}
+          onKeepScreenAwakeChange={setKeepScreenAwake}
         />
       </CollapsibleSection>
 

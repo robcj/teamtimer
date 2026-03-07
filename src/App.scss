@@ -152,6 +152,20 @@
   &.split {
     grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
   }
+
+  &.background-running-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
 }
 
 .location-timer-panel {
@@ -206,6 +220,33 @@
   margin-top: 4px;
 }
 
+.secondary-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.secondary-view-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.65);
+  color: $white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
 @media (max-width: 1024px) {
   .app-main {
     padding: clamp(8px, 1.5vh, 15px) clamp(8px, 1.5vw, 15px);
@@ -231,6 +272,11 @@
     grid-column: 1 / -1;
     justify-self: end;
     margin-top: 0;
+  }
+
+  .secondary-view-close {
+    top: 6px;
+    right: 6px;
   }
 }
 
