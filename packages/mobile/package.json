@@ -1,0 +1,15 @@
+{
+  "name": "@team-timer/mobile",
+  "version": "1.0.0",
+  "description": "iOS/Android app using Capacitor",
+  "scripts": {
+    "build": "mkdir -p www && echo 'Mobile build placeholder'"
+  },
+  "dependencies": {
+    "@team-timer/core": "file:../core",
+    "@capacitor/core": "^6.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

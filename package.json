@@ -1,13 +1,21 @@
 {
   "name": "team-timer",
   "version": "1.0.0",
-  "description": "A timer app for team sports tournaments",
-  "main": "index.js",
+  "description": "Multi-platform sports tournament timer (monorepo)",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/web",
+    "packages/mobile"
+  ],
   "scripts": {
-    "start": "webpack serve --mode development --open",
-    "build:bundle": "webpack --mode production",
-    "build": "npm run build:bundle && node build-single.js",
-    "build:single": "npm run build"
+    "start": "npm start -w @team-timer/web",
+    "build": "npm run build -w @team-timer/core && npm run build -w @team-timer/web",
+    "build:core": "npm run build -w @team-timer/core",
+    "build:web": "npm run build -w @team-timer/web",
+    "build:bundle": "npm run build:bundle -w @team-timer/web",
+    "build:single": "npm run build -w @team-timer/web",
+    "test": "npm test --workspaces"
   },
   "keywords": [
     "timer",
