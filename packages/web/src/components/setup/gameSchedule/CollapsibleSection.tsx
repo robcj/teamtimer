@@ -14,8 +14,8 @@ function CollapsibleSection({ title, defaultOpen = false, children }: Collapsibl
   };
 
   return (
-    <div className={`config-section ${isOpen ? '' : 'collapsed'}`} onClick={handleToggle}>
-      <div className="config-section-header">
+    <div className={`config-section ${isOpen ? '' : 'collapsed'}`}>
+      <div className="config-section-header" onClick={handleToggle}>
         <h3>{title}</h3>
         <button
           type="button"
