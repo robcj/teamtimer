@@ -77,11 +77,11 @@ Both build commands create `dist/dist-single/team-timer-offline.html`.
 - Optional grouping by **Location** and/or **Division**.
 - Use **Export CSV** or **Print**.
 
-#### Second Screen
+#### Additional Screen
 
-- Open **Menu -> Second Screen**.
+- Open **Menu -> Additional Screen**.
 - Choose a location or **all** (split view) when prompted.
-- Second screen is display-only and mirrors timer state.
+- Additional screen is display-only and mirrors timer state.
 
 ## Timer Phases
 

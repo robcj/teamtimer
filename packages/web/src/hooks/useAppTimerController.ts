@@ -48,7 +48,7 @@ export const useAppTimerController = ({
         .map((location, index) => `${index + 1}. ${location}`)
         .join('\n');
       const choice = window.prompt(
-        `Open second screen for which location?\n\n${optionsText}\n\nType a number, or type "all" for split screen.`,
+        `Open additional screen for which location?\n\n${optionsText}\n\nType a number, or type "all" for split screen.`,
         selectedLocation ? String(locations.indexOf(selectedLocation) + 1) : '1'
       );
 

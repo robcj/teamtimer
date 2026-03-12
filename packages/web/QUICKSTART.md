@@ -65,7 +65,7 @@ Both build commands create `dist/dist-single/team-timer-offline.html`.
 
 #### Multi-Location Controls
 
-- **Start All / Pause All / Resume All** controls all locations together.
+- **Start All / Pause All / Resume All** controls all locations (courts or fields etc.) together.
 - **Reset All** resets all locations.
 - Use **Single Scoreboard** or **Split Scoreboard** when multiple locations exist.
 - Each location timer continues running even when not currently visible.
@@ -77,11 +77,12 @@ Both build commands create `dist/dist-single/team-timer-offline.html`.
 - Optional grouping by **Location** and/or **Division**.
 - Use **Export CSV** or **Print**.
 
-#### Second Screen
+#### Additional Screen
 
-- Open **Menu -> Second Screen**.
+- Select **Menu -> Additional Screen** to open a new browser tab displaying the game time and scoreboard.
 - Choose a location or **all** (split view) when prompted.
-- Second screen is display-only and mirrors timer state.
+- Additional screen/tab is display-only and mirrors timer state.
+- This tab can then be moved onto a second display, e.g. a large screen connected to your device running Team Timer.
 
 ## Timer Phases
 

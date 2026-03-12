@@ -74,10 +74,23 @@ function UserGuide() {
         </section>
 
         <section className="user-guide-section">
-          <h3>6. Second Screen and Offline Use</h3>
+          <h3>6. Additional Screen </h3>
           <ul>
-            <li>Open Menu -&gt; Second Screen for a display-only mirror window.</li>
+            <li>
+              Open Menu -&gt; Additional Screen in a separate browser tab for a display-only mirror
+              window.
+            </li>
             <li>Choose one location or all (split) when prompted.</li>
+            <li>
+              This tab can then be moved onto a second display, e.g. a large screen connected to
+              your device running Team Timer.
+            </li>
+          </ul>
+        </section>
+
+        <section className="user-guide-section">
+          <h3>7. Offline Use</h3>
+          <ul>
             <li>Use Download Offline App in the menu for a portable single-file build.</li>
           </ul>
         </section>

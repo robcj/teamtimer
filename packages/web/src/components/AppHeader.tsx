@@ -10,6 +10,7 @@ interface AppHeaderProps {
   onOpenScores: () => void;
   onOpenSetup: () => void;
   onOpenGuide: () => void;
+  onOpenAbout: () => void;
   onViewTimer: () => void;
   onGlobalControl?: () => void;
   onOpenSecondScreen?: () => void;
@@ -29,6 +30,7 @@ function AppHeader({
   onOpenScores,
   onOpenSetup,
   onOpenGuide,
+  onOpenAbout,
   onViewTimer,
   onGlobalControl,
   onOpenSecondScreen,
@@ -72,6 +74,7 @@ function AppHeader({
           onOpenScores={onOpenScores}
           onOpenSetup={onOpenSetup}
           onOpenGuide={onOpenGuide}
+          onOpenAbout={onOpenAbout}
           canToggleLayout={canToggleLayout}
           isSplitLayout={isSplitLayout}
           onSetSingleLayout={onSetSingleLayout}

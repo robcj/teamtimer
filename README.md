@@ -28,7 +28,7 @@ Built with React and TypeScript for type safety and better developer experience.
   - Results table with expected/actual start times
   - Grouping by location and/or division
   - CSV export and print support
-- **Second screen mode**
+- **Additional screen mode**
   - Display-only mirrored view for projectors or external displays
 - **Config persistence and portability**
   - Import/export JSON config
@@ -116,9 +116,9 @@ The single file `team-timer-offline.html` can be downloaded and opened directly 
 - Optionally group by **Location** and/or **Division**
 - Use **Export CSV** or **Print**
 
-6. **Open a second screen**
+6. **Open a additional screen**
 
-- Open **Menu -> Second Screen**
+- Open **Menu -> Additional Screen**
 - Choose a specific location or `all` (split mode) when prompted
 - The second window is display-only (no control buttons)
 

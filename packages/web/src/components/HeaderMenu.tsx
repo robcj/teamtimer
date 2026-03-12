@@ -7,6 +7,7 @@ interface HeaderMenuProps {
   onOpenScores: () => void;
   onOpenSetup: () => void;
   onOpenGuide: () => void;
+  onOpenAbout: () => void;
   canToggleLayout?: boolean;
   isSplitLayout?: boolean;
   onSetSingleLayout?: () => void;
@@ -22,6 +23,7 @@ function HeaderMenu({
   onOpenScores,
   onOpenSetup,
   onOpenGuide,
+  onOpenAbout,
   canToggleLayout = false,
   isSplitLayout = false,
   onSetSingleLayout,
@@ -68,15 +70,6 @@ function HeaderMenu({
         >
           Setup
         </button>
-        <button
-          onClick={event => {
-            closeMenu(event);
-            onOpenGuide();
-          }}
-          className={`header-menu-item ${view === 'guide' ? 'active' : ''}`}
-        >
-          User Guide
-        </button>
         {canToggleLayout && onSetSingleLayout && isSplitLayout && (
           <button
             onClick={event => {
@@ -107,19 +100,9 @@ function HeaderMenu({
             }}
             className="header-menu-item"
           >
-            Second Screen
+            Additional Screen
           </button>
         )}
-        <a
-          href="dist-single/team-timer-offline.html"
-          download="team-timer.html"
-          onClick={event => {
-            closeMenu(event);
-          }}
-          className="header-menu-item"
-        >
-          Download Offline App
-        </a>
         {onResetAll && (
           <button
             onClick={event => {
@@ -142,6 +125,34 @@ function HeaderMenu({
             Clear All Data
           </button>
         )}
+        <button
+          onClick={event => {
+            closeMenu(event);
+            onOpenGuide();
+          }}
+          className={`header-menu-item ${view === 'guide' ? 'active' : ''}`}
+        >
+          User Guide
+        </button>
+        <a
+          href="dist-single/team-timer-offline.html"
+          download="team-timer.html"
+          onClick={event => {
+            closeMenu(event);
+          }}
+          className="header-menu-item"
+        >
+          Download Offline App
+        </a>
+        <button
+          onClick={event => {
+            closeMenu(event);
+            onOpenAbout();
+          }}
+          className={`header-menu-item ${view === 'about' ? 'active' : ''}`}
+        >
+          About
+        </button>
       </div>
     </details>
   );

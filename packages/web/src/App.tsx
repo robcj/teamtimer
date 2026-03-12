@@ -4,6 +4,7 @@ import Results from './components/Results';
 import AppHeader from './components/AppHeader';
 import Setup from './components/setup/Setup';
 import UserGuide from './components/UserGuide';
+import About from './components/About';
 import LocationTimerPanel, {
   QUICK_MODE_DIVISION_ID,
   QUICK_MODE_TEAM_A_ID,
@@ -265,6 +266,7 @@ function App() {
           onOpenScores={() => setView('scores')}
           onOpenSetup={() => setView('setup')}
           onOpenGuide={() => setView('guide')}
+          onOpenAbout={() => setView('about')}
           onViewTimer={() => setView('timer')}
           onGlobalControl={handleGlobalControl}
           canToggleLayout={locations.length > 1}
@@ -348,6 +350,8 @@ function App() {
               />
             ) : view === 'guide' ? (
               <UserGuide />
+            ) : view === 'about' ? (
+              <About gitTag={__GIT_TAG__} gitCommit={__GIT_COMMIT__} />
             ) : null}
           </section>
         ) : null}
