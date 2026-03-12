@@ -1,15 +1,26 @@
 {
   "name": "@team-timer/mobile",
   "version": "1.0.0",
-  "description": "iOS/Android app using Capacitor",
+  "description": "iOS/Android app wrapper for Team Timer using Capacitor",
   "scripts": {
-    "build": "mkdir -p www && echo 'Mobile build placeholder'"
+    "build:web": "cd ../web && npm run build",
+    "sync:web": "node ./scripts/sync-web-build.js",
+    "build": "npm run build:web && npm run sync:web",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:add:ios": "npx cap add ios",
+    "cap:add:android": "npx cap add android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:open:android": "npx cap open android",
+    "clean": "rm -rf www ios android"
   },
   "dependencies": {
     "@team-timer/core": "file:../core",
-    "@capacitor/core": "^6.0.0"
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/ios": "^6.2.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.1",
     "typescript": "^5.9.3"
   }
 }

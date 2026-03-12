@@ -5,7 +5,7 @@
   "scripts": {
     "start": "webpack serve --mode development --open",
     "build:bundle": "webpack --mode production",
-    "build": "npm run build:bundle && node build-single.js",
+    "build": "npm run build:bundle && node scripts/build-single.js",
     "build:single": "npm run build"
   },
   "dependencies": {

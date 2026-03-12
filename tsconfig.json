@@ -14,5 +14,17 @@
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "build",
+    "packages/core/dist",
+    "packages/web/dist",
+    "packages/web/scripts",
+    "packages/web/webpack.config.js",
+    "packages/mobile/scripts",
+    "packages/mobile/android",
+    "packages/mobile/ios",
+    "packages/mobile/www",
+    "webpack.config.js"
+  ]
 }

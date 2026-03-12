@@ -1,9 +1,12 @@
+// This script takes the output of the webpack build (index.html and bundle.js)
+// and produces a single HTML file with the JS inlined, suitable for offline use.
 const fs = require('fs');
 const path = require('path');
+const distDir = path.join(__dirname, '..', 'dist');
 
 // Read the dist files
-const htmlPath = path.join(__dirname, 'dist', 'index.html');
-const jsPath = path.join(__dirname, 'dist', 'bundle.js');
+const htmlPath = path.join(distDir, 'index.html');
+const jsPath = path.join(distDir, 'bundle.js');
 
 const html = fs.readFileSync(htmlPath, 'utf8');
 const js = fs.readFileSync(jsPath, 'utf8');
@@ -23,7 +26,7 @@ const inlineScript = '<script>' + safeJs + '</script>';
 const inlineHtml = htmlWithoutBundle.replace(/<\/body>/i, inlineScript + '</body>');
 
 // Create output directory
-const outputDir = path.join(__dirname, 'dist/dist-single');
+const outputDir = path.join(distDir, 'dist-single');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
