@@ -17,7 +17,6 @@ import {
   TimerConfig,
   ViewType,
   formatExpectedStartDateTime,
-  formatExpectedStartTime,
   getExpectedStartTimestamps,
   useGlobalTimerAggregateState,
   DEFAULT_CONFIG,
