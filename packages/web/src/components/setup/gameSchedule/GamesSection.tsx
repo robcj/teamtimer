@@ -323,7 +323,7 @@ function GamesSection({
                       {formatTeamWithDivision(teams, divisions, game.team2)}
                     </td>
                     <td className="scores-time-cell">
-                      {formatExpectedStartTime(expectedStartTimes[index] ?? null)}
+                      {formatExpectedStartTime(expectedStartTimes[index] ?? null) || '—'}
                     </td>
                     <td>
                       <div className="game-controls">

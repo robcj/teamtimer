@@ -52,18 +52,18 @@ export const getExpectedStartTimestamps = (
   return expectedStartTimes;
 };
 
-export const formatExpectedStartTime = (timestamp: number | null): string => {
+export const formatExpectedStartTime = (timestamp: number | null): string | null => {
   // If timestamp is null or undefined, or in the past, return a placeholder
   if (!timestamp || timestamp < Date.now()) {
-    return '—';
+    return null;
   }
   return formatClockTime(new Date(timestamp));
 };
 
-export const formatExpectedStartDateTime = (timestamp: number | null): string => {
+export const formatExpectedStartDateTime = (timestamp: number | null): string | null => {
   // If timestamp is null or undefined, or in the past, return a placeholder
   if (!timestamp || timestamp < Date.now()) {
-    return '—';
+    return null;
   }
   // Only show date if it's not today
   const now = new Date();

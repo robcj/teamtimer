@@ -123,7 +123,7 @@ function Results({
       const rightScore = result?.score?.team2 ?? '';
       return [
         String(index + 1),
-        formatExpectedStartTime(expectedStartTimes[index] ?? null),
+        formatExpectedStartTime(expectedStartTimes[index] ?? null) || '—',
         startTime,
         formatTeamWithDivision(teams, divisions, game.team1),
         String(leftScore),
@@ -239,7 +239,7 @@ function Results({
                           <td className="scores-time-cell">
                             {result?.startTime
                               ? startTime
-                              : formatExpectedStartTime(expectedStartTimes[index] ?? null)}
+                              : formatExpectedStartTime(expectedStartTimes[index] ?? null) || '—'}
                           </td>
                           <td className={team1Wins ? 'scores-winner' : ''}>
                             <strong>{formatTeamWithDivision(teams, divisions, game.team1)}</strong>

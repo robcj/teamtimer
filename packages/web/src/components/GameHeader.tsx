@@ -48,20 +48,6 @@ function GameHeader({
     <div className="game-info">
       <div className={`game-info-row ${hasBetweenGamesButtons ? 'has-between-games-buttons' : ''}`}>
         <div className="game-info-left">
-          {showLocationSelector && onSelectLocation && (
-            <label className="location-panel-selector game-info-location-selector">
-              <select
-                value={selectedLocation}
-                onChange={event => onSelectLocation(event.target.value)}
-              >
-                {locations.map(nextLocation => (
-                  <option key={`game-header-location-${nextLocation.id}`} value={nextLocation.id}>
-                    {nextLocation.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
           {showControls && (
             <>
               <button
@@ -89,11 +75,27 @@ function GameHeader({
           )}
         </div>
 
-        {totalGames > 0 && (
-          <h2>
-            Game {currentIndex + 1} of {totalGames}
-          </h2>
-        )}
+        <div className="game-info-middle">
+          {showLocationSelector && onSelectLocation && (
+            <label className="location-panel-selector game-info-location-selector">
+              <select
+                value={selectedLocation}
+                onChange={event => onSelectLocation(event.target.value)}
+              >
+                {locations.map(nextLocation => (
+                  <option key={`game-header-location-${nextLocation.id}`} value={nextLocation.id}>
+                    {nextLocation.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {totalGames > 0 && (
+            <h2>
+              Game {currentIndex + 1} of {totalGames}
+            </h2>
+          )}
+        </div>
 
         {showControls && onReset && onSkipPhase && (
           <div className="game-info-right">

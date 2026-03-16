@@ -234,8 +234,9 @@ function App() {
     if (!expectedStartTime) {
       return '';
     }
-
-    return `Start: ${formatExpectedStartDateTime(expectedStartTime)}`;
+    const formattedExpectedStartTime = formatExpectedStartDateTime(expectedStartTime);
+    return formattedExpectedStartTime ? `Start: ${formattedExpectedStartTime}` : '';
+    // Note: The signals are included as dependencies to ensure the header text updates when games are started/paused/resumed/reset from other screens or locations
   }, [
     isDisplayOnly,
     config.games,

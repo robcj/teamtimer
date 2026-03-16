@@ -23,7 +23,7 @@
     .game-info {
       margin-bottom: clamp(2px, 0.4vh, 6px);
 
-      h2 {
+      .game-info-middle h2 {
         font-size: clamp(0.75rem, 1.35vh, 1rem);
       }
     }
@@ -144,7 +144,7 @@
     column-gap: clamp(6px, 1vw, 12px);
   }
 
-  h2 {
+  .game-info-middle h2 {
     grid-column: 2;
     margin: 0;
     text-align: center;
@@ -187,7 +187,7 @@
       }
     }
 
-    h2 {
+    .game-info-middle {
       grid-column: 1 / -1;
       grid-row: 2;
     }
@@ -662,10 +662,8 @@
     padding: clamp(10px, 1.8vh, 20px);
   }
 
-  .game-info {
-    h2 {
-      font-size: clamp(1rem, 1.8vh, 1.4rem);
-    }
+  .game-info-middle h2 {
+    font-size: clamp(1rem, 1.8vh, 1.4rem);
   }
 
   .timer-container {
@@ -870,7 +868,7 @@
     .game-info {
       margin-bottom: 3px;
 
-      h2 {
+      .game-info-middle h2 {
         font-size: clamp(0.75rem, 3vh, 0.95rem);
       }
     }
