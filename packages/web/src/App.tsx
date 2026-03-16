@@ -251,6 +251,7 @@ function App() {
 
   const headerStatusText = headerStartTimeText;
   const isSplitView = timerLayout === 'split' && locations.length > 1;
+  const shouldShowGlobalControl = locations.length > 1 || globalControlLabel !== 'Start All';
   const handleCloseSecondaryView = (): void => {
     setView('timer');
   };
@@ -261,14 +262,14 @@ function App() {
         <AppHeader
           view={view}
           competitionName={config.competitionName}
-          globalControlLabel={globalControlLabel}
+          globalControlLabel={shouldShowGlobalControl ? globalControlLabel : undefined}
           headerStatusText={headerStatusText}
           onOpenScores={() => setView('scores')}
           onOpenSetup={() => setView('setup')}
           onOpenGuide={() => setView('guide')}
           onOpenAbout={() => setView('about')}
           onViewTimer={() => setView('timer')}
-          onGlobalControl={handleGlobalControl}
+          onGlobalControl={shouldShowGlobalControl ? handleGlobalControl : undefined}
           canToggleLayout={locations.length > 1}
           isSplitLayout={isSplitView}
           onSetSingleLayout={() => setTimerLayout('single')}

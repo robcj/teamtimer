@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GameResult, TimerConfig } from '@team-timer/core';
+import { DEFAULT_CONFIG, GameResult, TimerConfig } from '@team-timer/core';
 import CollapsibleSection from './gameSchedule/CollapsibleSection';
 import CompetitionSection from './CompetitionSection';
 import TimerDurationsSection from './TimerDurationsSection';
@@ -11,6 +11,7 @@ import ImportExportSection from './gameSchedule/ImportExportSection';
 import LocationsSection from './gameSchedule/LocationsSection';
 import TournamentStartSection from './gameSchedule/TournamentStartSection';
 import useGameSetupEditor from './gameSchedule/useGameSetupEditor';
+import demoConfig from './gameSchedule/DemoConfig';
 import './Setup.scss';
 
 interface SetupProps {
@@ -67,6 +68,7 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     handleMoveGameUp,
     handleMoveGameDown,
     handleImportConfig,
+    loadConfig,
     getConfigForSave,
   } = useGameSetupEditor(config, gameResults);
 
@@ -124,6 +126,16 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
     link.download = 'team-timer-config.json';
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleLoadDemoConfig = (): void => {
+    localStorage.clear();
+    loadConfig(demoConfig);
+  };
+
+  const handleClearConfiguration = (): void => {
+    localStorage.clear();
+    loadConfig(DEFAULT_CONFIG);
   };
 
   return (
@@ -240,6 +252,8 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
         <ImportExportSection
           onExportConfig={handleExportConfig}
           onImportConfig={handleImportConfig}
+          onLoadDemoConfig={handleLoadDemoConfig}
+          onClearConfiguration={handleClearConfiguration}
         />
       </CollapsibleSection>
 

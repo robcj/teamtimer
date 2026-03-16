@@ -46,8 +46,8 @@ function About({ gitTag, gitCommit }: AboutProps) {
             <tbody>
               {gitTag && (
                 <tr>
-                  <th>Version</th>
-                  <td>{gitTag}</td>
+                  <th>Version: </th>
+                  <td> {gitTag}</td>
                 </tr>
               )}
               <tr>

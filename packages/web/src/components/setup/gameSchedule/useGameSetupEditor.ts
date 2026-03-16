@@ -66,6 +66,7 @@ interface UseGameSetupEditorResult {
   handleMoveGameDown: (index: number) => void;
   handleExportConfig: () => void;
   handleImportConfig: (event: ChangeEvent<HTMLInputElement>) => void;
+  loadConfig: (configToLoad: TimerConfig) => void;
   getConfigForSave: () => TimerConfig;
 }
 
@@ -330,6 +331,22 @@ function useGameSetupEditor(
     URL.revokeObjectURL(url);
   };
 
+  const loadConfig = (configToLoad: TimerConfig): void => {
+    clearPersistedDataForImport();
+    setEditableConfig(configToLoad);
+    setLocations(configToLoad.locations || []);
+    setTournamentStartAt(configToLoad.tournamentStartAt || '');
+    setDivisions(configToLoad.divisions);
+    setTeams(configToLoad.teams);
+    setGames(configToLoad.games);
+    setSelectedLocation(configToLoad.locations[0]?.id || '');
+    setSelectedDivision('');
+    setSelectedTeam1('');
+    setSelectedTeam2('');
+    setSpecialGameNumber1(1);
+    setSpecialGameNumber2(1);
+  };
+
   const handleImportConfig = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
@@ -339,19 +356,7 @@ function useGameSetupEditor(
           const result = e.target?.result;
           if (typeof result === 'string') {
             const importedConfig = parseImportedConfig(JSON.parse(result) as TimerConfig);
-            clearPersistedDataForImport();
-            setEditableConfig(importedConfig);
-            setLocations(importedConfig.locations || []);
-            setTournamentStartAt(importedConfig.tournamentStartAt || '');
-            setDivisions(importedConfig.divisions);
-            setTeams(importedConfig.teams);
-            setGames(importedConfig.games);
-            setSelectedLocation(importedConfig.locations[0]?.id || '');
-            setSelectedDivision('');
-            setSelectedTeam1('');
-            setSelectedTeam2('');
-            setSpecialGameNumber1(1);
-            setSpecialGameNumber2(1);
+            loadConfig(importedConfig);
           }
         } catch (error) {
           alert('Error importing configuration. Please check the file format.');
@@ -423,6 +428,7 @@ function useGameSetupEditor(
     handleMoveGameDown,
     handleExportConfig,
     handleImportConfig,
+    loadConfig,
     getConfigForSave,
   };
 }

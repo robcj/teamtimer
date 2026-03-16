@@ -48,3 +48,98 @@ npm run cap:open:android -w @team-timer/mobile
 # and/or
 npm run cap:open:ios -w @team-timer/mobile
 ```
+
+## Hybrid development setup with Android Studio on windows and the code in WSL
+
+In PowerShell ensure all adb processes are stopped:
+
+```powershell
+taskkill /F /IM adb.exe
+netstat -ano | findstr 5037
+```
+
+Start adb on Windows:
+
+```powershell
+adb -a -P 5037 nodaemon server
+```
+
+In WSL, add this line to ~/.bashrc, with your Windows host's IP address (use ipconfig in PowerShell to find it):
+
+```bash
+export ADB_SERVER_SOCKET=tcp:<windows host IP address>:5037
+```
+
+run:
+
+```bash
+adb kill-server
+adb devices
+```
+
+## Single-emulator troubleshooting (WSL + Windows host)
+
+If the app icon appears but does not open, verify that WSL and Android Studio are both talking to the same ADB server/device.
+
+1. Stop all emulators in Android Studio Device Manager.
+2. In PowerShell, restart Windows adb on port `5037`:
+
+```powershell
+taskkill /F /IM adb.exe
+adb -a -P 5037 nodaemon server
+adb devices -l
+```
+
+3. Start exactly one emulator (Cold Boot if needed).
+4. In WSL, confirm the same port/device and avoid offline duplicates:
+
+```bash
+export ADB_SERVER_SOCKET=tcp:<windows host IP address>:5037
+adb devices -l
+```
+
+5. Reinstall and launch explicitly against the emulator serial:
+
+```bash
+adb -s emulator-5554 install -r app/build/outputs/apk/debug/app-debug.apk
+adb -s emulator-5554 shell monkey -p com.teamtimer.app -c android.intent.category.LAUNCHER 1
+```
+
+## Compiling the APK
+
+In Windows start Android Studio, click the Device Manager button on the right hand side to start an emulator.
+
+In WSL run `adb devices` and it should list the emulator device.
+
+build in VSCode/WSL, use Android Studio mainly to run/manage the emulator.
+
+For your setup (code in WSL, emulator on Windows), the clean workflow is:
+
+From repo root, sync web assets into mobile:
+`npm run cap:sync -w @team-timer/mobile`
+
+Build debug APK in WSL:
+
+```bash
+cd packages/mobile/android
+./gradlew assembleDebug
+```
+
+APK output:
+packages/mobile/android/app/build/outputs/apk/debug/app-debug.apk
+
+Install to running emulator from WSL:
+
+```bash
+adb devices
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+Which environment should compile?
+
+Preferred: VSCode/WSL (repeatable, scriptable, same environment as your code).
+Android Studio compile is also fine, but mostly useful for emulator UI, Logcat, and release/signing workflows.
+Important for your Windows-host emulator bridge:
+
+Keep ADB port consistent (usually 5037) between Windows ADB and WSL ADB_SERVER_SOCKET.
+If devices do not appear in WSL, restart ADB on both sides and re-run adb devices.
