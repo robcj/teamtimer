@@ -42,10 +42,11 @@ function GameHeader({
   canSkip = false,
 }: GameHeaderProps) {
   const showControls = Boolean(onStart);
+  const hasBetweenGamesButtons = showControls && phase === PHASES.BETWEEN_GAMES;
 
   return (
     <div className="game-info">
-      <div className="game-info-row">
+      <div className={`game-info-row ${hasBetweenGamesButtons ? 'has-between-games-buttons' : ''}`}>
         <div className="game-info-left">
           {showLocationSelector && onSelectLocation && (
             <label className="location-panel-selector game-info-location-selector">
