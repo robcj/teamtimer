@@ -14,8 +14,8 @@ import {
 } from '@team-timer/core';
 import ScoreBoard from './ScoreBoard';
 import TimerHeader from './TimerHeader';
-import TimerControls from './TimerControls';
 import GameHeader from './GameHeader';
+import GameSummary from './GameSummary';
 
 interface TimerDisplayProps {
   config: TimerConfig;
@@ -205,16 +205,33 @@ function TimerDisplay({
     team2Name: getTeamName(config.teams, previousGame.game.team2),
   };
 
+  const gameHeaderControlProps = !displayOnly
+    ? {
+        isRunning,
+        isPaused,
+        phase,
+        onStart: handleStart,
+        onPause: handlePause,
+        onStartExtraTime: handleStartExtraTime,
+        onStartSuddenDeath: handleStartSuddenDeath,
+        onEndSuddenDeath: handleEndSuddenDeath,
+        onReset: onResetTimer,
+        onSkipPhase: handleSkipPhase,
+        canSkip: phase !== PHASES.IDLE && isRunning,
+      }
+    : {};
+
   return (
     <div className="timer-display">
-      {currentGame && (
+      {(!displayOnly || currentGame) && (
         <GameHeader
           currentIndex={currentGameIndex}
           totalGames={config.games.length}
-          showLocationSelector={showLocationSelector}
+          showLocationSelector={showLocationSelector && Boolean(currentGame)}
           locations={locations}
           selectedLocation={selectedLocation}
           onSelectLocation={onSelectLocation}
+          {...gameHeaderControlProps}
         />
       )}
 
@@ -237,25 +254,7 @@ function TimerDisplay({
         />
       )}
 
-      {!displayOnly && (
-        <>
-          <TimerControls
-            phase={phase}
-            isRunning={isRunning}
-            isPaused={isPaused}
-            previousGame={previousGameSummary}
-            nextGame={nextGame}
-            onStart={handleStart}
-            onPause={handlePause}
-            onReset={onResetTimer}
-            onStartExtraTime={handleStartExtraTime}
-            onStartSuddenDeath={handleStartSuddenDeath}
-            onEndSuddenDeath={handleEndSuddenDeath}
-            onSkipPhase={handleSkipPhase}
-            canSkip={phase !== PHASES.IDLE && isRunning}
-          />
-        </>
-      )}
+      <GameSummary previousGame={previousGameSummary} nextGame={nextGame} />
     </div>
   );
 }

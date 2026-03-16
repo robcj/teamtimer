@@ -251,7 +251,7 @@ function App() {
 
   const headerStatusText = headerStartTimeText;
   const isSplitView = timerLayout === 'split' && locations.length > 1;
-  const shouldShowGlobalControl = locations.length > 1 || globalControlLabel !== 'Start All';
+  const shouldShowGlobalControl = locations.length > 1;
   const handleCloseSecondaryView = (): void => {
     setView('timer');
   };

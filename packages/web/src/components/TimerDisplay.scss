@@ -153,9 +153,18 @@
   }
 }
 
-.game-info-location-selector {
+.game-info-left {
   grid-column: 1;
   justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.8vw, 8px);
+  flex-wrap: wrap;
+}
+
+.game-info-right {
+  grid-column: 3;
+  justify-self: end;
 }
 
 .game-start-meta {
@@ -381,52 +390,20 @@
   }
 }
 
-.controls {
+.game-summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: clamp(6px, 1.2vw, 12px);
-  margin: clamp(8px, 1.5vh, 15px) 0;
+  margin: 5px 0;
   flex-wrap: nowrap;
   flex-shrink: 0;
 }
 
-.controls-left,
-.controls-middle,
-.controls-right {
-  display: flex;
-  align-items: center;
-  gap: clamp(6px, 1.2vw, 12px);
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.controls-middle {
-  flex: 1;
-  justify-content: center;
-}
-
-.controls-right {
-  justify-content: center;
-}
-
-.controls-middle .last-game-summary {
-  max-width: min(42vw, 420px);
-  text-align: center;
-}
-
-.next-game-summary {
-  min-width: 0;
-  max-width: min(42vw, 420px);
-  text-align: center;
-}
-
 @media (max-width: 1200px) {
-  .controls-middle .last-game-summary,
+  .last-game-summary,
   .next-game-summary {
     flex-basis: 100%;
-    // max-width: 100%;
-    max-width: min(20vw, 300px);
   }
 }
 
@@ -447,20 +424,15 @@
   text-overflow: ellipsis;
 }
 
-.compact-actions-menu,
-.compact-nav-menu {
+.game-actions-menu {
   position: relative;
 }
 
-.compact-actions-menu {
+.game-actions-menu {
   display: block;
 }
 
-.compact-nav-menu {
-  display: none;
-}
-
-.compact-actions-trigger {
+.game-actions-trigger {
   list-style: none;
   cursor: pointer;
   padding: 8px 12px;
@@ -476,7 +448,7 @@
   }
 }
 
-.compact-actions-list {
+.game-actions-list {
   position: absolute;
   right: 0;
   top: calc(100% + 6px);
@@ -492,7 +464,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.compact-actions-menu.open-upwards .compact-actions-list {
+.game-actions-menu.open-upwards .game-actions-list {
   top: auto;
   bottom: calc(100% + 6px);
 }
@@ -515,9 +487,9 @@
 
 .control-btn {
   @include btn-base;
-  padding: clamp(8px, 1.5vh, 12px) clamp(15px, 2.5vw, 25px);
+  padding: clamp(8px, 1.5vh, 12px) clamp(10px, 2.5vw, 15px);
   font-size: clamp(0.8rem, 1.6vh, 1rem);
-  min-width: clamp(80px, 12vw, 110px);
+  min-width: clamp(60px, 12vw, 80px);
 }
 
 .start-btn {
@@ -600,13 +572,15 @@
   min-width: 0;
 }
 
-.last-game-summary {
+.last-game-summary,
+.next-game-summary {
   min-width: 0;
-  max-width: 45%;
+  max-width: 49%;
 }
 
 .last-game-label,
 .next-game-label {
+  white-space: nowrap;
   font-size: clamp(0.7rem, 2vh, 2rem);
   color: $text-muted;
   font-weight: 600;
@@ -703,11 +677,6 @@
     font-size: clamp(1.1rem, 2vh, 1.6rem);
   }
 
-  .control-btn,
-  .nav-btn {
-    font-size: clamp(0.85rem, 1.4vh, 1rem);
-  }
-
   .last-game-label,
   .team-name {
     font-size: clamp(1rem, 2.2vh, 1.3rem);
@@ -715,49 +684,7 @@
 }
 
 @media (max-width: 900px) {
-  .controls,
-  .game-navigation {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .controls-left,
-  .controls-middle,
-  .controls-right,
-  .game-navigation-buttons,
-  .last-game-summary,
-  .next-game-time {
-    width: 20%;
-    justify-content: center;
-    text-align: center;
-  }
-
-  // .last-game-summary {
-  //   max-width: 100%;
-  // }
-
-  .control-btn,
-  .nav-btn {
-    min-width: clamp(90px, 22vw, 130px);
-  }
-
-  .controls-right,
-  .game-navigation-buttons {
-    display: none;
-  }
-
-  .controls-middle .last-game-summary {
-    // max-width: 100%;
-    text-align: center;
-  }
-
-  .next-game-summary {
-    // max-width: 100%;
-    text-align: center;
-  }
-
-  .compact-actions-menu,
-  .compact-nav-menu {
+  .game-actions-menu {
     display: block;
   }
 }
@@ -980,8 +907,7 @@
       display: none;
     }
 
-    .compact-actions-menu,
-    .compact-nav-menu {
+    .game-actions-menu {
       display: block;
     }
 
@@ -991,12 +917,12 @@
       font-size: 0.74rem;
     }
 
-    .compact-actions-trigger {
+    .game-actions-trigger {
       padding: 6px 8px;
       font-size: 0.74rem;
     }
 
-    .compact-actions-list {
+    .game-actions-list {
       min-width: 150px;
       gap: 4px;
       padding: 6px;
