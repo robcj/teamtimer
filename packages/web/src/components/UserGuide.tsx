@@ -45,7 +45,15 @@ function UserGuide() {
 
         <section className="user-guide-section">
           <h3>3. Multi-Location Events</h3>
+          <p>
+            Multi-Location controls allow you to manage games happening simultaneously at different
+            locations, such as multiple courts, swimming pools, or fields.
+          </p>
           <ul>
+            <li>
+              Multi-location controls will only be visible if you have configured multiple locations
+              (i.e. multiple courts, swimming pools, or fields).
+            </li>
             <li>Use Start All, Pause All, and Resume All from the header.</li>
             <li>Use Reset All from the menu to clear all location timers and scores.</li>
             <li>Use Single Scoreboard or Split Scoreboard layout options.</li>
@@ -74,7 +82,19 @@ function UserGuide() {
         </section>
 
         <section className="user-guide-section">
-          <h3>6. Additional Screen </h3>
+          <h3>6. Extra-Time and Sudden Death</h3>
+          <ul>
+            <li>
+              Extra-Time and Sudden Death buttons will appear after a game has finished, if the
+              scores are equal.
+            </li>
+            <li>Use Extra Time to extend the game duration when needed.</li>
+            <li>Use Sudden Death to determine a winner in case of a tie.</li>
+          </ul>
+        </section>
+
+        <section className="user-guide-section">
+          <h3>7. Additional Screen </h3>
           <ul>
             <li>
               Open Menu -&gt; Additional Screen in a separate browser tab for a display-only mirror
@@ -89,7 +109,7 @@ function UserGuide() {
         </section>
 
         <section className="user-guide-section">
-          <h3>7. Offline Use</h3>
+          <h3>8. Offline Use</h3>
           <ul>
             <li>Use Download Offline App in the menu for a portable single-file build.</li>
           </ul>

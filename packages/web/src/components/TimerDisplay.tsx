@@ -227,6 +227,7 @@ function TimerDisplay({
         <GameHeader
           currentIndex={currentGameIndex}
           totalGames={config.games.length}
+          scores={scores}
           showLocationSelector={showLocationSelector && Boolean(currentGame)}
           locations={locations}
           selectedLocation={selectedLocation}

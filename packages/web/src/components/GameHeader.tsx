@@ -1,10 +1,11 @@
 import React from 'react';
-import { Location, Phase, PHASES } from '@team-timer/core';
+import { Location, Phase, PHASES, Scores } from '@team-timer/core';
 import GameActionsMenu from './GameActionsMenu';
 
 interface GameHeaderProps {
   currentIndex: number;
   totalGames: number;
+  scores: Scores;
   showLocationSelector?: boolean;
   locations?: Location[];
   selectedLocation?: string;
@@ -25,6 +26,7 @@ interface GameHeaderProps {
 function GameHeader({
   currentIndex,
   totalGames,
+  scores,
   showLocationSelector = false,
   locations = [],
   selectedLocation = '',
@@ -44,6 +46,7 @@ function GameHeader({
   const showControls = Boolean(onStart);
   const hasBetweenGamesButtons = showControls && phase === PHASES.BETWEEN_GAMES;
 
+  const equalScores = scores.team1 === scores.team2;
   return (
     <div className="game-info">
       <div className={`game-info-row ${hasBetweenGamesButtons ? 'has-between-games-buttons' : ''}`}>
@@ -61,12 +64,12 @@ function GameHeader({
                   Extra Time
                 </button>
               )}
-              {phase === PHASES.BETWEEN_GAMES && (
+              {equalScores && phase === PHASES.BETWEEN_GAMES && (
                 <button onClick={onStartSuddenDeath} className="control-btn start-sudden-death-btn">
                   Sudden Death
                 </button>
               )}
-              {phase === PHASES.SUDDEN_DEATH && (
+              {equalScores && phase === PHASES.SUDDEN_DEATH && (
                 <button onClick={onEndSuddenDeath} className="control-btn end-sudden-death-btn">
                   End Sudden Death
                 </button>
