@@ -1,5 +1,6 @@
 import React from 'react';
 import { ViewType } from '@team-timer/core';
+import { isMobileApp } from '../utils/platform';
 
 interface HeaderMenuProps {
   view: ViewType;
@@ -32,6 +33,8 @@ function HeaderMenu({
   onResetAll,
   onClearAllData,
 }: HeaderMenuProps) {
+  const runningInMobileApp = isMobileApp();
+
   const closeMenu = (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>): void => {
     const menu = event.currentTarget.closest('details');
     if (menu) {
@@ -92,7 +95,7 @@ function HeaderMenu({
             Split Scoreboard
           </button>
         )}
-        {onOpenSecondScreen && (
+        {onOpenSecondScreen && !runningInMobileApp && (
           <button
             onClick={event => {
               closeMenu(event);
