@@ -143,3 +143,46 @@ Important for your Windows-host emulator bridge:
 
 Keep ADB port consistent (usually 5037) between Windows ADB and WSL ADB_SERVER_SOCKET.
 If devices do not appear in WSL, restart ADB on both sides and re-run adb devices.
+
+## Production Android build (signed)
+
+From repo root, sync web assets first:
+
+```bash
+cd /home/robincj/git_repos/TeamTimer
+npm run cap:sync -w @team-timer/mobile
+```
+
+Create a release keystore (one time):
+
+```bash
+keytool -genkeypair -v \
+	-keystore ~/teamtimer-release.keystore \
+	-alias teamtimer \
+	-keyalg RSA \
+	-keysize 2048 \
+	-validity 10000
+```
+
+Store signing values in your user Gradle properties (`~/.gradle/gradle.properties`) so secrets are not committed:
+
+```properties
+TEAMTIMER_UPLOAD_STORE_FILE=/home/<your-user>/teamtimer-release.keystore
+TEAMTIMER_UPLOAD_STORE_PASSWORD=<keystore-password>
+TEAMTIMER_UPLOAD_KEY_ALIAS=teamtimer
+TEAMTIMER_UPLOAD_KEY_PASSWORD=<key-password>
+```
+
+Build signed release artifacts:
+
+```bash
+cd /home/robincj/git_repos/TeamTimer/packages/mobile/android
+./gradlew clean assembleRelease bundleRelease
+```
+
+Outputs:
+
+- APK: `packages/mobile/android/app/build/outputs/apk/release/app-release.apk`
+- AAB: `packages/mobile/android/app/build/outputs/bundle/release/app-release.aab`
+
+If signing vars are missing, Gradle will still build release artifacts but they will be unsigned.

@@ -1,3 +1,9 @@
 www/
-android/
-ios/
+
+android/.gradle/
+android/local.properties
+android/**/build/
+
+ios/App/build/
+ios/App/Pods/
+ios/capacitor-cordova-ios-plugins/build/
