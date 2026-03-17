@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ViewType } from '@team-timer/core';
 import { isMobileApp } from '../utils/platform';
+
+const OFFLINE_HTML_DOWNLOAD_URL = 'downloads/team-timer-offline.html';
+const ANDROID_APP_DOWNLOAD_URL = 'downloads/team-timer.apk';
 
 interface HeaderMenuProps {
   view: ViewType;
@@ -34,11 +37,48 @@ function HeaderMenu({
   onClearAllData,
 }: HeaderMenuProps) {
   const runningInMobileApp = isMobileApp();
+  const [hasAndroidAppDownload, setHasAndroidAppDownload] = useState(false);
+
+  useEffect(() => {
+    if (runningInMobileApp) {
+      setHasAndroidAppDownload(false);
+      return;
+    }
+
+    let isCancelled = false;
+
+    const checkAndroidAppDownload = async (): Promise<void> => {
+      try {
+        const response = await fetch(ANDROID_APP_DOWNLOAD_URL, {
+          method: 'HEAD',
+          cache: 'no-store',
+        });
+
+        if (!isCancelled) {
+          setHasAndroidAppDownload(response.ok);
+        }
+      } catch {
+        if (!isCancelled) {
+          setHasAndroidAppDownload(false);
+        }
+      }
+    };
+
+    void checkAndroidAppDownload();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [runningInMobileApp]);
 
   const closeMenu = (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>): void => {
-    const menu = event.currentTarget.closest('details');
-    if (menu) {
-      menu.removeAttribute('open');
+    let currentElement: HTMLElement | null = event.currentTarget;
+
+    while (currentElement) {
+      if (currentElement instanceof HTMLDetailsElement) {
+        currentElement.removeAttribute('open');
+      }
+      currentElement = currentElement.parentElement;
     }
   };
 
@@ -137,16 +177,33 @@ function HeaderMenu({
         >
           User Guide
         </button>
-        <a
-          href="dist-single/team-timer-offline.html"
-          download="team-timer.html"
-          onClick={event => {
-            closeMenu(event);
-          }}
-          className="header-menu-item"
-        >
-          Download Offline App
-        </a>
+        <details className="header-menu-submenu">
+          <summary className="header-menu-item header-menu-submenu-trigger">Downloads</summary>
+          <div className="header-menu-submenu-list">
+            <a
+              href={OFFLINE_HTML_DOWNLOAD_URL}
+              download="team-timer.html"
+              onClick={event => {
+                closeMenu(event);
+              }}
+              className="header-menu-item header-menu-submenu-item"
+            >
+              Single HTML File
+            </a>
+            {!runningInMobileApp && hasAndroidAppDownload && (
+              <a
+                href={ANDROID_APP_DOWNLOAD_URL}
+                download="team-timer.apk"
+                onClick={event => {
+                  closeMenu(event);
+                }}
+                className="header-menu-item header-menu-submenu-item"
+              >
+                Android App (APK)
+              </a>
+            )}
+          </div>
+        </details>
         <button
           onClick={event => {
             closeMenu(event);

@@ -58,7 +58,7 @@ The app will open at `http://localhost:3000`
 
 ### Production Build
 
-Build for production (outputs to `dist/` and also generates an offline single-file app in `dist/dist-single/`):
+Build for production (outputs to `dist/` and also generates an offline single-file app in `dist/downloads/`):
 
 ```bash
 npm run build

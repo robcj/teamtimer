@@ -1,8 +1,52 @@
 // This script takes the output of the webpack build (index.html and bundle.js)
 // and produces a single HTML file with the JS inlined, suitable for offline use.
+// It can also copy a release APK into the web output for download.
 const fs = require('fs');
 const path = require('path');
 const distDir = path.join(__dirname, '..', 'dist');
+const downloadsDir = path.join(distDir, 'downloads');
+const defaultAndroidApkPath = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'mobile',
+  'android',
+  'app',
+  'build',
+  'outputs',
+  'apk',
+  'release',
+  'app-release.apk'
+);
+
+function ensureDirectory(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+function copyAndroidApk() {
+  const configuredApkPath = process.env.TEAMTIMER_ANDROID_APK_PATH;
+  const sourceApkPath = configuredApkPath
+    ? path.resolve(process.cwd(), configuredApkPath)
+    : defaultAndroidApkPath;
+
+  if (!fs.existsSync(sourceApkPath)) {
+    console.log('! Android APK not copied.');
+    console.log(`  Expected APK: ${sourceApkPath}`);
+    console.log('  Build a signed release APK first, or set TEAMTIMER_ANDROID_APK_PATH.');
+    return;
+  }
+
+  ensureDirectory(downloadsDir);
+
+  const outputApkPath = path.join(downloadsDir, 'team-timer.apk');
+  fs.copyFileSync(sourceApkPath, outputApkPath);
+
+  console.log('✓ Android APK copied successfully!');
+  console.log(`  Source: ${sourceApkPath}`);
+  console.log(`  Output: ${outputApkPath}`);
+}
 
 // Read the dist files
 const htmlPath = path.join(distDir, 'index.html');
@@ -25,15 +69,13 @@ const htmlWithoutBundle = html.replace(scriptPattern, '');
 const inlineScript = '<script>' + safeJs + '</script>';
 const inlineHtml = htmlWithoutBundle.replace(/<\/body>/i, inlineScript + '</body>');
 
-// Create output directory
-const outputDir = path.join(distDir, 'dist-single');
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
+ensureDirectory(downloadsDir);
 
 // Write the single file
-const outputPath = path.join(outputDir, 'team-timer-offline.html');
+const outputPath = path.join(downloadsDir, 'team-timer-offline.html');
 fs.writeFileSync(outputPath, inlineHtml, 'utf8');
+
+copyAndroidApk();
 
 console.log('✓ Single-file build created successfully!');
 console.log(`  Output: ${outputPath}`);

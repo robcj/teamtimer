@@ -110,6 +110,42 @@
   }
 }
 
+.header-menu-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.header-menu-submenu-trigger {
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    content: '▸';
+    float: right;
+  }
+}
+
+.header-menu-submenu[open] > .header-menu-submenu-trigger::after {
+  content: '▾';
+}
+
+.header-menu-submenu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 2px solid $border-light-blue;
+}
+
+.header-menu-submenu-item {
+  font-size: 75%;
+}
+
 .config-button {
   @include btn-base;
   padding: clamp(6px, 1vh, 10px) clamp(12px, 2vw, 20px);

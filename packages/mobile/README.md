@@ -173,6 +173,9 @@ TEAMTIMER_UPLOAD_KEY_ALIAS=teamtimer
 TEAMTIMER_UPLOAD_KEY_PASSWORD=<key-password>
 ```
 
+e.g.
+TEAMTIMER_UPLOAD_STORE_FILE=/home/robincj/git_repos/TeamTimer/packages/mobile/android/teamtimer-release.keystore
+
 Build signed release artifacts:
 
 ```bash
@@ -186,3 +189,34 @@ Outputs:
 - AAB: `packages/mobile/android/app/build/outputs/bundle/release/app-release.aab`
 
 If signing vars are missing, Gradle will still build release artifacts but they will be unsigned.
+
+## Publishing the Android APK from the web app
+
+The web build can copy a signed Android APK into the web output automatically.
+
+Default source APK path:
+
+- `packages/mobile/android/app/build/outputs/apk/release/app-release.apk`
+
+Default web output path:
+
+- `packages/web/dist/downloads/team-timer.apk`
+
+Workflow:
+
+```bash
+cd /home/robincj/git_repos/TeamTimer/packages/mobile/android
+./gradlew clean assembleRelease
+
+cd /home/robincj/git_repos/TeamTimer
+npm run build -w @team-timer/web
+```
+
+If your release APK is in a different location, override the source path when building the web app:
+
+```bash
+cd /home/robincj/git_repos/TeamTimer
+TEAMTIMER_ANDROID_APK_PATH=/absolute/path/to/your/app-release.apk npm run build -w @team-timer/web
+```
+
+That keeps the menu link stable at `downloads/team-timer.apk` while letting you choose a different release artifact when needed.

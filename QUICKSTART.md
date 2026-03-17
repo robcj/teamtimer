@@ -30,7 +30,7 @@ Single-file build alias:
 npm run build:single
 ```
 
-Both build commands create `dist/dist-single/team-timer-offline.html`.
+Both build commands create `dist/downloads/team-timer-offline.html`.
 
 ### 3. Use the App
 
@@ -109,6 +109,6 @@ Audio beeps play for the final 5 seconds of active countdown phases.
 
 After `npm run build` or `npm run build:single`:
 
-1. Open `dist/dist-single/team-timer-offline.html`.
+1. Open `dist/downloads/team-timer-offline.html`.
 2. Run it directly in a browser (no server required).
 3. Local storage, timer, scoring, and config import/export continue to work offline.

@@ -111,7 +111,9 @@ function UserGuide() {
         <section className="user-guide-section">
           <h3>8. Offline Use</h3>
           <ul>
-            <li>Use Download Offline App in the menu for a portable single-file build.</li>
+            <li>
+              Use Menu -&gt; Downloads -&gt; Single HTML File for a portable single-file build.
+            </li>
           </ul>
         </section>
       </article>
