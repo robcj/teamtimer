@@ -5,6 +5,8 @@
   "scripts": {
     "build:web": "cd ../web && npm run build",
     "sync:web": "node ./scripts/sync-web-build.js",
+    "android:icons": "node ./scripts/generate-android-icons.js",
+    "ios:icons": "node ./scripts/generate-ios-icons.js",
     "build": "npm run build:web && npm run sync:web",
     "cap:sync": "npm run build && npx cap sync",
     "cap:add:ios": "npx cap add ios",
