@@ -101,7 +101,11 @@ adb devices -l
 5. Reinstall and launch explicitly against the emulator serial:
 
 ```bash
-adb -s emulator-5554 install -r app/build/outputs/apk/debug/app-debug.apk
+npm run cap:sync -w @team-timer/mobile
+cd packages/mobile/android
+./gradlew clean assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell monkey -p com.teamtimer.app -c android.intent.category.LAUNCHER 1
 adb -s emulator-5554 shell monkey -p com.teamtimer.app -c android.intent.category.LAUNCHER 1
 ```
 

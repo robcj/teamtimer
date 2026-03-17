@@ -48,6 +48,10 @@ module.exports = {
         test: /\.(scss|css)$/,
         use: ['style-loader', 'css-loader', 'sass-loader'],
       },
+      {
+        test: /\.(png|jpe?g|gif|svg|webp|ico)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
   resolve: {
@@ -57,6 +61,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
+      favicon: path.resolve(__dirname, 'images/favicon.ico'),
     }),
     new webpack.DefinePlugin({
       __GIT_TAG__: JSON.stringify(getGitInfo().tag),
