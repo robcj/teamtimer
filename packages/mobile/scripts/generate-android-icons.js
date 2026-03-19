@@ -7,7 +7,7 @@ const webImagesDir = path.resolve(mobileRoot, '../web/images');
 const androidResDir = path.resolve(mobileRoot, 'android/app/src/main/res');
 
 const defaultLegacySource = path.join(webImagesDir, 'tt-icon-512x512.png');
-const defaultForegroundSource = path.join(webImagesDir, 'tt-icon-big-transparent-bg.png');
+const defaultForegroundSource = path.join(webImagesDir, 'tt-icon-big.png');
 
 const legacySource = process.env.TEAMTIMER_ANDROID_ICON_LEGACY_SRC
   ? path.resolve(mobileRoot, process.env.TEAMTIMER_ANDROID_ICON_LEGACY_SRC)
