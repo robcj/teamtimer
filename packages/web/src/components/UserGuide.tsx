@@ -33,13 +33,31 @@ function UserGuide() {
         </section>
 
         <section className="user-guide-section">
-          <h3>2. Control Timers</h3>
+          <h3>2. Timer Controls</h3>
           <ul>
-            <li>Start begins countdown and phase progression.</li>
-            <li>Pause/Resume controls the active timer.</li>
+            <li>
+              Start begins countdown to the start of the first game for just the selected location.
+            </li>
+            <li>
+              Start All begins countdowns to the start of the first game for all locations, if
+              multiple locations are configured.
+            </li>
+            <li>Pause/Resume controls the active timer for just the selected location.</li>
+            <li>Pause All/Resume All controls all active timers across locations.</li>
             <li>Reset clears current game timer and score.</li>
-            <li>Skip Phase moves immediately to the next phase.</li>
             <li>Extra Time and Sudden Death can be triggered from Between Games.</li>
+          </ul>
+          <h5>Action Menu</h5>
+          <ul>
+            <li>
+              Reset resets the current game timer and score for just the selected location. (Use
+              Reset All in the main Menu to reset timers and scores for all locations, if multiple
+              locations are configured).
+            </li>
+            <li>
+              Skip Phase moves immediately to the next phase (e.g. first half to half-time, second
+              half to full-time), just for the displayed game.
+            </li>
           </ul>
         </section>
 
@@ -56,7 +74,9 @@ function UserGuide() {
             </li>
             <li>Use Start All, Pause All, and Resume All from the header.</li>
             <li>Use Reset All from the menu to clear all location timers and scores.</li>
-            <li>Use Single Scoreboard or Split Scoreboard layout options.</li>
+            <li>
+              Use Single Scoreboard or Split Scoreboard layout options to show multiple scoreboards.
+            </li>
             <li>Each location timer continues running even when hidden in single layout.</li>
           </ul>
         </section>
@@ -112,7 +132,8 @@ function UserGuide() {
           <h3>8. Offline Use</h3>
           <ul>
             <li>
-              Use Menu -&gt; Downloads -&gt; Single HTML File for a portable single-file build.
+              Use Menu -&gt; Downloads -&gt; Single HTML File for a portable single-file build or
+              Android App.
             </li>
           </ul>
         </section>

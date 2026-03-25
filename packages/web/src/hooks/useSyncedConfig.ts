@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TimerConfig, DEFAULT_CONFIG, hydrateConfig } from '@team-timer/core';
+import { TEAM_TIMER_CONFIG_STORAGE_KEY } from '../utils/appBootstrap';
 
 type UseSyncedConfigResult = [TimerConfig, Dispatch<SetStateAction<TimerConfig>>];
 
 export const useSyncedConfig = (isDisplayOnly: boolean): UseSyncedConfigResult => {
   const [config, setConfig] = useState<TimerConfig>(() => {
-    const saved = localStorage.getItem('teamTimerConfig');
+    const saved = localStorage.getItem(TEAM_TIMER_CONFIG_STORAGE_KEY);
     if (!saved) {
       return DEFAULT_CONFIG;
     }
@@ -21,7 +22,7 @@ export const useSyncedConfig = (isDisplayOnly: boolean): UseSyncedConfigResult =
     if (isDisplayOnly) {
       return;
     }
-    localStorage.setItem('teamTimerConfig', JSON.stringify(config));
+    localStorage.setItem(TEAM_TIMER_CONFIG_STORAGE_KEY, JSON.stringify(config));
   }, [config, isDisplayOnly]);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export const useSyncedConfig = (isDisplayOnly: boolean): UseSyncedConfigResult =
     }
 
     const handleStorage = (event: StorageEvent): void => {
-      if (event.key !== 'teamTimerConfig' || !event.newValue) {
+      if (event.key !== TEAM_TIMER_CONFIG_STORAGE_KEY || !event.newValue) {
         return;
       }
 

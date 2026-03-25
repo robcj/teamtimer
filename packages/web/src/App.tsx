@@ -5,6 +5,7 @@ import AppHeader from './components/AppHeader';
 import Setup from './components/setup/Setup';
 import UserGuide from './components/UserGuide';
 import About from './components/About';
+import WelcomeSplash from './components/WelcomeSplash';
 import LocationTimerPanel, {
   QUICK_MODE_DIVISION_ID,
   QUICK_MODE_TEAM_A_ID,
@@ -29,14 +30,18 @@ import { useSyncedConfig } from './hooks/useSyncedConfig';
 import { useSyncedLocationStartTimes } from './hooks/useSyncedLocationStartTimes';
 import { useTournamentAutoStart } from './hooks/useTournamentAutoStart';
 import { useAppTimerController } from './hooks/useAppTimerController';
+import demoConfig from './components/setup/gameSchedule/DemoConfig';
+import { isConfigUnconfigured, replaceSavedAppState } from './utils/appBootstrap';
 
 function App() {
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isDisplayOnly = urlParams.get('view') === 'display';
   const initialLayoutParam = urlParams.get('layout');
   const initialLocationParam = urlParams.get('location');
-  const [view, setView] = useState<ViewType>('timer');
   const [config, setConfig] = useSyncedConfig(isDisplayOnly);
+  const [view, setView] = useState<ViewType>(() =>
+    !isDisplayOnly && isConfigUnconfigured(config) ? 'splash' : 'timer'
+  );
   const [timerLayout, setTimerLayout] = useState<'single' | 'split'>(
     initialLayoutParam === 'split' ? 'split' : 'single'
   );
@@ -74,6 +79,16 @@ function App() {
     setView('timer');
   };
 
+  const replaceAppState = (nextConfig: TimerConfig): void => {
+    replaceSavedAppState(nextConfig, setConfig);
+    setLocationStartTimes({});
+  };
+
+  const handleLoadDemoData = (): void => {
+    replaceAppState(demoConfig);
+    setView('timer');
+  };
+
   const handleClearAllData = (): void => {
     const confirmed = window.confirm(
       'Clear all saved game and configuration data. This cannot be undone.\n' +
@@ -83,9 +98,7 @@ function App() {
       return;
     }
 
-    localStorage.clear();
-    setConfig(DEFAULT_CONFIG);
-    setLocationStartTimes({});
+    replaceAppState(DEFAULT_CONFIG);
     setView('timer');
   };
 
@@ -259,7 +272,7 @@ function App() {
 
   return (
     <div className="app">
-      {!isDisplayOnly && (
+      {!isDisplayOnly && view !== 'splash' && (
         <AppHeader
           view={view}
           competitionName={config.competitionName}
@@ -321,16 +334,25 @@ function App() {
 
         {!isDisplayOnly && view !== 'timer' ? (
           <section className="secondary-view">
-            <button
-              type="button"
-              className="secondary-view-close"
-              aria-label="Close and return to timer"
-              onClick={handleCloseSecondaryView}
-            >
-              &times;
-            </button>
+            {view !== 'splash' ? (
+              <button
+                type="button"
+                className="secondary-view-close"
+                aria-label="Close and return to timer"
+                onClick={handleCloseSecondaryView}
+              >
+                &times;
+              </button>
+            ) : null}
 
-            {view === 'setup' ? (
+            {view === 'splash' ? (
+              <WelcomeSplash
+                onContinue={() => setView('timer')}
+                onLoadDemo={handleLoadDemoData}
+                onOpenSetup={() => setView('setup')}
+                onOpenGuide={() => setView('guide')}
+              />
+            ) : view === 'setup' ? (
               <Setup
                 config={config}
                 gameResults={gameResults}

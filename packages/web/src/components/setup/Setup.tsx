@@ -12,6 +12,7 @@ import LocationsSection from './gameSchedule/LocationsSection';
 import TournamentStartSection from './gameSchedule/TournamentStartSection';
 import useGameSetupEditor from './gameSchedule/useGameSetupEditor';
 import demoConfig from './gameSchedule/DemoConfig';
+import { replaceSavedAppState } from '../../utils/appBootstrap';
 import './Setup.scss';
 
 interface SetupProps {
@@ -129,13 +130,11 @@ function Setup({ config, gameResults, expectedStartTimes, onSave, onCancel }: Se
   };
 
   const handleLoadDemoConfig = (): void => {
-    localStorage.clear();
-    loadConfig(demoConfig);
+    replaceSavedAppState(demoConfig, loadConfig);
   };
 
   const handleClearConfiguration = (): void => {
-    localStorage.clear();
-    loadConfig(DEFAULT_CONFIG);
+    replaceSavedAppState(DEFAULT_CONFIG, loadConfig);
   };
 
   return (
