@@ -218,9 +218,58 @@
   }
 }
 
-.games-list {
+.games-list,
+.teams-list {
   margin-top: 8px;
   overflow-x: auto;
+}
+
+.scores-table,
+.teams-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  thead {
+    background: $table-header-bg;
+    border-bottom: 2px solid $border-scores;
+  }
+
+  th {
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 700;
+    color: $text-primary;
+    border-right: 1px solid $border-table;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid $border-table;
+    transition: background-color 150ms ease;
+
+    &:hover {
+      background-color: $table-row-hover;
+    }
+  }
+
+  td {
+    padding: 10px 10px;
+    color: $text-secondary;
+    border-right: 1px solid $border-table;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+}
+
+.teams-table th:first-child,
+.teams-table td:first-child {
+  max-width: 2em;
 }
 
 .grouping-controls {
@@ -228,6 +277,19 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+.grouping-toggle-btn {
+  @include btn-base;
+  padding: 10px 16px;
+  background: $neutral;
+  color: $white;
+  border-radius: $radius-sm;
+
+  &:hover {
+    background: $neutral-hover;
+    box-shadow: $shadow-hover-neutral;
+  }
 }
 
 .grouping-option {
@@ -268,6 +330,11 @@
   font-weight: 700;
   color: $brand-primary;
   background: rgba($brand-primary, 0.08);
+}
+
+.empty-table-row {
+  text-align: center;
+  color: $text-muted;
 }
 
 .move-btn {
